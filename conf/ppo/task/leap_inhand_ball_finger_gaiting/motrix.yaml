@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_finger_gaiting/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallFingerGaitingRotation
+  sim_backend: motrix
+
+env:
+  sim_dt: 0.01
+

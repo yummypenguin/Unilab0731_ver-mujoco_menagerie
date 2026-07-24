@@ -25,6 +25,19 @@ class BackendPlayCapabilities:
     supports_native_video_capture: bool = False
 
 
+@dataclass(frozen=True)
+class ContactPenetrationDetail:
+    """Maximum self/object penetration contacts for one environment."""
+
+    env_id: int
+    self_depth: float
+    self_body_pair: tuple[str, str] | None
+    self_geom_pair: tuple[str, str] | None
+    object_depth: float
+    object_body_pair: tuple[str, str] | None
+    object_geom_pair: tuple[str, str] | None
+
+
 class BackendHeightScanner(abc.ABC):
     """Backend-owned height-field scanner created on the env init path."""
 
@@ -183,6 +196,51 @@ class SimBackend(abc.ABC):
     def get_geom_friction(self) -> np.ndarray:
         """Return the backend geom-friction table."""
         raise NotImplementedError(f"{self.__class__.__name__} does not expose geom friction")
+
+    def get_geom_pair_distances(
+        self,
+        env_ids: np.ndarray,
+        geom_pairs: np.ndarray,
+        *,
+        max_distance: float,
+    ) -> np.ndarray:
+        """Return signed surface distances for explicit geom pairs.
+
+        This is a low-frequency diagnostic API. The result has shape
+        ``(len(env_ids), len(geom_pairs))``; negative values indicate overlap.
+        """
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not expose geom-pair distances"
+        )
+
+    def get_contact_penetration_depths(
+        self,
+        env_ids: np.ndarray,
+        *,
+        self_collision_body_ids: np.ndarray,
+        object_body_id: int,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Return maximum self and object penetration for selected environments.
+
+        This is a low-frequency validation API for cache generation and similar
+        acceptance paths. Returned depths are non-negative and have shape
+        ``(len(env_ids),)``.
+        """
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not expose contact penetration depths"
+        )
+
+    def get_contact_penetration_details(
+        self,
+        env_ids: np.ndarray,
+        *,
+        self_collision_body_ids: np.ndarray,
+        object_body_id: int,
+    ) -> tuple[ContactPenetrationDetail, ...]:
+        """Return maximum penetration contact identities on a validation path."""
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not expose contact penetration details"
+        )
 
     def get_gravity(self) -> np.ndarray:
         """Return the backend gravity vector."""

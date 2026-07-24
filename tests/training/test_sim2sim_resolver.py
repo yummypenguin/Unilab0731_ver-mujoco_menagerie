@@ -345,3 +345,62 @@ def test_g1_walk_flat_cross_backend_play_is_guarded(tmp_path):
     motrix = _compose_task("g1_walk_flat/motrix")
     with pytest.raises(CrossBackendIncompatibleError):
         resolve_sim2sim_config(tmp_path, motrix)
+
+
+def test_leap_inhand_cross_backend_contract_is_transferable(tmp_path):
+    snapshot = extract_contract_snapshot(_compose_task("leap_inhand/mujoco"))
+    (tmp_path / "run_config.json").write_text(
+        json.dumps({"contract_snapshot": snapshot}), encoding="utf-8"
+    )
+
+    motrix = _compose_task("leap_inhand/motrix")
+
+    assert resolve_sim2sim_config(tmp_path, motrix) is motrix
+
+
+def test_leap_inhand_ball_matches_allegro_reward_and_transfers(tmp_path):
+    allegro = _compose_task("allegro_inhand/mujoco")
+    mujoco = _compose_task("leap_inhand_ball/mujoco")
+
+    assert OmegaConf.to_container(mujoco.reward.scales, resolve=True) == OmegaConf.to_container(
+        allegro.reward.scales, resolve=True
+    )
+    assert mujoco.reward.angvel_clip_min == allegro.reward.angvel_clip_min
+    assert mujoco.reward.angvel_clip_max == allegro.reward.angvel_clip_max
+    assert mujoco.reward.reset_z_threshold == pytest.approx(0.4)
+    assert OmegaConf.to_container(mujoco.algo, resolve=True) == OmegaConf.to_container(
+        allegro.algo, resolve=True
+    )
+    assert mujoco.env.control_config.action_scale == pytest.approx(1.0 / 24.0)
+    assert mujoco.env.control_config.kp == pytest.approx(3.0)
+    assert mujoco.env.grasp_cache_path == "robots/leap_hand/caches/cube_grasp_s10_1k.npy"
+
+    snapshot = extract_contract_snapshot(mujoco)
+    (tmp_path / "run_config.json").write_text(
+        json.dumps({"contract_snapshot": snapshot}), encoding="utf-8"
+    )
+    motrix = _compose_task("leap_inhand_ball/motrix")
+
+    assert motrix.env.sim_dt == pytest.approx(0.01)
+    assert resolve_sim2sim_config(tmp_path, motrix) is motrix
+
+
+def test_leap_inhand_toss_cross_backend_contract_is_transferable(tmp_path):
+    mujoco = _compose_task("leap_inhand_toss/mujoco")
+    snapshot = extract_contract_snapshot(mujoco)
+    (tmp_path / "run_config.json").write_text(
+        json.dumps({"contract_snapshot": snapshot}), encoding="utf-8"
+    )
+
+    motrix = _compose_task("leap_inhand_toss/motrix")
+
+    assert mujoco.algo.save_interval == 25
+    assert motrix.algo.save_interval == 25
+    assert mujoco.env.max_episode_seconds == 15.0
+    assert motrix.env.max_episode_seconds == 15.0
+    assert mujoco.env.support_timeout_seconds == motrix.env.support_timeout_seconds == 5.0
+    assert mujoco.env.flight_timeout_seconds == motrix.env.flight_timeout_seconds == 1.2
+    assert mujoco.env.impact_timeout_seconds == motrix.env.impact_timeout_seconds == 0.5
+    assert mujoco.env.return_timeout_seconds == motrix.env.return_timeout_seconds == 2.5
+    assert mujoco.env.capture_timeout_seconds == motrix.env.capture_timeout_seconds == 3.0
+    assert resolve_sim2sim_config(tmp_path, motrix) is motrix

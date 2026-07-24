@@ -20,6 +20,7 @@ algo:
   resume: false
   load_run: "-1"
   checkpoint: -1
+  load_mode: resume
   resume_path: null
   policy:
     init_noise_std: 1.0
@@ -113,6 +114,11 @@ interactive:
   camera_elevation: null
   camera_azimuth: null
   use_env_visual_model: true
+  show_object_rotation: false
+  rotation_body_name: ""
+  show_reward_values: false
+  reward_value_keys: ""
+  reward_value_max_terms: 12
   speed: 1.0
   start_paused: false
   keyboard: false

@@ -1,0 +1,22 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandRotation
+  sim_backend: motrix
+
+algo:
+  # Start below the mature Allegro profile until LEAP throughput is measured.
+  num_envs: 1024
+
+env:
+  # Motrix hand profiles use a larger stable physics step than this task's
+  # MuJoCo owner while preserving the policy-facing control interval.
+  sim_dt: 0.01
+
+play_profile:
+  enabled: true
+  env:
+    render_spacing: 2.0

@@ -31,8 +31,9 @@ import sys
 import tempfile
 import time
 import warnings
+from collections import deque
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, cast
 
@@ -71,6 +72,7 @@ from unilab.visualization.interactive_playback import (
     prepare_motion_overlay_selection,
     select_torch_device,
 )
+from unilab.visualization.reward_telemetry import RewardTelemetry, parse_reward_value_keys
 
 _KEY_ENTER, _KEY_KP_ENTER = 257, 335
 _KEY_BACKSPACE = 259
@@ -134,6 +136,8 @@ class PlayInteractiveArgs:
     camera_elevation: float | None
     camera_azimuth: float | None
     use_env_visual_model: bool
+    show_object_rotation: bool
+    rotation_body_name: str
     speed: float
     start_paused: bool
     keyboard: bool = False
@@ -141,6 +145,104 @@ class PlayInteractiveArgs:
     keyboard_step_ang: float = 0.2
     require_keyboard_command_obs: bool = True
     algo: str = "ppo"
+    show_reward_values: bool = False
+    reward_value_keys: str = ""
+    reward_value_max_terms: int = 12
+
+
+@dataclass
+class ObjectRotationTelemetry:
+    """Viewer-only angular-speed statistics for one simulated body."""
+
+    axis: np.ndarray
+    window_steps: int
+    signed_axis_speed: float = 0.0
+    total_speed: float = 0.0
+    cumulative_turns: float = 0.0
+    _signed_history: deque[float] = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        axis = np.asarray(self.axis, dtype=np.float64).reshape(3)
+        norm = float(np.linalg.norm(axis))
+        if norm <= 1e-12:
+            raise ValueError("rotation telemetry axis must be non-zero")
+        self.axis = axis / norm
+        self.window_steps = max(int(self.window_steps), 1)
+        self._signed_history = deque(maxlen=self.window_steps)
+
+    @property
+    def signed_rpm(self) -> float:
+        return self.signed_axis_speed * 60.0 / (2.0 * np.pi)
+
+    @property
+    def mean_signed_axis_speed(self) -> float:
+        if not self._signed_history:
+            return 0.0
+        return float(np.mean(self._signed_history))
+
+    def update(
+        self,
+        angular_velocity: np.ndarray,
+        *,
+        ctrl_dt: float,
+        advanced: bool,
+    ) -> None:
+        velocity = np.asarray(angular_velocity, dtype=np.float64).reshape(3)
+        self.signed_axis_speed = float(velocity @ self.axis)
+        self.total_speed = float(np.linalg.norm(velocity))
+        if advanced:
+            self._signed_history.append(self.signed_axis_speed)
+            self.cumulative_turns += self.signed_axis_speed * ctrl_dt / (2.0 * np.pi)
+
+
+def _rotation_overlay_text(
+    telemetry: ObjectRotationTelemetry,
+) -> tuple[int, int, str, str]:
+    labels = "Axis speed\nTotal speed\nRPM\n1 s mean\nSession turns"
+    values = (
+        f"{telemetry.signed_axis_speed:+.3f} rad/s\n"
+        f"{telemetry.total_speed:.3f} rad/s\n"
+        f"{telemetry.signed_rpm:+.3f}\n"
+        f"{telemetry.mean_signed_axis_speed:+.3f} rad/s\n"
+        f"{telemetry.cumulative_turns:+.3f}"
+    )
+    return (
+        int(mujoco.mjtFontScale.mjFONTSCALE_100),
+        int(mujoco.mjtGridPos.mjGRID_TOPRIGHT),
+        labels,
+        values,
+    )
+
+
+def _checkpoint_overlay_text(
+    checkpoint_path: str | None,
+) -> tuple[int, int, str, str]:
+    if checkpoint_path is None:
+        run_name = "None"
+        checkpoint_name = "None"
+    else:
+        path = Path(checkpoint_path)
+        run_name = path.parent.name
+        checkpoint_name = path.name
+    return (
+        int(mujoco.mjtFontScale.mjFONTSCALE_100),
+        int(mujoco.mjtGridPos.mjGRID_BOTTOMLEFT),
+        "Run\nCheckpoint",
+        f"{run_name}\n{checkpoint_name}",
+    )
+
+
+def _world_body_angular_velocity(mj_model, mj_data, body_id: int) -> np.ndarray:
+    velocity = np.zeros(6, dtype=np.float64)
+    mujoco.mj_objectVelocity(
+        mj_model,
+        mj_data,
+        mujoco.mjtObj.mjOBJ_BODY,
+        int(body_id),
+        velocity,
+        0,
+    )
+    return velocity[:3].copy()
 
 
 def _infer_checkpoint_actor_input_dim(ckpt_path: str) -> int | None:
@@ -1114,6 +1216,7 @@ def play_interactive(args, cfg: DictConfig | None = None, *, algo: str | None = 
             return
         raise
     playback_session = session[0]
+    checkpoint_path = session[2]
     env = playback_session.env
 
     if _uses_native_mujoco_viewer_launch() and not _can_launch_glfw_viewer():
@@ -1149,6 +1252,45 @@ def play_interactive(args, cfg: DictConfig | None = None, *, algo: str | None = 
     viz_data = mujoco.MjData(mj_model)
     state_spec = mujoco.mjtState.mjSTATE_FULLPHYSICS
     ctrl_dt = env.cfg.ctrl_dt
+
+    rotation_telemetry: ObjectRotationTelemetry | None = None
+    rotation_body_id = -1
+    if bool(getattr(args, "show_object_rotation", False)):
+        rotation_body_name = str(getattr(args, "rotation_body_name", "")).strip()
+        rotation_body_id = mujoco.mj_name2id(
+            mj_model,
+            mujoco.mjtObj.mjOBJ_BODY,
+            rotation_body_name,
+        )
+        if rotation_body_id < 0:
+            print(
+                "[play_interactive] Object rotation telemetry disabled: "
+                f"body not found: {rotation_body_name!r}."
+            )
+        else:
+            rotation_axis = np.asarray(
+                getattr(env.cfg, "rotation_axis", (0.0, 0.0, 1.0)),
+                dtype=np.float64,
+            )
+            rotation_telemetry = ObjectRotationTelemetry(
+                axis=rotation_axis,
+                window_steps=max(1, int(round(1.0 / float(ctrl_dt)))),
+            )
+            print(
+                "[play_interactive] Object rotation telemetry enabled "
+                f"(body={rotation_body_name}, axis={rotation_telemetry.axis.tolist()})."
+            )
+
+    reward_telemetry: RewardTelemetry | None = None
+    if bool(getattr(args, "show_reward_values", False)):
+        reward_telemetry = RewardTelemetry(
+            selected_keys=parse_reward_value_keys(str(getattr(args, "reward_value_keys", ""))),
+            max_terms=int(getattr(args, "reward_value_max_terms", 12)),
+        )
+        print(
+            "[play_interactive] Reward value telemetry enabled "
+            f"(max_terms={reward_telemetry.max_terms})."
+        )
 
     playback_session.reset()
     render_velocity_arrows = str(args.action_mode) == "policy" and _should_render_velocity_arrows(
@@ -1238,12 +1380,41 @@ def play_interactive(args, cfg: DictConfig | None = None, *, algo: str | None = 
                 if commander is not None and env.state is not None:
                     env.state.info["commands"][:] = commander.command
 
-                playback_session.advance(controls)
+                advanced = playback_session.advance(controls)
 
                 # Push env state[0] into viz_data and refresh scene
                 phys = playback_session.physics_state()[0].astype(np.float64)
                 mujoco.mj_setState(mj_model, viz_data, phys, state_spec)
                 mujoco.mj_forward(mj_model, viz_data)
+
+                text_overlays: list[tuple[int, int, str, str]] = []
+                if rotation_telemetry is not None:
+                    rotation_telemetry.update(
+                        _world_body_angular_velocity(mj_model, viz_data, rotation_body_id),
+                        ctrl_dt=float(ctrl_dt),
+                        advanced=advanced,
+                    )
+                    text_overlays.append(_rotation_overlay_text(rotation_telemetry))
+
+                if reward_telemetry is not None:
+                    reward_telemetry.update(
+                        env.state.reward,
+                        env.state.info,
+                        advanced=advanced,
+                    )
+                    reward_labels, reward_values = reward_telemetry.overlay_columns()
+                    text_overlays.append(
+                        (
+                            int(mujoco.mjtFontScale.mjFONTSCALE_100),
+                            int(mujoco.mjtGridPos.mjGRID_TOPLEFT),
+                            reward_labels,
+                            reward_values,
+                        )
+                    )
+
+                text_overlays.append(_checkpoint_overlay_text(checkpoint_path))
+                if text_overlays:
+                    viewer.set_texts(text_overlays)
 
                 if has_cam and bool(getattr(args, "camera_follow_body", True)):
                     base_pos = viz_data.xpos[focus_body_id]
@@ -1358,6 +1529,10 @@ def _build_play_args(cfg: DictConfig, *, algo: str = "ppo") -> PlayInteractiveAr
             else None
         ),
         use_env_visual_model=bool(cfg.interactive.use_env_visual_model),
+        show_object_rotation=bool(
+            OmegaConf.select(cfg, "interactive.show_object_rotation", default=False)
+        ),
+        rotation_body_name=str(OmegaConf.select(cfg, "interactive.rotation_body_name", default="")),
         speed=float(OmegaConf.select(cfg, "interactive.speed", default=1.0)),
         start_paused=bool(OmegaConf.select(cfg, "interactive.start_paused", default=False)),
         keyboard=bool(OmegaConf.select(cfg, "interactive.keyboard", default=False)),
@@ -1371,6 +1546,13 @@ def _build_play_args(cfg: DictConfig, *, algo: str = "ppo") -> PlayInteractiveAr
             OmegaConf.select(cfg, "interactive.require_keyboard_command_obs", default=True)
         ),
         algo=algo,
+        show_reward_values=bool(
+            OmegaConf.select(cfg, "interactive.show_reward_values", default=False)
+        ),
+        reward_value_keys=str(OmegaConf.select(cfg, "interactive.reward_value_keys", default="")),
+        reward_value_max_terms=int(
+            OmegaConf.select(cfg, "interactive.reward_value_max_terms", default=12)
+        ),
     )
 
 

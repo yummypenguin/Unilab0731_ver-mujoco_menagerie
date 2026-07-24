@@ -1,0 +1,18 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_grasp/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallGrasp
+  sim_backend: motrix
+
+env:
+  sim_dt: 0.01
+  # Keep Motrix output separate until the two backend caches are cross-validated.
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k_motrix.npy
+  # Motrix does not yet expose exact geom-pair surface distance queries.
+  grasp_max_fingertip_surface_gap: null
+  # Motrix does not yet expose contact penetration depth through SimBackend.
+  grasp_max_self_penetration: null
+  grasp_max_object_penetration: null

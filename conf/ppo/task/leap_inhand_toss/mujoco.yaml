@@ -1,0 +1,106 @@
+# @package _global_
+training:
+  task_name: LeapInhandToss
+  sim_backend: mujoco
+  render_spacing: 0.35
+  cam_distance: 1.2
+  cam_lookat: [0.0, 0.0, 0.55]
+  cam_elevation: -20.0
+algo:
+  num_envs: 1024
+  num_steps_per_env: 8
+  max_iterations: 1000
+  # Eight control steps per iteration; interval 25 gives checkpoints every 200
+  # control steps and multiple checkpoints inside every curriculum level.
+  save_interval: 25
+  obs_groups:
+    actor: [policy]
+    critic: [policy]
+  actor:
+    class_name: rsl_rl.models.MLPModel
+    hidden_dims: [512, 256, 128]
+    activation: elu
+    obs_normalization: true
+    distribution_cfg:
+      class_name: rsl_rl.modules.distribution.GaussianDistribution
+      init_std: 0.8
+      std_type: scalar
+  critic:
+    class_name: rsl_rl.models.MLPModel
+    hidden_dims: [512, 256, 128]
+    activation: elu
+    obs_normalization: true
+  algorithm:
+    value_loss_coef: 4.0
+    desired_kl: 0.02
+reward:
+  support_scale: 0.5
+  guard_scale: 0.25
+  trajectory_scale: 1.0
+  orientation_scale: 0.1
+  return_progress_scale: 1.0
+  capture_scale: 1.0
+  action_rate_scale: 0.001
+  ready_bonus: 0.2
+  valid_launch_bonus: 0.5
+  assisted_rebound_bonus: 2.0
+  stable_capture_bonus: 10.0
+  failure_penalty: 10.0
+  trajectory_pos_sigma: 0.035
+  trajectory_vel_sigma: 0.20
+  orientation_sigma: 1.5
+  return_progress_distance: 0.02
+  capture_pos_sigma: 0.025
+  capture_vel_sigma: 0.08
+  guard_distance_sigma: 0.08
+  thumb_lateral_sigma: 0.04
+  reset_z_threshold: 0.4
+env:
+  sim_dt: 0.008333333333333333
+  ctrl_dt: 0.05
+  max_episode_seconds: 15.0
+  grasp_cache_path: robots/leap_hand/caches/cube_grasp_s10_1k.npy
+  gen_grasp: false
+  target_forward_speed: 0.20
+  target_apex_fraction: 0.20
+  min_launch_forward_speed: 0.08
+  min_launch_up_speed: 0.10
+  min_impact_speed: 0.05
+  min_rebound_speed: 0.03
+  support_timeout_seconds: 5.0
+  flight_timeout_seconds: 1.2
+  impact_timeout_seconds: 0.5
+  return_timeout_seconds: 2.5
+  capture_timeout_seconds: 3.0
+  workspace_radius: 0.15
+  capture_radius: 0.040
+  capture_dwell_seconds: 0.40
+  curriculum:
+    enabled: true
+    level_steps: [0, 1000, 2500, 4000]
+    reset_phase_weights:
+      - [0.0, 0.0, 0.0, 1.0]
+      - [0.0, 0.0, 0.5, 0.5]
+      - [0.0, 0.5, 0.35, 0.15]
+      - [0.7, 0.15, 0.10, 0.05]
+  noise_config:
+    level: 0.0
+    scale_joint_angle: 0.02
+  control_config:
+    action_scale: 0.041666666666666664
+    kp: 3.0
+    kd: 0.1
+  domain_rand:
+    randomize_base_mass: false
+    random_com: false
+    randomize_gravity: false
+    push_robots: false
+    joint_noise: 0.0
+    ball_vel_noise: 0.0
+    ball_z_offset: 0.0
+play_profile:
+  enabled: true
+  env:
+    render_spacing: 1.0
+    curriculum:
+      enabled: false

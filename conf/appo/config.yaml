@@ -108,6 +108,9 @@ interactive:
   camera_elevation: null
   camera_azimuth: null
   use_env_visual_model: true
+  show_reward_values: false
+  reward_value_keys: ""
+  reward_value_max_terms: 12
   speed: 1.0
   start_paused: false
   keyboard: false

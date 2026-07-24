@@ -37,6 +37,7 @@ from ..base import (
     BackendHeightScanner,
     BackendPlayCapabilities,
     BackendPlayRenderPlan,
+    ContactPenetrationDetail,
     SimBackend,
     normalize_play_render_mode,
 )
@@ -724,6 +725,162 @@ class MuJoCoBackend(SimBackend):
 
     def get_geom_friction(self) -> np.ndarray:
         return np.asarray(self._model.geom_friction, dtype=np.float64).copy()
+
+    def get_geom_pair_distances(
+        self,
+        env_ids: np.ndarray,
+        geom_pairs: np.ndarray,
+        *,
+        max_distance: float,
+    ) -> np.ndarray:
+        rows = np.asarray(env_ids, dtype=np.intp).reshape(-1)
+        pairs = np.asarray(geom_pairs, dtype=np.int32)
+        if np.any(rows < 0) or np.any(rows >= self._num_envs):
+            raise IndexError(f"env_ids must be within [0, {self._num_envs})")
+        if pairs.ndim != 2 or pairs.shape[1] != 2:
+            raise ValueError(f"geom_pairs must have shape (?, 2), got {pairs.shape}")
+        if not np.isfinite(max_distance) or max_distance <= 0.0:
+            raise ValueError("max_distance must be positive and finite")
+
+        distances = np.empty((len(rows), len(pairs)), dtype=self._np_dtype)
+        data_by_variant: dict[int, mujoco.MjData] = {}
+        state_spec = mujoco.mjtState.mjSTATE_FULLPHYSICS
+        for output_index, env_id in enumerate(rows):
+            variant_index = int(self._model_assignments[env_id])
+            model = self._model_variants[variant_index]
+            if np.any(pairs < 0) or np.any(pairs >= model.ngeom):
+                raise ValueError("geom_pairs contains an invalid MuJoCo geom id")
+            data = data_by_variant.setdefault(variant_index, mujoco.MjData(model))
+            mujoco.mj_setState(
+                model,
+                data,
+                np.asarray(self._physics_state[env_id], dtype=np.float64),
+                state_spec,
+            )
+            mujoco.mj_forward(model, data)
+            for pair_index, (geom1, geom2) in enumerate(pairs):
+                distances[output_index, pair_index] = mujoco.mj_geomDistance(
+                    model,
+                    data,
+                    int(geom1),
+                    int(geom2),
+                    float(max_distance),
+                    None,
+                )
+        return distances
+
+    def get_contact_penetration_depths(
+        self,
+        env_ids: np.ndarray,
+        *,
+        self_collision_body_ids: np.ndarray,
+        object_body_id: int,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        details = self.get_contact_penetration_details(
+            env_ids,
+            self_collision_body_ids=self_collision_body_ids,
+            object_body_id=object_body_id,
+        )
+        return (
+            np.asarray([detail.self_depth for detail in details], dtype=self._np_dtype),
+            np.asarray([detail.object_depth for detail in details], dtype=self._np_dtype),
+        )
+
+    def get_contact_penetration_details(
+        self,
+        env_ids: np.ndarray,
+        *,
+        self_collision_body_ids: np.ndarray,
+        object_body_id: int,
+    ) -> tuple[ContactPenetrationDetail, ...]:
+        rows = np.asarray(env_ids, dtype=np.intp).reshape(-1)
+        if np.any(rows < 0) or np.any(rows >= self._num_envs):
+            raise IndexError(f"env_ids must be within [0, {self._num_envs})")
+
+        hand_body_ids = {
+            int(body_id) for body_id in np.asarray(self_collision_body_ids).reshape(-1)
+        }
+        object_id = int(object_body_id)
+        if object_id in hand_body_ids:
+            raise ValueError("object_body_id must not belong to the self-collision body set")
+
+        details: list[ContactPenetrationDetail] = []
+        data_by_variant: dict[int, mujoco.MjData] = {}
+        state_spec = mujoco.mjtState.mjSTATE_FULLPHYSICS
+
+        for env_id in rows:
+            variant_index = int(self._model_assignments[env_id])
+            model = self._model_variants[variant_index]
+            if any(body_id < 0 or body_id >= model.nbody for body_id in hand_body_ids):
+                raise ValueError("self_collision_body_ids contains an invalid MuJoCo body id")
+            if object_id < 0 or object_id >= model.nbody:
+                raise ValueError(f"Invalid object_body_id {object_id}")
+
+            data = data_by_variant.setdefault(variant_index, mujoco.MjData(model))
+            mujoco.mj_setState(
+                model,
+                data,
+                np.asarray(self._physics_state[env_id], dtype=np.float64),
+                state_spec,
+            )
+            mujoco.mj_forward(model, data)
+
+            max_self_depth = 0.0
+            max_object_depth = 0.0
+            max_self_contact: tuple[int, int, int, int] | None = None
+            max_object_contact: tuple[int, int, int, int] | None = None
+            for contact in data.contact:
+                depth = max(0.0, -float(contact.dist))
+                if depth == 0.0:
+                    continue
+                body1 = int(model.geom_bodyid[contact.geom1])
+                body2 = int(model.geom_bodyid[contact.geom2])
+                is_self_contact = body1 in hand_body_ids and body2 in hand_body_ids
+                is_object_contact = (
+                    body1 == object_id and body2 in hand_body_ids
+                ) or (
+                    body2 == object_id and body1 in hand_body_ids
+                )
+                if is_self_contact and depth > max_self_depth:
+                    max_self_depth = depth
+                    max_self_contact = (body1, body2, int(contact.geom1), int(contact.geom2))
+                elif is_object_contact and depth > max_object_depth:
+                    max_object_depth = depth
+                    max_object_contact = (body1, body2, int(contact.geom1), int(contact.geom2))
+
+            def names(
+                contact_ids: tuple[int, int, int, int] | None,
+            ) -> tuple[tuple[str, str] | None, tuple[str, str] | None]:
+                if contact_ids is None:
+                    return None, None
+                body1, body2, geom1, geom2 = contact_ids
+                body_names = tuple(
+                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
+                    or f"<body:{body_id}>"
+                    for body_id in (body1, body2)
+                )
+                geom_names = tuple(
+                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, geom_id)
+                    or f"<geom:{geom_id}>"
+                    for geom_id in (geom1, geom2)
+                )
+                return body_names, geom_names
+
+            self_body_pair, self_geom_pair = names(max_self_contact)
+            object_body_pair, object_geom_pair = names(max_object_contact)
+            details.append(
+                ContactPenetrationDetail(
+                    env_id=int(env_id),
+                    self_depth=max_self_depth,
+                    self_body_pair=self_body_pair,
+                    self_geom_pair=self_geom_pair,
+                    object_depth=max_object_depth,
+                    object_body_pair=object_body_pair,
+                    object_geom_pair=object_geom_pair,
+                )
+            )
+
+        return tuple(details)
 
     def get_gravity(self) -> np.ndarray:
         return np.asarray(self._model.opt.gravity, dtype=np.float64).copy()

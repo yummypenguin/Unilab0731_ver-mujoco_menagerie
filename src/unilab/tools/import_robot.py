@@ -284,6 +284,17 @@ def _scene_keyframe_values(robot_xml: Path) -> tuple[list[float], list[float]]:
     return qpos, ctrl
 
 
+def _robot_has_free_joint(robot_xml: Path) -> bool:
+    root = ET.parse(robot_xml).getroot()
+    root_body = root.find("./worldbody/body")
+    if root_body is None:
+        raise ValueError("robot XML must define a root body under <worldbody>")
+    return (
+        root_body.find("./freejoint") is not None
+        or root_body.find("./joint[@type='free']") is not None
+    )
+
+
 def _write_scene_xml(robot_xml: Path, scene_xml: Path, robot_name: str) -> None:
     qpos, ctrl = _scene_keyframe_values(robot_xml)
     root = ET.Element("mujoco", {"model": f"{robot_name} scene"})
@@ -511,7 +522,11 @@ def _compile_tuning_scene(robot_xml: Path, scene_xml: Path) -> Any:
     import mujoco
 
     mujoco_api: Any = mujoco
-    merged = _materialize_tuning_scene(robot_xml, scene_xml)
+    merged = _materialize_tuning_scene(
+        robot_xml,
+        scene_xml,
+        add_height_joint=_robot_has_free_joint(robot_xml),
+    )
     try:
         return mujoco_api.MjModel.from_xml_path(str(merged))
     finally:

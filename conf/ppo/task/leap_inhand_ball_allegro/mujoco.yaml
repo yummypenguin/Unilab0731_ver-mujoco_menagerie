@@ -1,0 +1,19 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallAllegroRotation
+
+reward:
+  scales:
+    drop: -1.0
+  # A 7 mm fall triggers the dense drop cost; palm contact terminates the episode.
+  reset_z_threshold: 0.66797318983078
+
+env:
+  # Match Allegro's 200 Hz physics rate while retaining the 20 Hz control rate.
+  sim_dt: 0.005
+  ctrl_dt: 0.05
+  reset_source: home

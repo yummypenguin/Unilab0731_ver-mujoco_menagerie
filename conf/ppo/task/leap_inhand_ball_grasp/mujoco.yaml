@@ -1,0 +1,95 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallGrasp
+  sim_backend: mujoco
+  no_play: true
+
+algo:
+  num_envs: 1024
+  max_iterations: 1000
+
+reward:
+  scales:
+    rotate: 0.0
+    obj_linvel: 0.0
+    pose_diff: 0.0
+    torque: 0.0
+    work: 0.0
+    drop: 0.0
+
+env:
+  gen_grasp: true
+  # Match the official LEAP generator's 50 control-step settling horizon.
+  max_episode_seconds: 2.5
+  # Match Allegro's direct-save cache scale after LEAP-specific quality gates.
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k.npy
+  grasp_collection_target: 50000
+  grasp_auto_save: true
+  grasp_quality_check: true
+  grasp_min_contacts: 2
+  grasp_require_thumb_contact: true
+  # Selected LEAP ball canonical seed: passes the strict 2.5 s settling diagnostic
+  # without termination, retaining index/ring/thumb contact and <1 mm penetration.
+  grasp_seed_qpos:
+    - 1.03410442949809
+    - 0.15679991228963497
+    - 0.25610135637493514
+    - 0.045668025549832805
+    - 0.771828792737894
+    - 0.009351868838524551
+    - 0.6275431550313586
+    - 0.13213983678334723
+    - 0.8995371304303955
+    - -0.12547198738935086
+    - 0.7401180634800134
+    - 0.17855020221211734
+    - 1.4648204389828898
+    - 0.4525430081690111
+    - 0.6321388427548723
+    - -0.5916553393951335
+    - -0.012619446773068123
+    - 0.02770136438817874
+    - 0.6337514939469586
+    - 0.9949214781878678
+    - -0.07395348612537869
+    - 0.025469120495700256
+    - -0.0633518589431043
+  # LEAP ablation: ±0.10 rad preserves variation while improving strict acceptance.
+  grasp_joint_offset_lower: []
+  grasp_joint_offset_upper: []
+  grasp_joint_noise: 0.10
+  grasp_ball_position_noise: 0.0
+  # Keep the official proposal distribution free of rejected-state refinement.
+  grasp_frontier_capacity: 256
+  grasp_frontier_fraction: 0.0
+  grasp_frontier_joint_noise: 0.0
+  grasp_frontier_ball_position_noise: 0.0
+  grasp_warmup_seconds: 0.5
+  # Primary enclosure gate with a 0.05 mm float32 serialization margin;
+  # the published cache is audited against the external 10 mm contract.
+  grasp_max_fingertip_surface_gap: 0.00995
+  # Retain the Allegro-style body-origin gate as a secondary sanity check.
+  grasp_max_fingertip_distance: 0.1
+  grasp_max_ball_drift: 0.005
+  grasp_max_ball_linear_speed: 0.05
+  grasp_max_ball_angular_speed: 0.5
+  grasp_max_joint_speed: 0.5
+  grasp_max_abs_work: 0.25
+  # Cache-only physical acceptance limits; these are not evaluated in the RL step path.
+  grasp_max_self_penetration: 0.001
+  grasp_max_object_penetration: 0.001
+  noise_config:
+    level: 0.0
+    scale_joint_angle: 0.0
+  domain_rand:
+    randomize_base_mass: false
+    random_com: false
+    randomize_gravity: false
+    push_robots: false
+    joint_noise: 0.0
+    ball_vel_noise: 0.0
+    ball_z_offset: 0.0

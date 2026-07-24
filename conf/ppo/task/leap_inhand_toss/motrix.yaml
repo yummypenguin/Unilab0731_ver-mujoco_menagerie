@@ -1,0 +1,21 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_toss/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandToss
+  sim_backend: motrix
+
+algo:
+  num_envs: 1024
+
+env:
+  sim_dt: 0.01
+
+play_profile:
+  enabled: true
+  env:
+    render_spacing: 2.0
+    curriculum:
+      enabled: false

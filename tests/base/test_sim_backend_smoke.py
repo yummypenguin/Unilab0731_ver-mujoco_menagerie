@@ -32,6 +32,7 @@ BASIC_ROBOTS = [
 _G1 = dict(model_file=_xml("g1"), base_name="pelvis")
 _ALLEGRO = dict(model_file=_xml("allegro_hand", "scene.xml"), base_name="palm")
 _SHARPA = dict(model_file=_xml("sharpa_wave", "scene.xml"), base_name="right_hand_C_MC")
+_LEAP = dict(model_file=_xml("leap_hand", "scene_ball.xml"), base_name="palm_lower")
 
 NUM_ENVS = 2
 SIM_DT = 0.005
@@ -367,6 +368,111 @@ def test_mujoco_metadata_getters_return_stable_copies():
     np.testing.assert_allclose(dof_armature, model.dof_armature)
     dof_armature[-1] += 1.0
     assert not np.isclose(dof_armature[-1], model.dof_armature[-1])
+
+
+def test_mujoco_contact_penetration_depths_for_leap_cache_rows():
+    import mujoco
+
+    from unilab.base.backend.mujoco.backend import MuJoCoBackend
+
+    bkd = MuJoCoBackend(
+        SceneCfg(model_file=_LEAP["model_file"]),
+        NUM_ENVS,
+        SIM_DT,
+        base_name=_LEAP["base_name"],
+    )
+    bkd.materialize()
+    cache = np.load(
+        ASSETS_ROOT_PATH / "robots" / "leap_hand" / "caches" / "cube_grasp_s10_1k.npy"
+    )
+    env_ids = np.arange(NUM_ENVS, dtype=np.int32)
+    bkd.set_state(env_ids, cache[:NUM_ENVS], np.zeros((NUM_ENVS, bkd.model.nv)))
+
+    palm_id = bkd.get_body_id("palm_lower")
+    object_id = bkd.get_body_id("leap_object")
+    hand_body_ids = bkd.get_body_subtree_ids(palm_id)
+    self_depths, object_depths = bkd.get_contact_penetration_depths(
+        env_ids,
+        self_collision_body_ids=hand_body_ids,
+        object_body_id=object_id,
+    )
+    details = bkd.get_contact_penetration_details(
+        env_ids,
+        self_collision_body_ids=hand_body_ids,
+        object_body_id=object_id,
+    )
+
+    _shape(self_depths, NUM_ENVS)
+    _shape(object_depths, NUM_ENVS)
+    assert np.all(self_depths >= 0.0)
+    assert np.all(object_depths >= 0.0)
+    assert len(details) == NUM_ENVS
+    np.testing.assert_allclose([detail.self_depth for detail in details], self_depths)
+    np.testing.assert_allclose([detail.object_depth for detail in details], object_depths)
+    for env_id, detail in enumerate(details):
+        assert detail.env_id == env_id
+        if detail.self_depth > 0.0:
+            assert detail.self_body_pair is not None
+            assert detail.self_geom_pair is not None
+        if detail.object_depth > 0.0:
+            assert detail.object_body_pair is not None
+            assert detail.object_geom_pair is not None
+
+        variant_index = int(bkd._model_assignments[env_id])
+        model = bkd._model_variants[variant_index]
+        data = mujoco.MjData(model)
+        mujoco.mj_setState(
+            model,
+            data,
+            np.asarray(bkd._physics_state[env_id], dtype=np.float64),
+            mujoco.mjtState.mjSTATE_FULLPHYSICS,
+        )
+        mujoco.mj_forward(model, data)
+        hand_ids = {int(body_id) for body_id in hand_body_ids}
+        expected_object_depth = 0.0
+        for contact in data.contact:
+            body1 = int(model.geom_bodyid[contact.geom1])
+            body2 = int(model.geom_bodyid[contact.geom2])
+            is_object_contact = (
+                body1 == object_id and body2 in hand_ids
+            ) or (
+                body2 == object_id and body1 in hand_ids
+            )
+            if is_object_contact:
+                expected_object_depth = max(
+                    expected_object_depth,
+                    max(0.0, -float(contact.dist)),
+                )
+        assert detail.object_depth == pytest.approx(expected_object_depth)
+
+
+def test_mujoco_geom_pair_distances_for_leap_fingertips():
+    from unilab.base.backend.mujoco.backend import MuJoCoBackend
+
+    bkd = MuJoCoBackend(
+        SceneCfg(model_file=_LEAP["model_file"]),
+        NUM_ENVS,
+        SIM_DT,
+        base_name=_LEAP["base_name"],
+    )
+    bkd.materialize()
+    env_ids = np.arange(NUM_ENVS, dtype=np.int32)
+    qpos = np.broadcast_to(bkd.get_keyframe_qpos("home"), (NUM_ENVS, bkd.model.nq)).copy()
+    bkd.set_state(env_ids, qpos, np.zeros((NUM_ENVS, bkd.model.nv)))
+    object_geom_id = bkd.get_geom_id("leap_object_col")
+    pairs = np.asarray(
+        [
+            [bkd.get_geom_id("index_tip_col"), object_geom_id],
+            [bkd.get_geom_id("thumb_tip_col"), object_geom_id],
+        ],
+        dtype=np.int32,
+    )
+
+    distances = bkd.get_geom_pair_distances(env_ids, pairs, max_distance=0.2)
+
+    _shape(distances, NUM_ENVS, 2)
+    assert np.all(np.isfinite(distances))
+    np.testing.assert_allclose(distances[0], distances[1])
 
 
 def test_mujoco_copy_body_state_matches_split_queries():

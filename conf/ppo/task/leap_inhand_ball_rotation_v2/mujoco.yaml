@@ -1,0 +1,83 @@
+# @package _global_
+training:
+  task_name: LeapInhandBallRotationV2
+  sim_backend: mujoco
+  render_spacing: 0.5
+  cam_distance: 1.2
+  cam_lookat: [0.0, 0.0, 0.5]
+  cam_elevation: -20.0
+algo:
+  num_envs: 1024
+  num_steps_per_env: 8
+  max_iterations: 800
+  save_interval: 25
+  obs_groups:
+    actor: [policy]
+    critic: [policy]
+  actor:
+    class_name: rsl_rl.models.MLPModel
+    hidden_dims: [512, 256, 128]
+    activation: elu
+    obs_normalization: true
+    distribution_cfg:
+      class_name: rsl_rl.modules.distribution.GaussianDistribution
+      init_std: 1.0
+      std_type: scalar
+  critic:
+    class_name: rsl_rl.models.MLPModel
+    hidden_dims: [512, 256, 128]
+    activation: elu
+    obs_normalization: true
+  algorithm:
+    value_loss_coef: 4.0
+    desired_kl: 0.02
+reward:
+  axis_progress_scale: 2.0
+  directional_quality_scale: 0.5
+  retention_scale: 0.25
+  action_rate_scale: 0.001
+  torque_scale: 0.01
+  work_scale: 0.10
+  sustained_rotation_bonus: 0.20
+  quarter_turn_bonus: 0.25
+  drop_penalty: 5.0
+  retention_sigma: 0.03
+  orthogonal_speed_tolerance: 0.50
+  reset_z_threshold: 0.40
+  workspace_radius: 0.12
+env:
+  sim_dt: 0.008333333333333333
+  ctrl_dt: 0.05
+  gen_grasp: false
+  max_episode_seconds: 20.0
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_s10_5k.npy
+  # World-frame axis, shared by reward, TensorBoard diagnostics, and viewer telemetry.
+  rotation_axis: [0.0, 0.0, 1.0]
+  joint_velocity_scale: 0.20
+  curriculum:
+    target_speeds: [0.10, 0.25, 0.50]
+    sustain_ratio: 0.60
+    sustain_steps: 5
+    energy_level_scales: [0.0, 0.25, 1.0]
+  noise_config:
+    level: 0.0
+    scale_joint_angle: 0.02
+  control_config:
+    action_scale: 0.041666666666666664
+    kp: 3.0
+    kd: 0.1
+  domain_rand:
+    randomize_base_mass: false
+    random_com: false
+    randomize_gravity: false
+    push_robots: false
+    joint_noise: 0.0
+    ball_vel_noise: 0.0
+    ball_z_offset: 0.0
+play_profile:
+  enabled: true
+  env:
+    render_spacing: 2.0
+interactive:
+  show_object_rotation: true
+  rotation_body_name: leap_object

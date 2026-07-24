@@ -288,3 +288,78 @@ def test_play_interactive_viewer_model_uses_shared_render_playback_resolver(
     assert resolved["env"] is env
     assert resolved["num_envs"] == 1
     assert Path(resolved["tmp_dir"]).name.startswith("unilab-interactive-viewer-")
+
+
+def test_object_rotation_telemetry_reports_signed_speed_rpm_and_turns():
+    mod = _load_script("play_interactive")
+    telemetry = mod.ObjectRotationTelemetry(
+        axis=np.asarray([0.0, 0.0, 2.0]),
+        window_steps=2,
+    )
+
+    telemetry.update(np.asarray([3.0, 4.0, 1.0]), ctrl_dt=0.05, advanced=True)
+
+    assert telemetry.axis.tolist() == pytest.approx([0.0, 0.0, 1.0])
+    assert telemetry.signed_axis_speed == pytest.approx(1.0)
+    assert telemetry.total_speed == pytest.approx(np.sqrt(26.0))
+    assert telemetry.signed_rpm == pytest.approx(60.0 / (2.0 * np.pi))
+    assert telemetry.mean_signed_axis_speed == pytest.approx(1.0)
+    assert telemetry.cumulative_turns == pytest.approx(0.05 / (2.0 * np.pi))
+
+    previous_turns = telemetry.cumulative_turns
+    telemetry.update(np.asarray([0.0, 0.0, -0.5]), ctrl_dt=0.05, advanced=False)
+    assert telemetry.signed_axis_speed == pytest.approx(-0.5)
+    assert telemetry.mean_signed_axis_speed == pytest.approx(1.0)
+    assert telemetry.cumulative_turns == pytest.approx(previous_turns)
+
+    font, grid, labels, values = mod._rotation_overlay_text(telemetry)
+    assert font == int(mod.mujoco.mjtFontScale.mjFONTSCALE_100)
+    assert grid == int(mod.mujoco.mjtGridPos.mjGRID_TOPRIGHT)
+    assert "Axis speed" in labels
+    assert "-0.500 rad/s" in values
+
+
+def test_leap_ball_owner_enables_object_rotation_telemetry():
+    mod = _load_script("play_interactive")
+
+    cfg = mod._compose_interactive_config(
+        "ppo",
+        ["task=leap_inhand_ball/mujoco"],
+    )
+    args = mod._build_play_args(cfg)
+
+    assert args.show_object_rotation is True
+    assert args.rotation_body_name == "leap_object"
+
+
+def test_world_body_angular_velocity_reads_mujoco_scene_state():
+    mod = _load_script("play_interactive")
+    model = mod.mujoco.MjModel.from_xml_path(
+        str(
+            Path(mod.ROOT_DIR)
+            / "src"
+            / "unilab"
+            / "assets"
+            / "robots"
+            / "leap_hand"
+            / "scene_ball.xml"
+        )
+    )
+    data = mod.mujoco.MjData(model)
+    body_id = mod.mujoco.mj_name2id(
+        model,
+        mod.mujoco.mjtObj.mjOBJ_BODY,
+        "leap_object",
+    )
+    joint_id = mod.mujoco.mj_name2id(
+        model,
+        mod.mujoco.mjtObj.mjOBJ_JOINT,
+        "leap_object_joint",
+    )
+    dof_adr = int(model.jnt_dofadr[joint_id])
+    data.qvel[dof_adr + 3 : dof_adr + 6] = [0.0, 0.0, 2.0]
+    mod.mujoco.mj_forward(model, data)
+
+    angular_velocity = mod._world_body_angular_velocity(model, data, body_id)
+
+    np.testing.assert_allclose(angular_velocity, [0.0, 0.0, 2.0], atol=1e-9)

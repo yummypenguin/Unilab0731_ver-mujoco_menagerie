@@ -160,6 +160,57 @@ def test_write_scene_xml_creates_only_home_keyframe(tmp_path: Path) -> None:
     assert root.find("./sensor") is None
 
 
+def test_robot_has_free_joint_distinguishes_fixed_base(tmp_path: Path) -> None:
+    mod = _load_script()
+    floating = tmp_path / "floating.xml"
+    fixed = tmp_path / "fixed.xml"
+    floating.write_text(
+        "<mujoco><worldbody><body><freejoint/></body></worldbody></mujoco>",
+        encoding="utf-8",
+    )
+    fixed.write_text(
+        "<mujoco><worldbody><body><joint name='finger'/></body></worldbody></mujoco>",
+        encoding="utf-8",
+    )
+
+    assert mod._robot_has_free_joint(floating)
+    assert not mod._robot_has_free_joint(fixed)
+
+
+def test_compile_tuning_scene_skips_height_joint_for_fixed_base(
+    tmp_path: Path, monkeypatch: Any
+) -> None:
+    mod = _load_script()
+    robot_xml = tmp_path / "fixed.xml"
+    scene_xml = tmp_path / "scene.xml"
+    robot_xml.write_text(
+        "<mujoco><worldbody><body><joint name='finger'/></body></worldbody></mujoco>",
+        encoding="utf-8",
+    )
+    scene_xml.write_text("<mujoco/>", encoding="utf-8")
+    merged = tmp_path / "merged.xml"
+    merged.write_text("<mujoco/>", encoding="utf-8")
+    calls: list[bool] = []
+
+    def fake_materialize(*args: Any, add_height_joint: bool, **kwargs: Any) -> Path:
+        del args, kwargs
+        calls.append(add_height_joint)
+        return merged
+
+    class FakeModel:
+        @staticmethod
+        def from_xml_path(path: str) -> object:
+            assert path == str(merged)
+            return object()
+
+    monkeypatch.setattr(mod, "_materialize_tuning_scene", fake_materialize)
+    monkeypatch.setitem(__import__("sys").modules, "mujoco", type("M", (), {"MjModel": FakeModel}))
+
+    mod._compile_tuning_scene(robot_xml, scene_xml)
+
+    assert calls == [False]
+
+
 def test_tuning_scene_visuals_add_floor_and_light() -> None:
     mod = _load_script()
     root = ET.fromstring("<mujoco><worldbody /></mujoco>")

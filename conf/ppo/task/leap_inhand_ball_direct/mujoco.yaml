@@ -1,0 +1,63 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_sustained_cache/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallDirectRotation
+  sim_backend: mujoco
+
+env:
+  max_episode_seconds: 25.0
+  curriculum:
+    direct_target_mode: true
+    target_speeds: [0.30]
+    stage_durations_seconds: [2.0]
+    orthogonal_speed_tolerances: [0.30]
+    energy_level_scales: [1.0]
+    sustain_ratio: 0.80
+    gate_position_radius: 0.015
+    minimum_fingertip_contacts: 2
+    ema_time_constant: 0.1
+
+reward:
+  scales:
+    stable_rotation: 6.0
+    rotation_streak: 0.5
+    stall: -1.0
+    reverse: -4.0
+    thumb_contact: 0.1
+    fingertip_support: 0.15
+    object_center: -2.5
+    center_recovery: 1.0
+    object_linear_velocity: -0.4
+    palm_contact: -1.0
+    orthogonal_speed: -0.25
+    action_rate: -0.008
+    torque: -0.001
+    work: -0.0001
+    failure: -5.0
+  spin_progress_scale: 0.0
+  retention_scale: 0.0
+  anchor_proximity_scale: 0.0
+  fingertip_support_scale: 0.0
+  action_rate_scale: 0.008
+  torque_scale: 0.001
+  work_scale: 0.0001
+  stage_bonuses: []
+  positive_spin_retention_floors: [1.0]
+  final_success_bonus: 0.0
+  stable_rotation_scale: 6.0
+  rotation_streak_scale: 0.5
+  stall_scale: 1.0
+  reverse_scale: 4.0
+  thumb_contact_scale: 0.1
+  support_scale: 0.15
+  object_center_scale: 2.5
+  center_recovery_scale: 1.0
+  object_linear_velocity_scale: 0.4
+  palm_contact_scale: 1.0
+  orthogonal_speed_scale: 0.25
+  minimum_positive_speed: 0.05
+  stall_grace_seconds: 1.0
+

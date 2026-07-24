@@ -1,0 +1,15 @@
+<mujoco model="leap_hand_cube">
+  <asset>
+    <material name="leap_cube_material" rgba="0.12 0.55 0.92 1"/>
+  </asset>
+
+  <worldbody>
+    <body name="leap_object" pos="-0.03 0.04 0.57">
+      <freejoint name="leap_object_joint"/>
+      <inertial pos="0 0 0" mass="0.05" diaginertia="4.6875e-05 4.6875e-05 4.6875e-05"/>
+      <geom name="leap_object_col" type="box" size="0.0375 0.0375 0.0375"
+            mass="0.05" material="leap_cube_material" condim="6"
+            friction="2.0 0.05 0.01" solimp="0.9 0.95 0.001" solref="0.02 1"/>
+    </body>
+  </worldbody>
+</mujoco>

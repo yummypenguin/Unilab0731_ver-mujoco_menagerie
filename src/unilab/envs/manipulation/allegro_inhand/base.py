@@ -34,6 +34,10 @@ class AllegroBaseCfg(EnvCfg):
 
 class AllegroBaseEnv(NpEnv):
     _NUM_HAND_DOF: int = 16
+    _BASE_BODY_NAME: str = "palm"
+    _OBJECT_BODY_NAME: str = "ball"
+    _LOG_PREFIX: str = "allegro_inhand"
+    _GRASP_GENERATION_TASK: str | None = "allegro_inhand_grasp"
     _FINGERTIP_BODY_NAMES: tuple[str, ...] = ("ff_tip", "mf_tip", "rf_tip", "th_tip")
     _cfg: AllegroBaseCfg
     _init_qpos: np.ndarray
@@ -60,7 +64,7 @@ class AllegroBaseEnv(NpEnv):
         self.nq = int(self._init_qpos.shape[0])
         self.nv = int(self._init_qvel.shape[0])
 
-        self._ball_body_ids = self._backend.get_body_ids(["ball"])
+        self._ball_body_ids = self._backend.get_body_ids([self._OBJECT_BODY_NAME])
         self._fingertip_body_ids = self._backend.get_body_ids(self._FINGERTIP_BODY_NAMES)
 
     def _init_action_space(self) -> None:

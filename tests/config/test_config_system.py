@@ -208,6 +208,92 @@ def test_supported_task_composes(
     _assert_reward_populated(cfg, task_file)
 
 
+@pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+def test_ppo_leap_finger_gaiting_starts_with_stationary_handoff_stage(backend: str):
+    cfg = _compose(
+        "ppo",
+        overrides=[f"task=leap_inhand_ball_finger_gaiting/{backend}"],
+    )
+
+    assert cfg.training.task_name == "LeapInhandBallFingerGaitingRotation"
+    assert cfg.env.curriculum.target_speeds == [
+        0.0,
+        0.0,
+        0.04,
+        0.07,
+        0.085,
+        0.10,
+        0.16,
+        0.25,
+        0.50,
+    ]
+    assert cfg.env.finger_gaiting.required_handoffs_by_stage == [0, 1, 1, 1, 2, 2, 3, 4, 6]
+    assert len(cfg.env.curriculum.stage_durations_seconds) == 9
+    assert sum(cfg.env.curriculum.stage_durations_seconds) == pytest.approx(30.0)
+    assert len(cfg.reward.stage_bonuses) == 8
+    assert len(cfg.reward.positive_spin_retention_floors) == 9
+
+
+@pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+def test_ppo_leap_sustained_cache_uses_selected_direct_rewards(backend: str):
+    cfg = _compose(
+        "ppo",
+        overrides=[f"task=leap_inhand_ball_sustained_cache/{backend}"],
+    )
+
+    assert cfg.training.task_name == "LeapInhandBallSustainedCacheRotation"
+    assert cfg.training.sim_backend == backend
+    assert cfg.reward.scales.rotate == pytest.approx(1.25)
+    assert cfg.reward.scales.obj_linvel == pytest.approx(-0.3)
+    assert cfg.reward.scales.position_error == pytest.approx(-5.0)
+    for name in (
+        "spin_progress",
+        "spin_continuity",
+        "retention",
+        "anchor_proximity",
+        "fingertip_support",
+        "action_rate",
+        "torque",
+        "work",
+        "failure",
+    ):
+        assert cfg.reward.scales[name] == pytest.approx(0.0)
+    assert cfg.reward.angvel_clip_min == pytest.approx(-0.5)
+    assert cfg.reward.angvel_clip_max == pytest.approx(0.5)
+    assert cfg.reward.positive_spin_base_contact_scale == pytest.approx(0.25)
+    assert cfg.reward.positive_spin_index_contact_scale == pytest.approx(0.375)
+    assert cfg.reward.positive_spin_middle_contact_scale == pytest.approx(0.375)
+    assert cfg.reward.spin_progress_scale == pytest.approx(0.0)
+    assert cfg.reward.spin_continuity_penalty_scale == pytest.approx(0.0)
+    assert cfg.reward.direct_spin_reward is False
+    assert cfg.reward.stage_bonuses == []
+    assert cfg.reward.positive_spin_retention_floors == [1.0]
+    assert cfg.reward.final_success_bonus == pytest.approx(0.0)
+    assert cfg.reward.failure_penalty == pytest.approx(0.0)
+    assert not hasattr(cfg.env, "termination_drop_distance")
+    assert cfg.env.termination_workspace_radius == pytest.approx(0.05)
+    assert cfg.env.max_episode_seconds == pytest.approx(25.0)
+    assert int(cfg.env.max_episode_seconds / cfg.env.ctrl_dt) == 500
+
+
+@pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+def test_ppo_leap_direct_rotation_uses_one_fixed_positive_target(backend: str):
+    cfg = _compose(
+        "ppo",
+        overrides=[f"task=leap_inhand_ball_direct/{backend}"],
+    )
+
+    assert cfg.training.task_name == "LeapInhandBallDirectRotation"
+    assert cfg.training.sim_backend == backend
+    assert cfg.env.curriculum.direct_target_mode is True
+    assert cfg.env.curriculum.target_speeds == [0.30]
+    assert cfg.env.curriculum.stage_durations_seconds == [2.0]
+    assert cfg.reward.stable_rotation_scale == pytest.approx(6.0)
+    assert cfg.reward.stall_scale == pytest.approx(1.0)
+    assert cfg.reward.reverse_scale == pytest.approx(4.0)
+    assert cfg.env.control_config.action_scale == pytest.approx(1.0 / 24.0)
+
+
 def test_ppo_go2_arm_manip_loco_motrix_preserves_backend_overrides():
     cfg = _compose("ppo", overrides=["task=go2_arm_manip_loco/motrix"])
 

@@ -1,0 +1,44 @@
+<mujoco model="leap_hand_cube_rotation_scene">
+  <include file="leap_hand.xml"/>
+  <include file="cube.xml"/>
+
+  <statistic center="0 0 0.5" extent="0.8"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <global azimuth="135" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="2d" name="leap_ground_tex" builtin="checker" mark="edge"
+             rgb1="0.18 0.22 0.26" rgb2="0.08 0.10 0.12" markrgb="0.8 0.8 0.8"
+             width="300" height="300"/>
+    <material name="leap_ground" texture="leap_ground_tex" texuniform="true"
+              texrepeat="5 5" reflectance="0.15"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" pos="0 0 0.3" size="0 0 0.05" type="plane" material="leap_ground"/>
+  </worldbody>
+
+  <sensor>
+    <contact name="leap_index_contact" geom1="index_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_middle_contact" geom1="middle_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_ring_contact" geom1="ring_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_thumb_contact" geom1="thumb_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+  </sensor>
+
+  <keyframe>
+    <key name="home"
+      qpos="0.1458 -1.047 1.7247 -0.2187
+            -0.1054 0.029 1.6039 0.1227
+            -0.1084 0.9652 1.7317 0.1071
+            1.2985 1.6139 0.9757 -1.0728
+            -0.03 0.04 0.57 1 0 0 0"
+      ctrl="0.1458 -1.047 1.7247 -0.2187
+            -0.1054 0.029 1.6039 0.1227
+            -0.1084 0.9652 1.7317 0.1071
+            1.2985 1.6139 0.9757 -1.0728"/>
+  </keyframe>
+</mujoco>

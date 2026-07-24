@@ -35,7 +35,11 @@ from unilab.training.experiment import (
     patch_rsl_rl_resume_state,
     patch_rsl_rl_wandb_writer,
 )
-from unilab.training.rsl_rl import RslRlVecEnvWrapper, normalize_ppo_train_cfg
+from unilab.training.rsl_rl import (
+    RslRlVecEnvWrapper,
+    load_rsl_rl_training_checkpoint,
+    normalize_ppo_train_cfg,
+)
 from unilab.training.sim2sim import policy_load_dim_guard, resolve_sim2sim_config
 from unilab.utils.device import get_default_device
 
@@ -399,8 +403,25 @@ def main(cfg: DictConfig) -> None:
             if cfg.algo.load_run != "-1":
                 resume_path, _ = parse_checkpoint_path(cfg, root_dir=ROOT_DIR)
                 if resume_path:
-                    print(f"Resuming from {resume_path}")
-                    runner.load(str(resume_path))
+                    load_mode = str(getattr(cfg.algo, "load_mode", "resume"))
+                    if load_mode == "warm_start_policy":
+                        print(
+                            f"Warm-starting policy from {resume_path}; critic, optimizer, "
+                            "iteration, logger state, and action std remain freshly initialized."
+                        )
+                    elif load_mode == "warm_start_actor_critic":
+                        print(
+                            f"Warm-starting actor and critic from {resume_path}; optimizer, "
+                            "iteration, logger state, and action std remain freshly initialized."
+                        )
+                    else:
+                        print(f"Resuming from {resume_path}")
+                    load_rsl_rl_training_checkpoint(
+                        runner,
+                        str(resume_path),
+                        load_mode=load_mode,
+                        map_location=device,
+                    )
 
             train_start_wall = time.time()
             runner.learn(num_learning_iterations=max_iterations, init_at_random_ep_len=True)

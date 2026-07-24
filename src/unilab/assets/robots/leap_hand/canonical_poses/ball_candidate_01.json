@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "kind": "leap_hand_ball_canonical_pose_candidate",
+  "status": "candidate",
+  "training_referenced": false,
+  "scene": "robots/leap_hand/scene_ball.xml",
+  "source": "manual_pose_edit_then_deterministic_settle_refinement",
+  "coordinate_contract": {
+    "hand_dof": 16,
+    "qpos_joint_names": [
+      "1",
+      "0",
+      "2",
+      "3",
+      "5",
+      "4",
+      "6",
+      "7",
+      "9",
+      "8",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15"
+    ],
+    "object_position_indices": [16, 17, 18],
+    "object_quaternion_indices": [19, 20, 21, 22],
+    "object_quaternion_order": "wxyz"
+  },
+  "qpos": [
+    1.228796124458313,
+    0.00006612321885768324,
+    0.14423121511936188,
+    0.5514995455741882,
+    0.8568289279937744,
+    0.003151034004986286,
+    0.6013797521591187,
+    0.4033793807029724,
+    1.0706121921539307,
+    -0.20075294375419617,
+    0.689818799495697,
+    -0.09877684712409973,
+    1.5078380107879639,
+    0.7395835518836975,
+    0.3468613624572754,
+    0.1949923038482666,
+    -0.009521099738776684,
+    0.028475459665060043,
+    0.67497318983078,
+    0.692406177520752,
+    -0.6846243739128113,
+    -0.2277115434408188,
+    0.0032545626163482666
+  ],
+  "ctrl": [
+    1.228796124458313,
+    0.00006612321885768324,
+    0.14423121511936188,
+    0.5514995455741882,
+    0.8568289279937744,
+    0.003151034004986286,
+    0.6013797521591187,
+    0.4033793807029724,
+    1.0706121921539307,
+    -0.20075294375419617,
+    0.689818799495697,
+    -0.09877684712409973,
+    1.5078380107879639,
+    0.7395835518836975,
+    0.3468613624572754,
+    0.1949923038482666
+  ],
+  "validation": {
+    "settle_seconds": 1.5,
+    "quality_valid": true,
+    "terminated_during_settle": false,
+    "contacts": {
+      "count": 3,
+      "index": true,
+      "middle": true,
+      "ring": false,
+      "thumb": true
+    },
+    "measurements": {
+      "max_fingertip_distance_m": 0.09899883717298508,
+      "ball_drift_m": 0.0003368216857779771,
+      "ball_linear_speed_m_s": 0.00003619920971686952,
+      "ball_angular_speed_rad_s": 0.00013752441736869514,
+      "max_joint_speed_rad_s": 0.000522899383213371,
+      "absolute_work": 0.000025287121388828382,
+      "self_penetration_m": 0.0003879034607171164,
+      "object_penetration_m": 0.000057607152766057934
+    },
+    "acceptance_limits": {
+      "minimum_contacts": 2,
+      "require_thumb_contact": true,
+      "maximum_fingertip_distance_m": 0.1,
+      "maximum_ball_drift_m": 0.005,
+      "maximum_ball_linear_speed_m_s": 0.05,
+      "maximum_ball_angular_speed_rad_s": 0.5,
+      "maximum_joint_speed_rad_s": 0.5,
+      "maximum_absolute_work": 0.25,
+      "maximum_self_penetration_m": 0.001,
+      "maximum_object_penetration_m": 0.001
+    }
+  },
+  "robustness_sweep": {
+    "method": "deterministic_single_axis",
+    "settle_seconds_per_state": 1.5,
+    "strict_pass_definition": "quality_valid_and_not_terminated_during_settle",
+    "perturbations": {
+      "each_hand_qpos_rad": [-0.005, -0.002, 0.002, 0.005],
+      "each_object_position_axis_m": [-0.001, -0.0005, 0.0005, 0.001],
+      "object_quaternion": "not_swept_for_sphere"
+    },
+    "total_states": 77,
+    "strict_passed_states": 64,
+    "strict_failed_states": 13,
+    "strict_pass_rate": 0.8311688311688312,
+    "failure_counts": {
+      "terminated_during_settle": 13,
+      "thumb_contact": 3
+    },
+    "failed_cases": [
+      "joint_qpos_1:+0.005",
+      "joint_qpos_4:+0.002",
+      "joint_qpos_5:-0.005",
+      "joint_qpos_5:+0.002",
+      "joint_qpos_5:+0.005",
+      "joint_qpos_6:+0.005",
+      "joint_qpos_8:-0.005",
+      "joint_qpos_9:-0.005",
+      "joint_qpos_9:-0.002",
+      "ball_x:+0.0005",
+      "ball_x:+0.0010",
+      "ball_y:-0.0005",
+      "ball_z:+0.0005"
+    ],
+    "worst_measurements": {
+      "max_fingertip_distance": {
+        "case": "ball_x:+0.0010",
+        "value_m": 0.099588282
+      },
+      "self_penetration": {
+        "case": "joint_qpos_9:-0.005",
+        "value_m": 0.000423389
+      },
+      "object_penetration": {
+        "case": "joint_qpos_5:+0.005",
+        "value_m": 0.00038312
+      },
+      "ball_drift": {
+        "case": "ball_z:+0.0010",
+        "value_m": 0.001220047
+      }
+    },
+    "assessment": "Baseline is valid and replay-stable, but the candidate is not fully robust to all tested single-axis perturbations. Keep status=candidate until robustness is improved or the acceptance policy explicitly allows this pass rate."
+  }
+}

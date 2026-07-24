@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_rotation_v2/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallRotationV2
+  sim_backend: motrix
+
+env:
+  sim_dt: 0.01
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_s10_5k.npy

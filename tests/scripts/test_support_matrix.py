@@ -48,3 +48,42 @@ def test_support_matrix_marks_sharpa_motrix_phase1_support():
 
     assert allegro_appo_row.cells["mujoco"].level == EvidenceLevel.TESTED
     assert allegro_appo_row.cells["motrix"].level == EvidenceLevel.TESTED
+
+
+def test_support_matrix_marks_leap_ppo_backends_as_tested():
+    row = _row("PPO (torch)", "leap_inhand")
+
+    assert row.cells["mujoco"].level == EvidenceLevel.TESTED
+    assert row.cells["motrix"].level == EvidenceLevel.TESTED
+
+    ball_row = _row("PPO (torch)", "leap_inhand_ball")
+
+    assert ball_row.cells["mujoco"].level == EvidenceLevel.TESTED
+    assert ball_row.cells["motrix"].level == EvidenceLevel.TESTED
+
+    ball_v2_row = _row("PPO (torch)", "leap_inhand_ball_rotation_v2")
+
+    assert ball_v2_row.cells["mujoco"].level == EvidenceLevel.TESTED
+    assert ball_v2_row.cells["motrix"].level == EvidenceLevel.TESTED
+
+    sustained_row = _row("PPO (torch)", "leap_inhand_ball_sustained")
+
+    assert sustained_row.cells["mujoco"].level == EvidenceLevel.TESTED
+    assert sustained_row.cells["motrix"].level == EvidenceLevel.TESTED
+
+    sustained_cache_row = _row(
+        "PPO (torch)", "leap_inhand_ball_sustained_cache"
+    )
+
+    assert sustained_cache_row.cells["mujoco"].level == EvidenceLevel.TESTED
+    assert sustained_cache_row.cells["motrix"].level == EvidenceLevel.TESTED
+
+    allegro_faithful_row = _row("PPO (torch)", "leap_inhand_ball_allegro")
+
+    assert allegro_faithful_row.cells["mujoco"].level == EvidenceLevel.TESTED
+    assert allegro_faithful_row.cells["motrix"].level == EvidenceLevel.TESTED
+
+    toss_row = _row("PPO (torch)", "leap_inhand_toss")
+
+    assert toss_row.cells["mujoco"].level == EvidenceLevel.TESTED
+    assert toss_row.cells["motrix"].level == EvidenceLevel.TESTED

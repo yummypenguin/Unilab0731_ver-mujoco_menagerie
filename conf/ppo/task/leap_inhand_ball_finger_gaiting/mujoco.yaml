@@ -1,0 +1,40 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_sustained/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallFingerGaitingRotation
+  sim_backend: mujoco
+
+env:
+  reset_source: cache
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k.npy
+  termination_drop_distance: 0.007
+  max_episode_seconds: 35.0
+  curriculum:
+    # Level 1 isolates one safe release/recontact before rotation is required.
+    target_speeds: [0.0, 0.0, 0.04, 0.07, 0.085, 0.10, 0.16, 0.25, 0.50]
+    stage_durations_seconds: [1.0, 1.5, 1.5, 2.0, 2.5, 3.0, 3.5, 5.0, 10.0]
+    orthogonal_speed_tolerances: [0.10, 0.10, 0.08, 0.065, 0.058, 0.05, 0.06, 0.075, 0.10]
+    energy_level_scales: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 1.0]
+    sustain_ratio: 0.80
+    gate_position_radius: 0.015
+    minimum_fingertip_contacts: 2
+    ema_time_constant: 0.1
+  finger_gaiting:
+    required_handoffs_by_stage: [0, 1, 1, 1, 2, 2, 3, 4, 6]
+    minimum_contacts_by_stage: [3, 2, 2, 2, 2, 2, 2, 2, 2]
+    minimum_other_contacts: 2
+    minimum_release_steps: 2
+    maximum_release_steps: 10
+    handoff_cooldown_steps: 4
+    minimum_speed_ratio: 0.60
+    recovery_speed_ratio: 0.80
+    stable_support_scale: 0.20
+    release_progress_scale: 0.05
+    qualified_handoff_bonus: 0.25
+
+reward:
+  stage_bonuses: [0.10, 0.10, 0.175, 0.25, 0.30, 0.35, 0.50, 1.0]
+  positive_spin_retention_floors: [0.50, 0.50, 0.50, 0.50, 0.25, 0.25, 0.25, 0.25, 0.25]

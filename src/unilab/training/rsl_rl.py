@@ -13,6 +13,104 @@ from unilab.base.final_observation import resolve_terminal_observation_contract
 from unilab.base.np_env import NpEnvState
 from unilab.utils.tensor import to_numpy, to_torch
 
+RSL_RL_CHECKPOINT_LOAD_MODES = frozenset(
+    {"resume", "warm_start_policy", "warm_start_actor_critic"}
+)
+
+
+def _load_warm_start_model_state(
+    model: Any,
+    checkpoint_state: Any,
+    *,
+    checkpoint_path: str,
+    model_name: str,
+    excluded_prefixes: tuple[str, ...] = (),
+) -> None:
+    if not isinstance(checkpoint_state, dict):
+        raise KeyError(
+            f"Checkpoint {checkpoint_path!r} does not contain a {model_name}_state_dict mapping."
+        )
+
+    transferred_state = {
+        key: value
+        for key, value in checkpoint_state.items()
+        if not key.startswith(excluded_prefixes)
+    }
+    expected_state_keys = {
+        key for key in model.state_dict() if not key.startswith(excluded_prefixes)
+    }
+    transferred_state_keys = set(transferred_state)
+    missing_keys = sorted(expected_state_keys - transferred_state_keys)
+    unexpected_keys = sorted(transferred_state_keys - expected_state_keys)
+    if missing_keys or unexpected_keys:
+        raise RuntimeError(
+            f"{model_name.capitalize()} warm-start checkpoint is incompatible with the current "
+            f"{model_name}: missing={missing_keys}, unexpected={unexpected_keys}."
+        )
+
+    incompatible = model.load_state_dict(transferred_state, strict=False)
+    invalid_missing = [
+        key
+        for key in incompatible.missing_keys
+        if not key.startswith(excluded_prefixes)
+    ]
+    if invalid_missing or incompatible.unexpected_keys:
+        raise RuntimeError(
+            f"{model_name.capitalize()} warm-start checkpoint is incompatible with the current "
+            f"{model_name}: missing={invalid_missing}, "
+            f"unexpected={incompatible.unexpected_keys}."
+        )
+
+
+def load_rsl_rl_training_checkpoint(
+    runner: Any,
+    path: str,
+    *,
+    load_mode: str = "resume",
+    map_location: str | None = None,
+) -> None:
+    """Load an RSL-RL checkpoint using resume or warm-start semantics.
+
+    ``resume`` delegates to RSL-RL and restores the complete training state.
+    ``warm_start_policy`` transfers actor weights and observation-normalizer
+    state while preserving the newly constructed action distribution. The
+    critic, optimizer, iteration, and logger counters therefore remain fresh.
+    ``warm_start_actor_critic`` additionally transfers critic weights and its
+    observation-normalizer state, while keeping the action distribution,
+    optimizer, iteration, and logger counters freshly initialized.
+    """
+    if load_mode not in RSL_RL_CHECKPOINT_LOAD_MODES:
+        supported = ", ".join(sorted(RSL_RL_CHECKPOINT_LOAD_MODES))
+        raise ValueError(f"Unsupported RSL-RL checkpoint load_mode={load_mode!r}; use {supported}.")
+
+    if load_mode == "resume":
+        runner.load(path, map_location=map_location)
+        return
+
+    checkpoint = torch.load(path, weights_only=True, map_location=map_location)
+    actor = runner.alg.get_policy()
+    _load_warm_start_model_state(
+        actor,
+        checkpoint.get("actor_state_dict"),
+        checkpoint_path=path,
+        model_name="actor",
+        excluded_prefixes=("distribution.",),
+    )
+
+    if load_mode == "warm_start_actor_critic":
+        critic = getattr(runner.alg, "critic", None)
+        if critic is None:
+            raise AttributeError(
+                "RSL-RL algorithm does not expose the critic required by "
+                "warm_start_actor_critic."
+            )
+        _load_warm_start_model_state(
+            critic,
+            checkpoint.get("critic_state_dict"),
+            checkpoint_path=path,
+            model_name="critic",
+        )
+
 
 def get_policy_obs_dims(obs_groups_spec: dict[str, int]) -> tuple[int, int]:
     """Return ``(actor_obs_dim, flat_policy_obs_dim)`` for RSL-RL policies."""

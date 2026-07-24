@@ -148,20 +148,27 @@ class AllegroRotationDomainRandomizationProvider(DomainRandomizationProvider):
 
         cache_path = resolve_grasp_cache_path(env.cfg.grasp_cache_path)
         if not cache_path.exists():
+            generation_task = getattr(env, "_GRASP_GENERATION_TASK", "allegro_inhand_grasp")
+            log_prefix = getattr(env, "_LOG_PREFIX", "allegro_inhand")
+            generation_hint = (
+                f"Generate one with `uv run train --algo ppo --task {generation_task} "
+                "--sim mujoco training.no_play=true`, or "
+                if generation_task is not None
+                else ""
+            )
             print(
-                "[allegro_inhand] Grasp cache is missing; no Hugging Face download will be "
-                f"attempted. Expected local cache: {cache_path}. Generate one with "
-                "`uv run train --algo ppo --task allegro_inhand_grasp --sim mujoco "
-                "training.no_play=true`, or point `env.grasp_cache_path` at an existing "
-                "local cache."
+                f"[{log_prefix}] Grasp cache is missing; no Hugging Face download will "
+                f"be attempted. Expected local cache: {cache_path}. {generation_hint}Point "
+                "`env.grasp_cache_path` at an existing local cache."
             )
             env._grasp_cache = None
             env._grasp_cache_loaded = True
             return None
         env._grasp_cache = np.load(cache_path).astype(np.float64)
         env._grasp_cache_loaded = True
+        log_prefix = getattr(env, "_LOG_PREFIX", "allegro_inhand")
         print(
-            "[allegro_inhand] Loaded grasp cache: "
+            f"[{log_prefix}] Loaded grasp cache: "
             f"{cache_path}, shape={env._grasp_cache.shape}, dtype={env._grasp_cache.dtype}"
         )
         return cast(np.ndarray | None, env._grasp_cache)
@@ -273,7 +280,7 @@ class AllegroRotationPPO(AllegroBaseEnv):
             cfg.scene,
             num_envs,
             cfg.sim_dt,
-            base_name="palm",
+            base_name=self._BASE_BODY_NAME,
             push_body_name=cfg.domain_rand.push_body_name,
             add_body_sensors=True,
             position_actuator_gains={
@@ -294,7 +301,10 @@ class AllegroRotationPPO(AllegroBaseEnv):
         self._grasp_cache_loaded = False
 
         self._init_reward_functions()
-        self._init_domain_randomization(AllegroRotationDomainRandomizationProvider())
+        self._init_domain_randomization(self._make_domain_randomization_provider())
+
+    def _make_domain_randomization_provider(self) -> DomainRandomizationProvider:
+        return AllegroRotationDomainRandomizationProvider()
 
     @property
     def obs_groups_spec(self) -> dict[str, int]:
@@ -404,6 +414,13 @@ class AllegroRotationPPO(AllegroBaseEnv):
         del info, dof_pos, dof_vel, ball_pos, ball_linvel, ball_angvel, torques
         return np.asarray(terminated, dtype=get_global_dtype())
 
+    def _compute_terminated(self, ball_pos: np.ndarray) -> np.ndarray:
+        """Return the task-specific terminal-state mask."""
+        return np.asarray(
+            ball_pos[:, 2] < self._reward_cfg.reset_z_threshold,
+            dtype=bool,
+        )
+
     def update_state(self, state: NpEnvState) -> NpEnvState:
         dof_pos = self.get_hand_dof_pos()
         ball_pos = self.get_ball_pos()
@@ -431,7 +448,7 @@ class AllegroRotationPPO(AllegroBaseEnv):
             kp=self._cfg.control_config.kp,
             kd=self._cfg.control_config.kd,
         )
-        terminated = ball_pos[:, 2] < self._reward_cfg.reset_z_threshold
+        terminated = self._compute_terminated(ball_pos)
 
         reward = self._compute_reward(
             state.info, dof_pos, dof_vel, ball_pos, ball_linvel, ball_angvel, torques, terminated

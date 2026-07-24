@@ -286,6 +286,7 @@ class PPOConfig(BaseConfig):
     resume: bool = False
     load_run: str = "-1"
     checkpoint: int = -1
+    load_mode: str = "resume"
     resume_path: Optional[str] = None
     policy: PPOPolicyConfig = field(default_factory=PPOPolicyConfig)
     algorithm: PPOAlgorithmConfig = field(default_factory=PPOAlgorithmConfig)

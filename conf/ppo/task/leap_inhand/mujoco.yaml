@@ -1,0 +1,68 @@
+# @package _global_
+training:
+  task_name: LeapInhandRotation
+  sim_backend: mujoco
+  render_spacing: 0.35
+  cam_distance: 1.2
+  cam_lookat: [0.0, 0.0, 0.5]
+  cam_elevation: -20.0
+algo:
+  num_envs: 1024
+  num_steps_per_env: 8
+  max_iterations: 1000
+  obs_groups:
+    actor: [policy]
+    critic: [policy]
+  actor:
+    class_name: rsl_rl.models.MLPModel
+    hidden_dims: [512, 256, 128]
+    activation: elu
+    obs_normalization: true
+    distribution_cfg:
+      class_name: rsl_rl.modules.distribution.GaussianDistribution
+      init_std: 0.8
+      std_type: scalar
+  critic:
+    class_name: rsl_rl.models.MLPModel
+    hidden_dims: [512, 256, 128]
+    activation: elu
+    obs_normalization: true
+  algorithm:
+    value_loss_coef: 4.0
+    desired_kl: 0.02
+reward:
+  scales:
+    rotate: 1.25
+    obj_linvel: -0.3
+    pose_diff: -0.1
+    torque: -0.1
+    work: -1.0
+    drop: -10.0
+  angvel_clip_min: -0.25
+  angvel_clip_max: 0.25
+  reset_z_threshold: 0.4
+env:
+  sim_dt: 0.008333333333333333
+  ctrl_dt: 0.05
+  max_episode_seconds: 20.0
+  grasp_cache_path: robots/leap_hand/caches/cube_grasp_s10_1k.npy
+  gen_grasp: false
+  noise_config:
+    level: 0.0
+    scale_joint_angle: 0.02
+  control_config:
+    action_scale: 0.041666666666666664
+    kp: 3.0
+    kd: 0.1
+  domain_rand:
+    randomize_base_mass: false
+    random_com: false
+    randomize_gravity: false
+    push_robots: false
+    joint_noise: 0.0
+    ball_vel_noise: 0.0
+    ball_z_offset: 0.0
+play_profile:
+  enabled: true
+  env:
+    render_spacing: 1.0

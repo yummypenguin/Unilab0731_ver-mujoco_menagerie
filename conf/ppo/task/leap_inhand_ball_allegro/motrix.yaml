@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_allegro/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallAllegroRotation
+  sim_backend: motrix
+
+env:
+  # Keep the established Motrix integration rate; reward/control semantics match MuJoCo.
+  sim_dt: 0.01

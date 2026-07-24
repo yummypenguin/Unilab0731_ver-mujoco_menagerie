@@ -902,6 +902,61 @@ def test_build_ppo_env_cfg_override_allegro_grasp_cli_override_wins(
     assert env_cfg_override["gen_grasp"] is True
 
 
+def test_build_ppo_env_cfg_override_leap_ball_grasp_mujoco(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    mod = _train_rsl_rl(monkeypatch)
+    cfg = _ppo_cfg(["task=leap_inhand_ball_grasp/mujoco"])
+
+    env_cfg_override = mod.build_ppo_env_cfg_override(cfg)
+
+    assert cfg.training.task_name == "LeapInhandBallGrasp"
+    assert cfg.training.sim_backend == "mujoco"
+    assert cfg.algo.num_envs == 1024
+    assert env_cfg_override["grasp_cache_path"].endswith(
+        "ball_grasp_official_50k.npy"
+    )
+    assert env_cfg_override["termination_drop_distance"] == pytest.approx(0.007)
+    assert env_cfg_override["grasp_collection_target"] == 50_000
+    assert env_cfg_override["grasp_joint_noise"] == pytest.approx(0.10)
+    assert env_cfg_override["grasp_max_fingertip_surface_gap"] == pytest.approx(0.00995)
+    assert env_cfg_override["grasp_require_thumb_contact"] is True
+
+
+@pytest.mark.parametrize(
+    ("backend", "expected_sim_dt"),
+    [("mujoco", 1.0 / 120.0), ("motrix", 0.01)],
+)
+def test_build_ppo_env_cfg_override_leap_ball_cache_uses_official_cache(
+    monkeypatch: pytest.MonkeyPatch,
+    backend: str,
+    expected_sim_dt: float,
+):
+    mod = _train_rsl_rl(monkeypatch)
+    cfg = _ppo_cfg([f"task=leap_inhand_ball_cache/{backend}"])
+
+    env_cfg_override = mod.build_ppo_env_cfg_override(cfg)
+
+    assert cfg.training.task_name == "LeapInhandBallCacheRotation"
+    assert cfg.training.sim_backend == backend
+    assert env_cfg_override["reset_source"] == "cache"
+    assert env_cfg_override["grasp_cache_path"].endswith(
+        "ball_grasp_official_50k.npy"
+    )
+    assert env_cfg_override["sim_dt"] == pytest.approx(expected_sim_dt)
+    assert dict(cfg.reward.scales) == {
+        "rotate": 1.25,
+        "obj_linvel": -0.3,
+        "pose_diff": -0.3,
+        "torque": -0.1,
+        "work": -0.02,
+        "drop": -1.0,
+    }
+    assert cfg.reward.angvel_clip_min == pytest.approx(-0.5)
+    assert cfg.reward.angvel_clip_max == pytest.approx(0.5)
+    assert cfg.reward.reset_z_threshold == pytest.approx(0.4)
+
+
 def test_build_ppo_env_cfg_override_sharpa_grasp_cli_override_wins(
     monkeypatch: pytest.MonkeyPatch,
 ):

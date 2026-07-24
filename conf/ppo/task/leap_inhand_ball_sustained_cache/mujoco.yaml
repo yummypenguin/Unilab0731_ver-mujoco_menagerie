@@ -1,0 +1,53 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_sustained/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallSustainedCacheRotation
+  sim_backend: mujoco
+
+reward:
+  scales:
+    rotate: 1.25
+    obj_linvel: -0.3
+    position_error: -5.0
+    spin_progress: 0.0
+    spin_continuity: 0.0
+    retention: 0.0
+    anchor_proximity: 0.0
+    fingertip_support: 0.0
+    action_rate: 0.0
+    torque: 0.0
+    work: 0.0
+    failure: 0.0
+  angvel_clip_min: -0.5
+  angvel_clip_max: 0.5
+  positive_spin_base_contact_scale: 0.25
+  positive_spin_index_contact_scale: 0.375
+  positive_spin_middle_contact_scale: 0.375
+  spin_progress_scale: 0.0
+  spin_continuity_penalty_scale: 0.0
+  direct_spin_reward: false
+  retention_scale: 0.0
+  anchor_proximity_scale: 0.0
+  fingertip_support_scale: 0.0
+  action_rate_scale: 0.0
+  torque_scale: 0.0
+  work_scale: 0.0
+  stage_bonuses: []
+  positive_spin_retention_floors: [1.0]
+  final_success_bonus: 0.0
+  failure_penalty: 0.0
+
+env:
+  reset_source: cache
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k.npy
+  termination_workspace_radius: 0.05
+  curriculum:
+    direct_target_mode: true
+    # One revolution takes about 20.94 s at 0.30 rad/s, within the 25 s episode.
+    target_speeds: [0.30]
+    stage_durations_seconds: [21.0]
+    orthogonal_speed_tolerances: [0.10]
+    energy_level_scales: [0.0]
