@@ -43,9 +43,14 @@ STATE_A_SUPPORT_QPOS = np.asarray(
 
 LEAP_TIP_COLLISION_LOCAL_POS = np.asarray(
     [
-        0.0132864241085335,
-        -0.0061142383865420,
-        0.0145,
+        # Index (index_tip_col)
+        [-0.0005576831003444062, -0.021595618037303038, 0.014500251147576579],
+        # Middle (middle_tip_col)
+        [-0.0005576831003444062, -0.021595618037303038, 0.014500251147576579],
+        # Ring (ring_tip_col)
+        [-0.0005576831003444062, -0.021595618037303038, 0.014500251147576579],
+        # Thumb (thumb_tip_col)
+        [0.0010168925565113038, -0.020514362145326715, -0.014101128795797305],
     ],
     dtype=np.float64,
 )
@@ -53,7 +58,7 @@ LEAP_TIP_COLLISION_LOCAL_POS = np.asarray(
 
 @dataclass
 class AllegroStyleRotationRewardConfig(SustainedRotationRewardConfig):
-    """Signed-axis reward with index/middle participation on positive spin."""
+    """Signed-axis reward with index-ring support progress shaping."""
 
     scales: dict[str, float] = field(
         default_factory=lambda: {
@@ -89,13 +94,22 @@ def compute_support_pose_distance(
     reference_qpos: np.ndarray = STATE_A_SUPPORT_QPOS,
 ) -> np.ndarray:
     """Return normalized support-pose RMS distance to State A reference."""
+    dof_pos = np.asarray(dof_pos)
+    dtype = dof_pos.dtype
+
+    lower = np.asarray(ctrl_lower, dtype=dtype)[SUPPORT_JOINT_INDICES]
+    upper = np.asarray(ctrl_upper, dtype=dtype)[SUPPORT_JOINT_INDICES]
+    reference = np.asarray(reference_qpos, dtype=dtype)
+
     qpos = dof_pos[:, SUPPORT_JOINT_INDICES]
-    lower = ctrl_lower[SUPPORT_JOINT_INDICES]
-    upper = ctrl_upper[SUPPORT_JOINT_INDICES]
-    normalized = (qpos - lower) / (upper - lower + 1e-8)
-    ref_normalized = (reference_qpos - lower) / (upper - lower + 1e-8)
-    error = normalized - ref_normalized
-    return np.sqrt(np.mean(np.square(error), axis=1))
+    epsilon = np.asarray(1e-8, dtype=dtype)
+    joint_range = upper - lower + epsilon
+
+    normalized = (qpos - lower) / joint_range
+    reference_normalized = (reference - lower) / joint_range
+    error = normalized - reference_normalized
+
+    return np.sqrt(np.mean(np.square(error), axis=1)).astype(dtype, copy=False)
 
 
 def compute_tip_collision_reference_positions(
@@ -103,18 +117,22 @@ def compute_tip_collision_reference_positions(
     fingertip_body_quat: np.ndarray,
 ) -> np.ndarray:
     """Return world coordinates of tip collision geom origins for each fingertip."""
+    dtype = fingertip_body_pos.dtype
     local_offset = np.asarray(
         LEAP_TIP_COLLISION_LOCAL_POS,
-        dtype=fingertip_body_pos.dtype,
+        dtype=dtype,
     )
     local_offsets = np.broadcast_to(
         local_offset,
         fingertip_body_pos.shape,
     )
-    return fingertip_body_pos + np_quat_apply_batched(
-        fingertip_body_quat,
-        local_offsets,
-    )
+    return (
+        fingertip_body_pos
+        + np_quat_apply_batched(
+            fingertip_body_quat,
+            local_offsets,
+        )
+    ).astype(dtype, copy=False)
 
 
 def compute_index_ring_opposition_quality(
@@ -123,23 +141,41 @@ def compute_index_ring_opposition_quality(
     ball_pos: np.ndarray,
 ) -> np.ndarray:
     """Return opposition quality in [0, 1] between index and ring fingertips."""
+    dtype = index_tip_pos.dtype
+    epsilon = np.asarray(1e-8, dtype=dtype)
+    half = np.asarray(0.5, dtype=dtype)
+    zero = np.asarray(0.0, dtype=dtype)
+    one = np.asarray(1.0, dtype=dtype)
+
     index_vector = index_tip_pos - ball_pos
     ring_vector = ring_tip_pos - ball_pos
 
     index_unit = index_vector / (
-        np.linalg.norm(index_vector, axis=1, keepdims=True) + 1e-8
+        np.linalg.norm(index_vector, axis=1, keepdims=True) + epsilon
     )
     ring_unit = ring_vector / (
-        np.linalg.norm(ring_vector, axis=1, keepdims=True) + 1e-8
+        np.linalg.norm(ring_vector, axis=1, keepdims=True) + epsilon
     )
 
     dot = np.sum(index_unit * ring_unit, axis=1)
+    quality = np.clip(half * (one - dot), zero, one)
+    return quality.astype(dtype, copy=False)
 
-    return np.clip(
-        0.5 * (1.0 - dot),
-        0.0,
-        1.0,
+
+def compute_reset_safe_opposition_progress(
+    current_potential: np.ndarray,
+    previous_potential: np.ndarray,
+    step_count: np.ndarray,
+) -> np.ndarray:
+    """Return opposition progress zeroed out on reset step."""
+    dtype = current_potential.dtype
+    first_step_after_reset = np.asarray(step_count == 0, dtype=bool)
+    effective_previous = np.where(
+        first_step_after_reset,
+        current_potential,
+        previous_potential,
     )
+    return (current_potential - effective_previous).astype(dtype, copy=False)
 
 
 def compute_allegro_style_rotate_reward(
@@ -218,44 +254,40 @@ class LeapInhandBallSustainedCacheRotationCfg(
         reward_config = self.reward_config
         if reward_config is None:
             raise ValueError("reward_config must be provided via Hydra configuration")
-        angvel_clip_min = getattr(reward_config, "angvel_clip_min", -0.5)
-        angvel_clip_max = getattr(reward_config, "angvel_clip_max", 0.5)
-        if not (
-            np.isfinite(angvel_clip_min)
-            and np.isfinite(angvel_clip_max)
-            and angvel_clip_min < angvel_clip_max
-        ):
-            raise ValueError("angvel_clip_min must be less than angvel_clip_max")
-        for name in ("rotate", "obj_linvel", "position_error"):
-            if name in reward_config.scales and not np.isfinite(
-                reward_config.scales[name]
+        if isinstance(reward_config, AllegroStyleRotationRewardConfig):
+            if not (
+                np.isfinite(reward_config.angvel_clip_min)
+                and np.isfinite(reward_config.angvel_clip_max)
+                and reward_config.angvel_clip_min < reward_config.angvel_clip_max
             ):
-                raise ValueError(f"reward scales must define finite {name}")
-        contact_scales = (
-            getattr(reward_config, "positive_spin_base_contact_scale", 1.0),
-            getattr(reward_config, "positive_spin_index_contact_scale", 0.0),
-            getattr(reward_config, "positive_spin_middle_contact_scale", 0.0),
-        )
-        if not all(np.isfinite(scale) and scale >= 0.0 for scale in contact_scales):
-            raise ValueError("positive spin contact scales must be finite and non-negative")
-        support_scale = getattr(reward_config, "support_pose_progress_scale", 0.25)
-        opposition_scale = getattr(reward_config, "opposition_progress_scale", 0.20)
-        if not (
-            np.isfinite(support_scale)
-            and support_scale >= 0.0
-            and np.isfinite(opposition_scale)
-            and opposition_scale >= 0.0
-        ):
-            raise ValueError("progress scales must be finite and non-negative")
-        support_clip = getattr(reward_config, "support_pose_progress_clip", 0.04)
-        opposition_clip = getattr(reward_config, "opposition_progress_clip", 0.05)
-        if not (
-            np.isfinite(support_clip)
-            and support_clip > 0.0
-            and np.isfinite(opposition_clip)
-            and opposition_clip > 0.0
-        ):
-            raise ValueError("progress clips must be finite and positive")
+                raise ValueError("angvel_clip_min must be less than angvel_clip_max")
+            for name in ("rotate", "obj_linvel", "position_error"):
+                if (
+                    name not in reward_config.scales
+                    or not np.isfinite(reward_config.scales[name])
+                ):
+                    raise ValueError(f"reward scales must define finite {name}")
+            contact_scales = (
+                reward_config.positive_spin_base_contact_scale,
+                reward_config.positive_spin_index_contact_scale,
+                reward_config.positive_spin_middle_contact_scale,
+            )
+            if not all(np.isfinite(scale) and scale >= 0.0 for scale in contact_scales):
+                raise ValueError("positive spin contact scales must be finite and non-negative")
+            if not (
+                np.isfinite(reward_config.support_pose_progress_scale)
+                and reward_config.support_pose_progress_scale >= 0.0
+                and np.isfinite(reward_config.opposition_progress_scale)
+                and reward_config.opposition_progress_scale >= 0.0
+            ):
+                raise ValueError("progress scales must be finite and non-negative")
+            if not (
+                np.isfinite(reward_config.support_pose_progress_clip)
+                and reward_config.support_pose_progress_clip > 0.0
+                and np.isfinite(reward_config.opposition_progress_clip)
+                and reward_config.opposition_progress_clip > 0.0
+            ):
+                raise ValueError("progress clips must be finite and positive")
         if not np.isfinite(self.termination_workspace_radius) or (
             self.termination_workspace_radius <= 0.0
         ):
@@ -267,7 +299,7 @@ class LeapInhandBallSustainedCacheRotationCfg(
 class LeapInhandBallSustainedCacheRotationEnv(
     LeapInhandBallSustainedRotationEnv
 ):
-    """Learn signed-axis rotation with no reward shaping or auxiliary failure gates."""
+    """Learn signed-axis rotation with index-ring support progress shaping."""
 
     _cfg: LeapInhandBallSustainedCacheRotationCfg
     _reward_cfg: AllegroStyleRotationRewardConfig
@@ -290,40 +322,65 @@ class LeapInhandBallSustainedCacheRotationEnv(
         ball_linvel = (ball_pos - prev_ball_pos) / self._cfg.ctrl_dt
         ball_angvel = compute_ball_angvel(ball_quat, prev_ball_quat, self._cfg.ctrl_dt)
 
+        support_shaping_enabled = isinstance(
+            self._reward_cfg,
+            AllegroStyleRotationRewardConfig,
+        )
+
+        if support_shaping_enabled:
+            rotate_scale = self._reward_cfg.scales["rotate"]
+            clip_min = self._reward_cfg.angvel_clip_min
+            clip_max = self._reward_cfg.angvel_clip_max
+            base_contact_scale = self._reward_cfg.positive_spin_base_contact_scale
+            index_contact_scale = self._reward_cfg.positive_spin_index_contact_scale
+            middle_contact_scale = self._reward_cfg.positive_spin_middle_contact_scale
+            obj_linvel_scale = self._reward_cfg.scales["obj_linvel"]
+            position_error_scale = self._reward_cfg.scales["position_error"]
+        else:
+            rotate_scale = self._reward_cfg.scales.get("rotate", 1.25)
+            clip_min = getattr(self._reward_cfg, "angvel_clip_min", -0.5)
+            clip_max = getattr(self._reward_cfg, "angvel_clip_max", 0.5)
+            base_contact_scale = getattr(self._reward_cfg, "positive_spin_base_contact_scale", 1.0)
+            index_contact_scale = getattr(self._reward_cfg, "positive_spin_index_contact_scale", 0.0)
+            middle_contact_scale = getattr(self._reward_cfg, "positive_spin_middle_contact_scale", 0.0)
+            obj_linvel_scale = self._reward_cfg.scales.get("obj_linvel", -0.3)
+            position_error_scale = self._reward_cfg.scales.get("position_error", -5.0)
+
         clipped_axis_speed, base_rotate_reward = compute_allegro_style_rotate_reward(
             ball_angvel,
             self._rotation_axis_w,
-            scale=self._reward_cfg.scales.get("rotate", 1.25),
-            clip_min=getattr(self._reward_cfg, "angvel_clip_min", -0.5),
-            clip_max=getattr(self._reward_cfg, "angvel_clip_max", 0.5),
+            scale=rotate_scale,
+            clip_min=clip_min,
+            clip_max=clip_max,
         )
         fingertip_contacts = self._contacts(self._all_env_ids)
         participation_scale, rotate_reward = apply_positive_spin_finger_participation(
             base_rotate_reward,
             fingertip_contacts,
-            base_contact_scale=getattr(self._reward_cfg, "positive_spin_base_contact_scale", 1.0),
-            index_contact_scale=getattr(self._reward_cfg, "positive_spin_index_contact_scale", 0.0),
-            middle_contact_scale=getattr(self._reward_cfg, "positive_spin_middle_contact_scale", 0.0),
+            base_contact_scale=base_contact_scale,
+            index_contact_scale=index_contact_scale,
+            middle_contact_scale=middle_contact_scale,
         )
         axis_speed = ball_angvel @ self._rotation_axis_w
         linear_speed_l1, obj_linvel_reward = compute_allegro_style_obj_linvel_reward(
             ball_linvel,
-            scale=self._reward_cfg.scales.get("obj_linvel", -0.3),
+            scale=obj_linvel_scale,
         )
 
         anchor_pos = np.asarray(info["rotation_anchor_pos"], dtype=dtype)
         position_error, position_error_reward = compute_position_error_reward(
             ball_pos,
             anchor_pos,
-            scale=self._reward_cfg.scales.get("position_error", -5.0),
+            scale=position_error_scale,
         )
         terminated = self._compute_terminated(position_error)
-        palm_contact = self._palm_contacts(self._all_env_ids).astype(bool)
+
+        palm_contact_bool = self._palm_contacts(self._all_env_ids).astype(bool)
         fingertip_contact_count = np.sum(fingertip_contacts, axis=1)
         reward_adjustment, reward_adjustment_log = self._compute_reward_adjustment(
             info=info,
             fingertip_contacts=fingertip_contacts.astype(bool),
-            palm_contact=palm_contact,
+            palm_contact=palm_contact_bool,
             contact_count=fingertip_contact_count,
             target_speed=np.full(self._num_envs, 0.30, dtype=dtype),
             tolerance=np.full(self._num_envs, 0.10, dtype=dtype),
@@ -337,92 +394,83 @@ class LeapInhandBallSustainedCacheRotationEnv(
             stage_valid=np.ones(self._num_envs, dtype=bool),
             stage_duration_progress=np.ones(self._num_envs, dtype=dtype),
         )
-        dense_reward = rotate_reward + obj_linvel_reward + position_error_reward + reward_adjustment
+        dense_reward = (
+            rotate_reward
+            + obj_linvel_reward
+            + position_error_reward
+            + reward_adjustment
+        )
         reward = np.asarray(dense_reward * self._cfg.ctrl_dt, dtype=dtype)
 
-        current_support_distance = compute_support_pose_distance(
-            dof_pos,
-            self._ctrl_lower,
-            self._ctrl_upper,
-        )
-        previous_support_distance = compute_support_pose_distance(
-            np.asarray(info.get("prev_dof_pos", dof_pos), dtype=dtype),
-            self._ctrl_lower,
-            self._ctrl_upper,
-        )
-        raw_support_progress = (
-            previous_support_distance - current_support_distance
-        )
-        support_pose_progress_scale = getattr(
-            self._reward_cfg, "support_pose_progress_scale", 0.25
-        )
-        support_pose_progress_clip = getattr(
-            self._reward_cfg, "support_pose_progress_clip", 0.04
-        )
-        support_pose_progress_reward = (
-            support_pose_progress_scale
-            * np.clip(
-                raw_support_progress,
-                -support_pose_progress_clip,
-                support_pose_progress_clip,
+        if support_shaping_enabled:
+            current_support_distance = compute_support_pose_distance(
+                dof_pos,
+                self._ctrl_lower,
+                self._ctrl_upper,
             )
-        )
-
-        fingertip_body_pos, fingertip_body_quat = self._backend.get_body_pose_w(
-            self._fingertip_body_ids
-        )
-        tip_collision_pos = compute_tip_collision_reference_positions(
-            fingertip_body_pos,
-            fingertip_body_quat,
-        )
-        index_tip_pos = tip_collision_pos[:, 0, :]
-        ring_tip_pos = tip_collision_pos[:, 2, :]
-        opposition_quality = compute_index_ring_opposition_quality(
-            index_tip_pos,
-            ring_tip_pos,
-            ball_pos,
-        )
-
-        index_contact = fingertip_contacts[:, 0].astype(bool)
-        ring_contact = fingertip_contacts[:, 2].astype(bool)
-        index_ring_contact = index_contact & ring_contact
-        current_opposition_potential = (
-            index_ring_contact.astype(dtype) * opposition_quality
-        )
-
-        step_count = np.asarray(
-            info.get("steps", np.zeros(self._num_envs, dtype=np.uint32))
-        )
-        previous_opposition_potential = np.asarray(
-            info.get("prev_opposition_potential", current_opposition_potential),
-            dtype=dtype,
-        )
-        first_step_after_reset = step_count == 0
-        previous_opposition_potential = np.where(
-            first_step_after_reset,
-            current_opposition_potential,
-            previous_opposition_potential,
-        )
-        raw_opposition_progress = (
-            current_opposition_potential - previous_opposition_potential
-        )
-        opposition_progress_scale = getattr(
-            self._reward_cfg, "opposition_progress_scale", 0.20
-        )
-        opposition_progress_clip = getattr(
-            self._reward_cfg, "opposition_progress_clip", 0.05
-        )
-        opposition_progress_reward = (
-            opposition_progress_scale
-            * np.clip(
-                raw_opposition_progress,
-                -opposition_progress_clip,
-                opposition_progress_clip,
+            previous_support_distance = compute_support_pose_distance(
+                np.asarray(info.get("prev_dof_pos", dof_pos), dtype=dtype),
+                self._ctrl_lower,
+                self._ctrl_upper,
             )
-        )
+            raw_support_progress = (
+                previous_support_distance - current_support_distance
+            ).astype(dtype, copy=False)
+            support_pose_progress_reward = (
+                self._reward_cfg.support_pose_progress_scale
+                * np.clip(
+                    raw_support_progress,
+                    -self._reward_cfg.support_pose_progress_clip,
+                    self._reward_cfg.support_pose_progress_clip,
+                )
+            ).astype(dtype, copy=False)
 
-        reward += np.asarray(support_pose_progress_reward, dtype=dtype)
-        reward += np.asarray(opposition_progress_reward, dtype=dtype)
+            fingertip_body_pos, fingertip_body_quat = self._backend.get_body_pose_w(
+                self._fingertip_body_ids
+            )
+            tip_collision_pos = compute_tip_collision_reference_positions(
+                fingertip_body_pos,
+                fingertip_body_quat,
+            )
+            index_tip_pos = tip_collision_pos[:, 0, :]
+            ring_tip_pos = tip_collision_pos[:, 2, :]
+            opposition_quality = compute_index_ring_opposition_quality(
+                index_tip_pos,
+                ring_tip_pos,
+                ball_pos,
+            )
+
+            index_contact = fingertip_contacts[:, 0].astype(bool)
+            ring_contact = fingertip_contacts[:, 2].astype(bool)
+            index_ring_contact = index_contact & ring_contact
+            current_opposition_potential = (
+                index_ring_contact.astype(dtype) * opposition_quality
+            ).astype(dtype, copy=False)
+
+            step_count = np.asarray(
+                info.get("steps", np.zeros(self._num_envs, dtype=np.uint32))
+            )
+            previous_opposition_potential = np.asarray(
+                info.get("prev_opposition_potential", current_opposition_potential),
+                dtype=dtype,
+            )
+            raw_opposition_progress = compute_reset_safe_opposition_progress(
+                current_opposition_potential,
+                previous_opposition_potential,
+                step_count,
+            )
+            opposition_progress_reward = (
+                self._reward_cfg.opposition_progress_scale
+                * np.clip(
+                    raw_opposition_progress,
+                    -self._reward_cfg.opposition_progress_clip,
+                    self._reward_cfg.opposition_progress_clip,
+                )
+            ).astype(dtype, copy=False)
+
+            reward += support_pose_progress_reward
+            reward += opposition_progress_reward
+            info["prev_opposition_potential"] = current_opposition_potential.copy()
 
         info["curr_dof_pos"] = dof_pos.copy()
         info["curr_ball_pos"] = ball_pos.copy()
@@ -430,14 +478,13 @@ class LeapInhandBallSustainedCacheRotationEnv(
         info["prev_dof_pos"] = dof_pos.copy()
         info["prev_ball_pos"] = ball_pos.copy()
         info["prev_ball_quat"] = ball_quat.copy()
-        info["prev_opposition_potential"] = current_opposition_potential.copy()
 
         obs = self._compute_sustained_obs(self._all_env_ids, info)
+        step_count = info.get("steps", np.zeros(self._num_envs, dtype=np.uint32))
         if self._enable_reward_log and int(step_count[0]) % 4 == 0:
             displacement = ball_pos - anchor_pos
-            fingertip_contact_count = np.sum(fingertip_contacts, axis=1)
             palm_contact = self._palm_contacts(self._all_env_ids)
-            info["log"] = {
+            log = {
                 "reward/rotate_base": float(np.mean(base_rotate_reward)),
                 "reward/rotate": float(np.mean(rotate_reward)),
                 "reward/finger_participation": float(
@@ -445,12 +492,6 @@ class LeapInhandBallSustainedCacheRotationEnv(
                 ),
                 "reward/obj_linvel": float(np.mean(obj_linvel_reward)),
                 "reward/position_error": float(np.mean(position_error_reward)),
-                "reward/support_pose_progress": float(
-                    np.mean(support_pose_progress_reward)
-                ),
-                "reward/opposition_progress": float(
-                    np.mean(opposition_progress_reward)
-                ),
                 "reward/total": float(np.mean(reward)),
                 "rotation/axis_speed_rad_s": float(np.mean(axis_speed)),
                 "rotation/clipped_axis_speed_rad_s": float(np.mean(clipped_axis_speed)),
@@ -476,28 +517,40 @@ class LeapInhandBallSustainedCacheRotationEnv(
                     np.mean(np.sum(fingertip_contacts[:, :2], axis=1))
                 ),
                 "contact/palm_contact_rate": float(np.mean(palm_contact)),
-                "support/state_a_pose_distance": float(
-                    np.mean(current_support_distance)
-                ),
-                "support/state_a_pose_raw_progress": float(
-                    np.mean(raw_support_progress)
-                ),
-                "support/index_ring_contact_rate": float(
-                    np.mean(index_ring_contact)
-                ),
-                "support/opposition_quality": float(
-                    np.mean(opposition_quality)
-                ),
-                "support/opposition_potential": float(
-                    np.mean(current_opposition_potential)
-                ),
-                "support/opposition_raw_progress": float(
-                    np.mean(raw_opposition_progress)
-                ),
                 "termination/workspace_rate": float(np.mean(terminated)),
                 "termination/task_rate": float(np.mean(terminated)),
             }
-            info["log"].update(reward_adjustment_log)
+            if support_shaping_enabled:
+                log.update(
+                    {
+                        "reward/support_pose_progress": float(
+                            np.mean(support_pose_progress_reward)
+                        ),
+                        "reward/opposition_progress": float(
+                            np.mean(opposition_progress_reward)
+                        ),
+                        "support/state_a_pose_distance": float(
+                            np.mean(current_support_distance)
+                        ),
+                        "support/state_a_pose_raw_progress": float(
+                            np.mean(raw_support_progress)
+                        ),
+                        "support/index_ring_contact_rate": float(
+                            np.mean(index_ring_contact)
+                        ),
+                        "support/opposition_quality": float(
+                            np.mean(opposition_quality)
+                        ),
+                        "support/opposition_potential": float(
+                            np.mean(current_opposition_potential)
+                        ),
+                        "support/opposition_raw_progress": float(
+                            np.mean(raw_opposition_progress)
+                        ),
+                    }
+                )
+            log.update(reward_adjustment_log)
+            info["log"] = log
 
         return state.replace(obs=obs, reward=reward, terminated=terminated)
 
@@ -514,7 +567,7 @@ __all__ = [
     "compute_allegro_style_rotate_reward",
     "compute_index_ring_opposition_quality",
     "compute_position_error_reward",
+    "compute_reset_safe_opposition_progress",
     "compute_support_pose_distance",
     "compute_tip_collision_reference_positions",
 ]
-
