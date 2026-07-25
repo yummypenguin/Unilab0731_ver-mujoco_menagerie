@@ -23,9 +23,13 @@ reward:
     failure: 0.0
   angvel_clip_min: -0.5
   angvel_clip_max: 0.5
-  positive_spin_base_contact_scale: 0.25
-  positive_spin_index_contact_scale: 0.375
-  positive_spin_middle_contact_scale: 0.375
+  positive_spin_base_contact_scale: 1.0
+  positive_spin_index_contact_scale: 0.0
+  positive_spin_middle_contact_scale: 0.0
+  support_pose_progress_scale: 0.25
+  support_pose_progress_clip: 0.04
+  opposition_progress_scale: 0.20
+  opposition_progress_clip: 0.05
   spin_progress_scale: 0.0
   spin_continuity_penalty_scale: 0.0
   direct_spin_reward: false

@@ -50,13 +50,19 @@ from unilab.envs.manipulation.leap_inhand.finger_gaiting_rotation import (
 )
 from unilab.envs.manipulation.leap_inhand.rotation_v2 import compute_rotation_terms
 from unilab.envs.manipulation.leap_inhand.sustained_cache_rotation import (
+    LEAP_TIP_COLLISION_LOCAL_POS,
+    STATE_A_SUPPORT_QPOS,
+    SUPPORT_JOINT_INDICES,
     AllegroStyleRotationRewardConfig,
     LeapInhandBallSustainedCacheRotationCfg,
     LeapInhandBallSustainedCacheRotationEnv,
     apply_positive_spin_finger_participation,
     compute_allegro_style_obj_linvel_reward,
     compute_allegro_style_rotate_reward,
+    compute_index_ring_opposition_quality,
     compute_position_error_reward,
+    compute_support_pose_distance,
+    compute_tip_collision_reference_positions,
 )
 from unilab.envs.manipulation.leap_inhand.sustained_rotation import (
     LeapInhandBallSustainedRotationCfg,
@@ -1561,7 +1567,7 @@ def test_leap_direct_rotation_reset_and_step(backend: str) -> None:
             "ctrl_dt": 0.05,
             "reset_source": "cache",
             "grasp_cache_path": "robots/leap_hand/caches/ball_grasp_official_50k.npy",
-            "termination_drop_distance": 0.007,
+            "termination_workspace_radius": 0.05,
             "reward_config": asdict(DirectRotationRewardConfig()),
         },
     )
@@ -1856,3 +1862,116 @@ def test_leap_toss_motrix_reset_and_step() -> None:
         assert np.isfinite(next_state.reward).all()
     finally:
         env.close()
+
+
+def test_support_pose_distance_state_a_exact_and_scaled_delta() -> None:
+    ctrl_lower = np.full(16, -1.0, dtype=np.float64)
+    ctrl_upper = np.full(16, 1.0, dtype=np.float64)
+    dof_pos = np.zeros((1, 16), dtype=np.float64)
+    dof_pos[0, SUPPORT_JOINT_INDICES] = STATE_A_SUPPORT_QPOS
+
+    dist_exact = compute_support_pose_distance(dof_pos, ctrl_lower, ctrl_upper)
+    np.testing.assert_allclose(dist_exact, [0.0], atol=1e-7)
+
+    # Shift each selected joint by 10% of its joint range (ctrl_upper - ctrl_lower = 2.0 -> 0.2)
+    dof_pos_shifted = dof_pos.copy()
+    dof_pos_shifted[0, SUPPORT_JOINT_INDICES] += 0.20
+    dist_shifted = compute_support_pose_distance(dof_pos_shifted, ctrl_lower, ctrl_upper)
+    np.testing.assert_allclose(dist_shifted, [0.10], atol=1e-7)
+
+
+def test_support_pose_progress_sign_and_clipping() -> None:
+    scale = 0.25
+    clip = 0.04
+    prev_dist = np.asarray([0.20, 0.10], dtype=np.float64)
+    curr_dist = np.asarray([0.15, 0.14], dtype=np.float64)
+    raw_progress = prev_dist - curr_dist
+    clipped_progress = np.clip(raw_progress, -clip, clip)
+    reward = scale * clipped_progress
+
+    np.testing.assert_allclose(raw_progress, [0.05, -0.04])
+    np.testing.assert_allclose(clipped_progress, [0.04, -0.04])
+    np.testing.assert_allclose(reward, [0.01, -0.01])
+
+
+def test_tip_collision_reference_transform_identity_quat() -> None:
+    fingertip_body_pos = np.asarray(
+        [[[0.1, 0.2, 0.3], [0.4, 0.5, 0.6], [0.7, 0.8, 0.9], [1.0, 1.1, 1.2]]],
+        dtype=np.float64,
+    )
+    fingertip_body_quat = np.asarray(
+        [[[1.0, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0]]],
+        dtype=np.float64,
+    )
+
+    tip_pos = compute_tip_collision_reference_positions(fingertip_body_pos, fingertip_body_quat)
+    expected = fingertip_body_pos + LEAP_TIP_COLLISION_LOCAL_POS
+
+    np.testing.assert_allclose(tip_pos, expected)
+
+
+def test_opposition_quality_geometry() -> None:
+    ball_pos = np.zeros((1, 3), dtype=np.float64)
+
+    # 180 degrees (opposite) -> quality = 1.0
+    index_180 = np.asarray([[1.0, 0.0, 0.0]], dtype=np.float64)
+    ring_180 = np.asarray([[-1.0, 0.0, 0.0]], dtype=np.float64)
+    q_180 = compute_index_ring_opposition_quality(index_180, ring_180, ball_pos)
+    np.testing.assert_allclose(q_180, [1.0], atol=1e-7)
+
+    # 90 degrees -> quality = 0.5
+    index_90 = np.asarray([[1.0, 0.0, 0.0]], dtype=np.float64)
+    ring_90 = np.asarray([[0.0, 1.0, 0.0]], dtype=np.float64)
+    q_90 = compute_index_ring_opposition_quality(index_90, ring_90, ball_pos)
+    np.testing.assert_allclose(q_90, [0.5], atol=1e-7)
+
+    # 0 degrees (same side) -> quality = 0.0
+    index_0 = np.asarray([[1.0, 0.0, 0.0]], dtype=np.float64)
+    ring_0 = np.asarray([[1.0, 0.0, 0.0]], dtype=np.float64)
+    q_0 = compute_index_ring_opposition_quality(index_0, ring_0, ball_pos)
+    np.testing.assert_allclose(q_0, [0.0], atol=1e-7)
+
+
+def test_contact_weighted_opposition_potential() -> None:
+    quality = 0.8
+    contacts = np.asarray(
+        [
+            [True, False, True, False],
+            [True, False, False, False],
+            [False, False, True, False],
+            [False, False, False, False],
+        ],
+        dtype=bool,
+    )
+    index_contact = contacts[:, 0]
+    ring_contact = contacts[:, 2]
+    potential = (index_contact & ring_contact).astype(np.float64) * quality
+
+    np.testing.assert_allclose(potential, [0.8, 0.0, 0.0, 0.0])
+
+
+def test_opposition_progress_sign_and_clipping() -> None:
+    scale = 0.20
+    clip = 0.05
+    prev_potential = np.asarray([0.0, 0.8], dtype=np.float64)
+    curr_potential = np.asarray([0.8, 0.0], dtype=np.float64)
+    raw_progress = curr_potential - prev_potential
+    clipped_progress = np.clip(raw_progress, -clip, clip)
+    reward = scale * clipped_progress
+
+    np.testing.assert_allclose(raw_progress, [0.8, -0.8])
+    np.testing.assert_allclose(clipped_progress, [0.05, -0.05])
+    np.testing.assert_allclose(reward, [0.01, -0.01])
+
+
+def test_sustained_cache_rotation_reward_config_defaults() -> None:
+    cfg = AllegroStyleRotationRewardConfig()
+
+    assert cfg.positive_spin_base_contact_scale == 1.0
+    assert cfg.positive_spin_index_contact_scale == 0.0
+    assert cfg.positive_spin_middle_contact_scale == 0.0
+    assert cfg.support_pose_progress_scale == 0.25
+    assert cfg.support_pose_progress_clip == 0.04
+    assert cfg.opposition_progress_scale == 0.20
+    assert cfg.opposition_progress_clip == 0.05
+
