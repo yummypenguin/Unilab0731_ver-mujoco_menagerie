@@ -61,6 +61,7 @@ from unilab.envs.manipulation.leap_inhand.sustained_cache_rotation import (
     compute_allegro_style_rotate_reward,
     compute_index_ring_opposition_quality,
     compute_position_error_reward,
+    compute_reset_safe_opposition_progress,
     compute_support_pose_distance,
     compute_tip_collision_reference_positions,
 )
@@ -1114,7 +1115,7 @@ def test_leap_sustained_cache_rotation_matches_allegro_rotate_logic() -> None:
     np.testing.assert_allclose(reward, [-0.625, -0.3125, 0.3125, 0.625])
 
 
-def test_leap_sustained_cache_rotation_rewards_index_middle_participation() -> None:
+def test_positive_spin_participation_helper_preserves_legacy_behavior() -> None:
     base_reward = np.asarray([0.625, 0.625, 0.625, 0.625, -0.625])
     contacts = np.asarray(
         [
@@ -1975,3 +1976,113 @@ def test_sustained_cache_rotation_reward_config_defaults() -> None:
     assert cfg.opposition_progress_scale == 0.20
     assert cfg.opposition_progress_clip == 0.05
 
+
+def test_support_shaping_is_not_enabled_for_direct_rotation_reward_config() -> None:
+    assert not isinstance(DirectRotationRewardConfig(), AllegroStyleRotationRewardConfig)
+
+
+def test_direct_rotation_task_does_not_receive_support_or_opposition_shaping() -> None:
+    pytest.importorskip("mujoco")
+    try:
+        from mujoco.batch_env import BatchEnvPool as _  # noqa: F401
+    except Exception:
+        pytest.skip("mujoco.batch_env is unavailable")
+
+    ensure_registries()
+    env = registry.make(
+        "LeapInhandBallDirectRotation",
+        sim_backend="mujoco",
+        num_envs=2,
+        env_cfg_override={
+            "sim_dt": 0.005,
+            "ctrl_dt": 0.05,
+            "reset_source": "cache",
+            "grasp_cache_path": "robots/leap_hand/caches/ball_grasp_official_50k.npy",
+            "termination_workspace_radius": 0.05,
+            "reward_config": asdict(DirectRotationRewardConfig()),
+        },
+    )
+    try:
+        obs, info = env.reset(np.arange(2, dtype=np.int32))
+        next_state = env.step(np.zeros((2, 16), dtype=np.float32))
+
+        assert np.isfinite(next_state.reward).all()
+        assert "reward/direct_stable_rotation" in next_state.info["log"]
+        assert "reward/support_pose_progress" not in next_state.info["log"]
+        assert "reward/opposition_progress" not in next_state.info["log"]
+        assert "support/state_a_pose_distance" not in next_state.info["log"]
+        assert "prev_opposition_potential" not in next_state.info
+    finally:
+        env.close()
+
+
+def test_support_pose_distance_preserves_float32_dtype() -> None:
+    ctrl_lower = np.full(16, -1.0, dtype=np.float32)
+    ctrl_upper = np.full(16, 1.0, dtype=np.float32)
+    dof_pos = np.zeros((2, 16), dtype=np.float32)
+
+    dist = compute_support_pose_distance(dof_pos, ctrl_lower, ctrl_upper)
+    assert dist.dtype == np.float32
+
+
+def test_tip_collision_reference_positions_preserves_float32_dtype() -> None:
+    body_pos = np.zeros((2, 4, 3), dtype=np.float32)
+    body_quat = np.broadcast_to(np.asarray([1.0, 0.0, 0.0, 0.0], dtype=np.float32), (2, 4, 4))
+
+    pos = compute_tip_collision_reference_positions(body_pos, body_quat)
+    assert pos.dtype == np.float32
+
+
+def test_index_ring_opposition_quality_preserves_float32_dtype() -> None:
+    index_pos = np.asarray([[1.0, 0.0, 0.0]], dtype=np.float32)
+    ring_pos = np.asarray([[-1.0, 0.0, 0.0]], dtype=np.float32)
+    ball_pos = np.zeros((1, 3), dtype=np.float32)
+
+    quality = compute_index_ring_opposition_quality(index_pos, ring_pos, ball_pos)
+    assert quality.dtype == np.float32
+
+
+def test_tip_collision_reference_matches_mujoco_geom_xpos() -> None:
+    mujoco = pytest.importorskip("mujoco")
+
+    model = mujoco.MjModel.from_xml_path(str(LEAP_ASSET_DIR / "scene_ball.xml"))
+    data = mujoco.MjData(model)
+
+    mujoco.mj_resetDataKeyframe(model, data, 0)
+    mujoco.mj_forward(model, data)
+
+    body_names = ("fingertip", "fingertip_2", "fingertip_3", "thumb_fingertip")
+    body_ids = np.asarray(
+        [mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name) for name in body_names],
+        dtype=np.int32,
+    )
+
+    fingertip_body_pos = data.xpos[body_ids][None, :, :]
+    fingertip_body_quat = data.xquat[body_ids][None, :, :]
+
+    computed = compute_tip_collision_reference_positions(
+        fingertip_body_pos,
+        fingertip_body_quat,
+    )
+
+    index_geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "index_tip_col")
+    ring_geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "ring_tip_col")
+
+    np.testing.assert_allclose(computed[0, 0], data.geom_xpos[index_geom_id], atol=1e-7)
+    np.testing.assert_allclose(computed[0, 2], data.geom_xpos[ring_geom_id], atol=1e-7)
+
+
+def test_reset_safe_opposition_progress_zeroes_out_step_zero() -> None:
+    current = np.asarray([0.8, 0.8], dtype=np.float32)
+    previous = np.asarray([0.0, 0.0], dtype=np.float32)
+    steps_0 = np.asarray([0, 1], dtype=np.uint32)
+
+    raw_progress = compute_reset_safe_opposition_progress(current, previous, steps_0)
+    np.testing.assert_allclose(raw_progress, [0.0, 0.8])
+    assert raw_progress.dtype == np.float32
+
+    scale = 0.20
+    clip = 0.05
+    reward = scale * np.clip(raw_progress, -clip, clip)
+    np.testing.assert_allclose(reward, [0.0, 0.01])
+    assert reward.dtype == np.float32
