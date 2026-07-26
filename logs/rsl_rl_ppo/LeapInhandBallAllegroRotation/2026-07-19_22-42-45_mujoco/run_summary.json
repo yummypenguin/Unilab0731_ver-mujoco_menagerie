@@ -1,0 +1,21 @@
+{
+  "status": "completed",
+  "completed_iterations": 200,
+  "total_env_steps": 26345472,
+  "final_mean_reward": -0.23393987014889717,
+  "best_mean_reward": -0.07873567938804626,
+  "mean_episode_length": 9.7,
+  "last_checkpoint": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallAllegroRotation\\2026-07-19_22-42-45_mujoco\\model_200.pt",
+  "training_wall_time_sec": 7980.53518819809,
+  "algo": "ppo",
+  "task": "LeapInhandBallAllegroRotation",
+  "sim_backend": "mujoco",
+  "log_dir": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallAllegroRotation\\2026-07-19_22-42-45_mujoco",
+  "start_time_utc": "2026-07-20T05:42:45.908388+00:00",
+  "end_time_utc": "2026-07-20T07:56:49.431842+00:00",
+  "wall_time_sec": 8043.523436799995,
+  "wandb_run_url": null,
+  "configured_seed": 1,
+  "configured_seed_source": "algo.seed",
+  "effective_seed": 1
+}

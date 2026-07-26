@@ -1,0 +1,21 @@
+{
+  "status": "completed",
+  "completed_iterations": 0,
+  "total_env_steps": 128,
+  "final_mean_reward": -4.983093589544296,
+  "best_mean_reward": -4.955326557159424,
+  "mean_episode_length": 4.375,
+  "last_checkpoint": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallFingerGaitingRotation\\2026-07-22_12-15-48_motrix\\model_0.pt",
+  "training_wall_time_sec": 2.6308023929595947,
+  "algo": "ppo",
+  "task": "LeapInhandBallFingerGaitingRotation",
+  "sim_backend": "motrix",
+  "log_dir": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallFingerGaitingRotation\\2026-07-22_12-15-48_motrix",
+  "start_time_utc": "2026-07-22T19:15:48.611002+00:00",
+  "end_time_utc": "2026-07-22T19:15:53.139525+00:00",
+  "wall_time_sec": 4.528519599989522,
+  "wandb_run_url": null,
+  "configured_seed": 1,
+  "configured_seed_source": "algo.seed",
+  "effective_seed": 1
+}

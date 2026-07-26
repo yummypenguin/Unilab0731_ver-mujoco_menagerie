@@ -1,0 +1,352 @@
+--- git commit ---
+7eab13f079112ff6f6468c94158995e6724533e5
+
+
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   AGENTS.md
+	modified:   README.md
+	modified:   docs/sphinx/source/en/5-reference/5-support_matrix.md
+	modified:   docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md
+	modified:   src/unilab/envs/manipulation/__init__.py
+	modified:   src/unilab/envs/manipulation/allegro_inhand/base.py
+	modified:   src/unilab/envs/manipulation/allegro_inhand/rotation.py
+	modified:   src/unilab/tools/import_robot.py
+	modified:   src/unilab/utils/support_matrix.py
+	modified:   tests/scripts/test_support_matrix.py
+	modified:   tests/test_import_robot.py
+	modified:   tests/training/test_sim2sim_resolver.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	DEVELOPMENT_LOG.md
+	USEFUL_COMMANDS.md
+	USER_INSTRUCTIONS.md
+	conf/ppo/task/leap_inhand/
+	conf/ppo/task/leap_inhand_toss/
+	src/unilab/assets/robots/leap_hand/
+	src/unilab/envs/manipulation/leap_inhand/
+	tests/envs/test_leap_inhand.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/AGENTS.md b/AGENTS.md
+index 501dd26c..c9de2cf2 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -97,3 +97,14 @@ gh pr create --title "fix: xxx" --body "Fixes #174" --base main
+ - 协作流程与 PR 规范：[docs/sphinx/source/zh_CN/4-developer_guide/5-contributing_workflow.md](docs/sphinx/source/zh_CN/4-developer_guide/5-contributing_workflow.md)
+ - 开发者入口（环境、命令、提交规范）：[CONTRIBUTING.md](CONTRIBUTING.md)
+ - 文档本地构建与发布到 UniLab-doc：[docs/sphinx/README.md#本地发布到-unilab-doc](docs/sphinx/README.md#本地发布到-unilab-doc)
++
++
++User Instructions
++
++These instructions apply to all future work in this repository:
++
++1. The assistant may read any file without requesting permission.
++2. Commands whose only purpose is reading or searching files may be executed without requesting permission.
++3. Before executing any other command, the assistant must obtain the user's explicit consent.
++4. Before creating, modifying, renaming, moving, or deleting any file or program code, the assistant must obtain the user's explicit consent.
++5. Permission applies only to the specific command or file change described when consent is requested. Further commands or changes require new consent unless the user explicitly grants broader permission
+\ No newline at end of file
+diff --git a/docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md b/docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md
+index b1947352..e6138161 100644
+--- a/docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md
++++ b/docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md
+@@ -59,6 +59,8 @@ uv run scripts/generate_support_matrix.py --write
+ | PPO (torch) | `g1_wall_flip_tracking` (G1 wall flip tracking) | Tested | Tested |
+ | PPO (torch) | `x2_wall_flip_tracking` (X2 wall flip tracking) | Tested | Tested |
+ | PPO (torch) | `allegro_inhand` (Allegro in-hand) | Tested | Tested |
++| PPO (torch) | `leap_inhand` (LEAP Hand in-hand) | Tested | Tested |
++| PPO (torch) | `leap_inhand_toss` (LEAP Hand toss and catch) | Tested | Tested |
+ | PPO (torch) | `sharpa_inhand` (Sharpa in-hand) | Tested | Tested |
+ | PPO (torch) | `sharpa_inhand_grasp` (Sharpa in-hand grasp) | Tested | Tested |
+ | PPO (torch) | `a2_joystick_flat` (a2 joystick flat) | Tested | - |
+@@ -81,6 +83,8 @@ uv run scripts/generate_support_matrix.py --write
+ | PPO (mlx) | `g1_wall_flip_tracking` (G1 wall flip tracking) | Configured | Configured |
+ | PPO (mlx) | `x2_wall_flip_tracking` (X2 wall flip tracking) | Configured | Configured |
+ | PPO (mlx) | `allegro_inhand` (Allegro in-hand) | Configured | Configured |
++| PPO (mlx) | `leap_inhand` (LEAP Hand in-hand) | Configured | Configured |
++| PPO (mlx) | `leap_inhand_toss` (LEAP Hand toss and catch) | Configured | Configured |
+ | PPO (mlx) | `sharpa_inhand` (Sharpa in-hand) | Configured | Configured |
+ | PPO (mlx) | `sharpa_inhand_grasp` (Sharpa in-hand grasp) | Configured | Configured |
+ | PPO (mlx) | `a2_joystick_flat` (a2 joystick flat) | Configured | - |
+diff --git a/src/unilab/envs/manipulation/__init__.py b/src/unilab/envs/manipulation/__init__.py
+index 16b529f1..2639bc40 100644
+--- a/src/unilab/envs/manipulation/__init__.py
++++ b/src/unilab/envs/manipulation/__init__.py
+@@ -2,6 +2,7 @@
+ 
+ __unilab_registry_modules__ = (
+     "unilab.envs.manipulation.allegro_inhand",
++    "unilab.envs.manipulation.leap_inhand",
+     "unilab.envs.manipulation.sharpa_inhand",
+     "unilab.envs.manipulation.stewart",
+ )
+diff --git a/src/unilab/envs/manipulation/allegro_inhand/base.py b/src/unilab/envs/manipulation/allegro_inhand/base.py
+index bc71df8b..f9599ec3 100644
+--- a/src/unilab/envs/manipulation/allegro_inhand/base.py
++++ b/src/unilab/envs/manipulation/allegro_inhand/base.py
+@@ -34,6 +34,10 @@ class AllegroBaseCfg(EnvCfg):
+ 
+ class AllegroBaseEnv(NpEnv):
+     _NUM_HAND_DOF: int = 16
++    _BASE_BODY_NAME: str = "palm"
++    _OBJECT_BODY_NAME: str = "ball"
++    _LOG_PREFIX: str = "allegro_inhand"
++    _GRASP_GENERATION_TASK: str | None = "allegro_inhand_grasp"
+     _FINGERTIP_BODY_NAMES: tuple[str, ...] = ("ff_tip", "mf_tip", "rf_tip", "th_tip")
+     _cfg: AllegroBaseCfg
+     _init_qpos: np.ndarray
+@@ -60,7 +64,7 @@ class AllegroBaseEnv(NpEnv):
+         self.nq = int(self._init_qpos.shape[0])
+         self.nv = int(self._init_qvel.shape[0])
+ 
+-        self._ball_body_ids = self._backend.get_body_ids(["ball"])
++        self._ball_body_ids = self._backend.get_body_ids([self._OBJECT_BODY_NAME])
+         self._fingertip_body_ids = self._backend.get_body_ids(self._FINGERTIP_BODY_NAMES)
+ 
+     def _init_action_space(self) -> None:
+diff --git a/src/unilab/envs/manipulation/allegro_inhand/rotation.py b/src/unilab/envs/manipulation/allegro_inhand/rotation.py
+index 74173a80..6217ef5f 100644
+--- a/src/unilab/envs/manipulation/allegro_inhand/rotation.py
++++ b/src/unilab/envs/manipulation/allegro_inhand/rotation.py
+@@ -148,20 +148,27 @@ class AllegroRotationDomainRandomizationProvider(DomainRandomizationProvider):
+ 
+         cache_path = resolve_grasp_cache_path(env.cfg.grasp_cache_path)
+         if not cache_path.exists():
++            generation_task = getattr(env, "_GRASP_GENERATION_TASK", "allegro_inhand_grasp")
++            log_prefix = getattr(env, "_LOG_PREFIX", "allegro_inhand")
++            generation_hint = (
++                f"Generate one with `uv run train --algo ppo --task {generation_task} "
++                "--sim mujoco training.no_play=true`, or "
++                if generation_task is not None
++                else ""
++            )
+             print(
+-                "[allegro_inhand] Grasp cache is missing; no Hugging Face download will be "
+-                f"attempted. Expected local cache: {cache_path}. Generate one with "
+-                "`uv run train --algo ppo --task allegro_inhand_grasp --sim mujoco "
+-                "training.no_play=true`, or point `env.grasp_cache_path` at an existing "
+-                "local cache."
++                f"[{log_prefix}] Grasp cache is missing; no Hugging Face download will "
++                f"be attempted. Expected local cache: {cache_path}. {generation_hint}Point "
++                "`env.grasp_cache_path` at an existing local cache."
+             )
+             env._grasp_cache = None
+             env._grasp_cache_loaded = True
+             return None
+         env._grasp_cache = np.load(cache_path).astype(np.float64)
+         env._grasp_cache_loaded = True
++        log_prefix = getattr(env, "_LOG_PREFIX", "allegro_inhand")
+         print(
+-            "[allegro_inhand] Loaded grasp cache: "
++            f"[{log_prefix}] Loaded grasp cache: "
+             f"{cache_path}, shape={env._grasp_cache.shape}, dtype={env._grasp_cache.dtype}"
+         )
+         return cast(np.ndarray | None, env._grasp_cache)
+@@ -273,7 +280,7 @@ class AllegroRotationPPO(AllegroBaseEnv):
+             cfg.scene,
+             num_envs,
+             cfg.sim_dt,
+-            base_name="palm",
++            base_name=self._BASE_BODY_NAME,
+             push_body_name=cfg.domain_rand.push_body_name,
+             add_body_sensors=True,
+             position_actuator_gains={
+@@ -294,7 +301,10 @@ class AllegroRotationPPO(AllegroBaseEnv):
+         self._grasp_cache_loaded = False
+ 
+         self._init_reward_functions()
+-        self._init_domain_randomization(AllegroRotationDomainRandomizationProvider())
++        self._init_domain_randomization(self._make_domain_randomization_provider())
++
++    def _make_domain_randomization_provider(self) -> DomainRandomizationProvider:
++        return AllegroRotationDomainRandomizationProvider()
+ 
+     @property
+     def obs_groups_spec(self) -> dict[str, int]:
+diff --git a/src/unilab/tools/import_robot.py b/src/unilab/tools/import_robot.py
+index 135f476e..f3602014 100644
+--- a/src/unilab/tools/import_robot.py
++++ b/src/unilab/tools/import_robot.py
+@@ -284,6 +284,17 @@ def _scene_keyframe_values(robot_xml: Path) -> tuple[list[float], list[float]]:
+     return qpos, ctrl
+ 
+ 
++def _robot_has_free_joint(robot_xml: Path) -> bool:
++    root = ET.parse(robot_xml).getroot()
++    root_body = root.find("./worldbody/body")
++    if root_body is None:
++        raise ValueError("robot XML must define a root body under <worldbody>")
++    return (
++        root_body.find("./freejoint") is not None
++        or root_body.find("./joint[@type='free']") is not None
++    )
++
++
+ def _write_scene_xml(robot_xml: Path, scene_xml: Path, robot_name: str) -> None:
+     qpos, ctrl = _scene_keyframe_values(robot_xml)
+     root = ET.Element("mujoco", {"model": f"{robot_name} scene"})
+@@ -511,7 +522,11 @@ def _compile_tuning_scene(robot_xml: Path, scene_xml: Path) -> Any:
+     import mujoco
+ 
+     mujoco_api: Any = mujoco
+-    merged = _materialize_tuning_scene(robot_xml, scene_xml)
++    merged = _materialize_tuning_scene(
++        robot_xml,
++        scene_xml,
++        add_height_joint=_robot_has_free_joint(robot_xml),
++    )
+     try:
+         return mujoco_api.MjModel.from_xml_path(str(merged))
+     finally:
+diff --git a/src/unilab/utils/support_matrix.py b/src/unilab/utils/support_matrix.py
+index d392c74b..75e6c574 100644
+--- a/src/unilab/utils/support_matrix.py
++++ b/src/unilab/utils/support_matrix.py
+@@ -29,8 +29,10 @@ _TASK_ORDER = {
+     "x2_wall_flip_tracking": 8,
+     "allegro_inhand": 9,
+     "allegro_sac": 10,
+-    "sharpa_inhand": 11,
+-    "sharpa_inhand_grasp": 12,
++    "leap_inhand": 11,
++    "leap_inhand_toss": 12,
++    "sharpa_inhand": 13,
++    "sharpa_inhand_grasp": 14,
+ }
+ _TASK_LABELS = {
+     "go1_joystick_flat": "Go1 joystick",
+@@ -44,6 +46,8 @@ _TASK_LABELS = {
+     "x2_wall_flip_tracking": "X2 wall flip tracking",
+     "allegro_inhand": "Allegro in-hand",
+     "allegro_sac": "Allegro SAC in-hand",
++    "leap_inhand": "LEAP Hand in-hand",
++    "leap_inhand_toss": "LEAP Hand toss and catch",
+     "sharpa_inhand": "Sharpa in-hand",
+     "sharpa_inhand_grasp": "Sharpa in-hand grasp",
+ }
+diff --git a/tests/scripts/test_support_matrix.py b/tests/scripts/test_support_matrix.py
+index caa26308..14be969d 100644
+--- a/tests/scripts/test_support_matrix.py
++++ b/tests/scripts/test_support_matrix.py
+@@ -48,3 +48,15 @@ def test_support_matrix_marks_sharpa_motrix_phase1_support():
+ 
+     assert allegro_appo_row.cells["mujoco"].level == EvidenceLevel.TESTED
+     assert allegro_appo_row.cells["motrix"].level == EvidenceLevel.TESTED
++
++
++def test_support_matrix_marks_leap_ppo_backends_as_tested():
++    row = _row("PPO (torch)", "leap_inhand")
++
++    assert row.cells["mujoco"].level == EvidenceLevel.TESTED
++    assert row.cells["motrix"].level == EvidenceLevel.TESTED
++
++    toss_row = _row("PPO (torch)", "leap_inhand_toss")
++
++    assert toss_row.cells["mujoco"].level == EvidenceLevel.TESTED
++    assert toss_row.cells["motrix"].level == EvidenceLevel.TESTED
+diff --git a/tests/test_import_robot.py b/tests/test_import_robot.py
+index 9aaa4833..d3760bb9 100644
+--- a/tests/test_import_robot.py
++++ b/tests/test_import_robot.py
+@@ -160,6 +160,57 @@ def test_write_scene_xml_creates_only_home_keyframe(tmp_path: Path) -> None:
+     assert root.find("./sensor") is None
+ 
+ 
++def test_robot_has_free_joint_distinguishes_fixed_base(tmp_path: Path) -> None:
++    mod = _load_script()
++    floating = tmp_path / "floating.xml"
++    fixed = tmp_path / "fixed.xml"
++    floating.write_text(
++        "<mujoco><worldbody><body><freejoint/></body></worldbody></mujoco>",
++        encoding="utf-8",
++    )
++    fixed.write_text(
++        "<mujoco><worldbody><body><joint name='finger'/></body></worldbody></mujoco>",
++        encoding="utf-8",
++    )
++
++    assert mod._robot_has_free_joint(floating)
++    assert not mod._robot_has_free_joint(fixed)
++
++
++def test_compile_tuning_scene_skips_height_joint_for_fixed_base(
++    tmp_path: Path, monkeypatch: Any
++) -> None:
++    mod = _load_script()
++    robot_xml = tmp_path / "fixed.xml"
++    scene_xml = tmp_path / "scene.xml"
++    robot_xml.write_text(
++        "<mujoco><worldbody><body><joint name='finger'/></body></worldbody></mujoco>",
++        encoding="utf-8",
++    )
++    scene_xml.write_text("<mujoco/>", encoding="utf-8")
++    merged = tmp_path / "merged.xml"
++    merged.write_text("<mujoco/>", encoding="utf-8")
++    calls: list[bool] = []
++
++    def fake_materialize(*args: Any, add_height_joint: bool, **kwargs: Any) -> Path:
++        del args, kwargs
++        calls.append(add_height_joint)
++        return merged
++
++    class FakeModel:
++        @staticmethod
++        def from_xml_path(path: str) -> object:
++            assert path == str(merged)
++            return object()
++
++    monkeypatch.setattr(mod, "_materialize_tuning_scene", fake_materialize)
++    monkeypatch.setitem(__import__("sys").modules, "mujoco", type("M", (), {"MjModel": FakeModel}))
++
++    mod._compile_tuning_scene(robot_xml, scene_xml)
++
++    assert calls == [False]
++
++
+ def test_tuning_scene_visuals_add_floor_and_light() -> None:
+     mod = _load_script()
+     root = ET.fromstring("<mujoco><worldbody /></mujoco>")
+diff --git a/tests/training/test_sim2sim_resolver.py b/tests/training/test_sim2sim_resolver.py
+index ef31e413..11bdad27 100644
+--- a/tests/training/test_sim2sim_resolver.py
++++ b/tests/training/test_sim2sim_resolver.py
+@@ -345,3 +345,28 @@ def test_g1_walk_flat_cross_backend_play_is_guarded(tmp_path):
+     motrix = _compose_task("g1_walk_flat/motrix")
+     with pytest.raises(CrossBackendIncompatibleError):
+         resolve_sim2sim_config(tmp_path, motrix)
++
++
++def test_leap_inhand_cross_backend_contract_is_transferable(tmp_path):
++    snapshot = extract_contract_snapshot(_compose_task("leap_inhand/mujoco"))
++    (tmp_path / "run_config.json").write_text(
++        json.dumps({"contract_snapshot": snapshot}), encoding="utf-8"
++    )
++
++    motrix = _compose_task("leap_inhand/motrix")
++
++    assert resolve_sim2sim_config(tmp_path, motrix) is motrix
++
++
++def test_leap_inhand_toss_cross_backend_contract_is_transferable(tmp_path):
++    mujoco = _compose_task("leap_inhand_toss/mujoco")
++    snapshot = extract_contract_snapshot(mujoco)
++    (tmp_path / "run_config.json").write_text(
++        json.dumps({"contract_snapshot": snapshot}), encoding="utf-8"
++    )
++
++    motrix = _compose_task("leap_inhand_toss/motrix")
++
++    assert mujoco.algo.save_interval == 25
++    assert motrix.algo.save_interval == 25
++    assert resolve_sim2sim_config(tmp_path, motrix) is motrix

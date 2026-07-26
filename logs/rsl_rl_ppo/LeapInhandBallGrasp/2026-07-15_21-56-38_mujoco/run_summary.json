@@ -1,0 +1,21 @@
+{
+  "status": "completed",
+  "completed_iterations": 79,
+  "total_env_steps": 40960,
+  "final_mean_reward": 0.0,
+  "best_mean_reward": 0.0,
+  "mean_episode_length": 13.44,
+  "last_checkpoint": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallGrasp\\2026-07-15_21-56-38_mujoco\\model_79.pt",
+  "training_wall_time_sec": 35.497095823287964,
+  "algo": "ppo",
+  "task": "LeapInhandBallGrasp",
+  "sim_backend": "mujoco",
+  "log_dir": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallGrasp\\2026-07-15_21-56-38_mujoco",
+  "start_time_utc": "2026-07-16T04:56:38.454897+00:00",
+  "end_time_utc": "2026-07-16T04:57:15.564303+00:00",
+  "wall_time_sec": 37.10940689999916,
+  "wandb_run_url": null,
+  "configured_seed": 1,
+  "configured_seed_source": "algo.seed",
+  "effective_seed": 1
+}

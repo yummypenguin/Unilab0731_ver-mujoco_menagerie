@@ -1,0 +1,21 @@
+{
+  "status": "completed",
+  "completed_iterations": 1,
+  "total_env_steps": 768,
+  "final_mean_reward": null,
+  "best_mean_reward": null,
+  "mean_episode_length": null,
+  "last_checkpoint": "D:\\UniLab\\logs\\rsl_rl_ppo\\Go2JoystickFlat\\2026-07-13_16-47-59_mujoco\\model_1.pt",
+  "training_wall_time_sec": 0.970095157623291,
+  "algo": "ppo",
+  "task": "Go2JoystickFlat",
+  "sim_backend": "mujoco",
+  "log_dir": "D:\\UniLab\\logs\\rsl_rl_ppo\\Go2JoystickFlat\\2026-07-13_16-47-59_mujoco",
+  "start_time_utc": "2026-07-13T23:47:59.491387+00:00",
+  "end_time_utc": "2026-07-13T23:48:01.287323+00:00",
+  "wall_time_sec": 1.7959339000517502,
+  "wandb_run_url": null,
+  "configured_seed": 1,
+  "configured_seed_source": "algo.seed",
+  "effective_seed": 1
+}

@@ -1,0 +1,795 @@
+--- git commit ---
+7eab13f079112ff6f6468c94158995e6724533e5
+
+
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   AGENTS.md
+	modified:   CONTRIBUTING.md
+	modified:   README.md
+	modified:   docs/sphinx/source/en/5-reference/5-support_matrix.md
+	modified:   docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md
+	modified:   src/unilab/base/backend/base.py
+	modified:   src/unilab/base/backend/mujoco/backend.py
+	modified:   src/unilab/envs/manipulation/__init__.py
+	modified:   src/unilab/envs/manipulation/allegro_inhand/base.py
+	modified:   src/unilab/envs/manipulation/allegro_inhand/rotation.py
+	modified:   src/unilab/tools/import_robot.py
+	modified:   src/unilab/utils/support_matrix.py
+	modified:   tests/base/test_sim_backend_smoke.py
+	modified:   tests/scripts/test_support_matrix.py
+	modified:   tests/test_import_robot.py
+	modified:   tests/training/test_sim2sim_resolver.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	DEVELOPMENT_LOG.md
+	USEFUL_COMMANDS.md
+	USER_INSTRUCTIONS.md
+	conf/ppo/task/leap_inhand/
+	conf/ppo/task/leap_inhand_ball/
+	conf/ppo/task/leap_inhand_ball_grasp/
+	conf/ppo/task/leap_inhand_toss/
+	scripts/diagnose_leap_ball_grasp.py
+	src/unilab/assets/robots/leap_hand/
+	src/unilab/envs/manipulation/leap_inhand/
+	tests/envs/test_leap_inhand.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/AGENTS.md b/AGENTS.md
+index 501dd26c..51d1b386 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -36,6 +36,51 @@ UniLab 是一个 **高性能、模块化、contract 驱动** 的 RL infrastructu
+ 
+ 训练时 `ExperimentTracker.start()` 把上述字段写入 `run_config.json` 的 `contract_snapshot`（不改 checkpoint 格式，旧 run 无 snapshot 时 fallback + warning）；五个 play 入口在建 env 前调用 `resolve_sim2sim_config` 校验，并用 `policy_load_dim_guard` 包裹 checkpoint 加载以把维度不匹配的隐晦报错重抛为显式诊断。设 `training.sim2sim_strict=false` 可把 DENYLIST 差异降级为 warning（默认 `true`）。DENYLIST 字段在每个后端 owner 配置中显式声明并保持跨后端一致（范例：`conf/ppo/task/g1_walk_flat/{mujoco,motrix}.yaml`）；跨后端契约审计见 `scripts/audit_sim2sim_contracts.py`。
+ 
++## Dexterous Manipulation Training Guidance
++
++本節是後續靈巧操作任務調整的研究基礎，不是不可變 contract。任何方法都必須以
++checkpoint、metrics、影片、跨 seed 實驗或消融結果驗證，並保留既有 run 作為
++baseline，禁止只因論文或直覺直接宣稱有效。
++
++1. **Action representation**: 優先使用 joint-position target 加 PD/PID，而非讓
++   policy 直接輸出 torque；同時必須保留真實 joint limit、velocity limit、actuator
++   force/torque limit 與有效 self-collision，禁止讓 RL 利用不實物理。
++2. **Phase decomposition**: 困難 manipulation 應拆成可觀測、可量測的階段，並使用
++   curriculum reset 從 capture/return 等後段技能逐步擴展到完整動作。階段轉換應使用
++   連續多步成立的事件 gate，不能只靠單一瞬時 reward 或角速度尖峰。
++3. **Reward semantics**: dense shaping 只協助探索真正困難的局部技能，並搭配
++   milestone bonus；避免堆疊大量 penalty。旋轉任務必須獎勵目標軸 signed angular
++   speed/rotation progress，並抑制 orthogonal rotation，不能在需要旋轉的階段獎勵
++   `exp(-||angular_velocity||^2)`；低角速度只應在 return/capture 階段要求。
++4. **Diagnostics before tuning**: reward 變更前先記錄各 failure 類別、phase transition
++   成功率、各 phase 耗時、目標軸與非目標軸角速度、trajectory error、contact event、
++   action std/entropy 與 capture stability。聚合 total reward 不足以判斷卡點。
++5. **Curriculum progression**: 固定 step threshold 可作 baseline，但正式設計優先考慮
++   rolling performance gate；成功率連續達標才升級。高 level 仍保留早期 reset mixture，
++   避免 catastrophic forgetting。resume 必須確認 curriculum progress 是否被還原。
++6. **Exploration control**: exploration variance 往往比小幅網路寬度調整更重要。持續
++   監控 policy standard deviation 與 entropy；std 無界增長且行為退化時，先處理分布
++   尺度、entropy 設定或 schedule，不以增加訓練時間掩蓋。
++7. **Nominal then robust**: 先在固定 nominal dynamics 學會完整任務，再逐步增加 mass、
++   friction、COM、actuator、latency、observation noise 與尺寸 randomization。task
++   acquisition 與 robustness 應分階段評估。
++8. **Ablation discipline**: reward、observation、curriculum 與 regularization 的修改應做
++   單變量 ablation，至少比較多個 random seeds；同時報告 success rate、time to first
++   success、failure distribution 與最終穩定度，不只報最高 return。
++9. **Observations**: 快速 launch、impact、roll 與 capture 任務應評估 joint velocity、
++   object pose/velocity、previous action、contact、phase、target axis 等資訊。Observation
++   contract 改變會使舊 checkpoint 不相容，必須同步更新雙 backend owner 與測試。
++10. **Demonstrations**: grasp cache 是 reset-state prior，不是 state-action demonstration。
++    BC/DAPG 需要 observation-action 軌跡；object-centric trajectory 可作 tracking target，
++    但不能直接當 BC。只有 curriculum 仍無法探索 launch/rebound/roll 時，才優先投資
++    scripted demonstration、BC，再做 PPO fine-tuning 或 decaying demo-gradient 方法。
++11. **HER/off-policy boundary**: PPO 沒有 replay buffer，HER 也要求 goal-conditioned
++    observation 與可重算 reward。SAC/TD3+HER 應作為獨立實驗，不得直接塞入含 phase
++    state、one-shot bonus 與 timeout 的 PPO 任務。
++12. **Visual and physical acceptance**: 每個 curriculum 邊界附近都要比較 checkpoint，
++    並以原生 viewer 檢查接觸、穿透、動作順序與 reward hacking。影片看似成功不能取代
++    collision、actuator limit、event metrics 與跨 backend 驗證。
++
+ ## Pointers
+ 
+ - PPO: `scripts/train_rsl_rl.py`
+@@ -97,3 +142,15 @@ gh pr create --title "fix: xxx" --body "Fixes #174" --base main
+ - 协作流程与 PR 规范：[docs/sphinx/source/zh_CN/4-developer_guide/5-contributing_workflow.md](docs/sphinx/source/zh_CN/4-developer_guide/5-contributing_workflow.md)
+ - 开发者入口（环境、命令、提交规范）：[CONTRIBUTING.md](CONTRIBUTING.md)
+ - 文档本地构建与发布到 UniLab-doc：[docs/sphinx/README.md#本地发布到-unilab-doc](docs/sphinx/README.md#本地发布到-unilab-doc)
++
++
++User Instructions
++
++These instructions apply to all future work in this repository:
++
++1. The assistant may read any file without requesting permission.
++2. Commands whose only purpose is reading or searching files may be executed without requesting permission.
++3. Before executing any other command, the assistant must obtain the user's explicit consent.
++4. Before creating, modifying, renaming, moving, or deleting any file or program code, the assistant must obtain the user's explicit consent.
++5. Permission applies only to the specific command or file change described when consent is requested. Further commands or changes require new consent unless the user explicitly grants broader permission
++6. When the user says `給我訓練指令`, provide three copy-and-paste Windows 11 PowerShell command blocks: the context-appropriate training command, the official MuJoCo viewer command for the latest checkpoint in an explicit run id, and the official MuJoCo viewer command for a specified checkpoint. Adjust task, backend, environment count, iteration count, checkpoint interval, run id, and checkpoint examples to the current situation while preserving this three-part workflow.
+diff --git a/docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md b/docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md
+index b1947352..08e7c08a 100644
+--- a/docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md
++++ b/docs/sphinx/source/zh_CN/5-reference/5-support_matrix.md
+@@ -59,6 +59,9 @@ uv run scripts/generate_support_matrix.py --write
+ | PPO (torch) | `g1_wall_flip_tracking` (G1 wall flip tracking) | Tested | Tested |
+ | PPO (torch) | `x2_wall_flip_tracking` (X2 wall flip tracking) | Tested | Tested |
+ | PPO (torch) | `allegro_inhand` (Allegro in-hand) | Tested | Tested |
++| PPO (torch) | `leap_inhand` (LEAP Hand in-hand) | Tested | Tested |
++| PPO (torch) | `leap_inhand_ball` (LEAP Hand ball rotation) | Tested | Tested |
++| PPO (torch) | `leap_inhand_toss` (LEAP Hand toss and catch) | Tested | Tested |
+ | PPO (torch) | `sharpa_inhand` (Sharpa in-hand) | Tested | Tested |
+ | PPO (torch) | `sharpa_inhand_grasp` (Sharpa in-hand grasp) | Tested | Tested |
+ | PPO (torch) | `a2_joystick_flat` (a2 joystick flat) | Tested | - |
+@@ -81,6 +84,9 @@ uv run scripts/generate_support_matrix.py --write
+ | PPO (mlx) | `g1_wall_flip_tracking` (G1 wall flip tracking) | Configured | Configured |
+ | PPO (mlx) | `x2_wall_flip_tracking` (X2 wall flip tracking) | Configured | Configured |
+ | PPO (mlx) | `allegro_inhand` (Allegro in-hand) | Configured | Configured |
++| PPO (mlx) | `leap_inhand` (LEAP Hand in-hand) | Configured | Configured |
++| PPO (mlx) | `leap_inhand_ball` (LEAP Hand ball rotation) | Configured | Configured |
++| PPO (mlx) | `leap_inhand_toss` (LEAP Hand toss and catch) | Configured | Configured |
+ | PPO (mlx) | `sharpa_inhand` (Sharpa in-hand) | Configured | Configured |
+ | PPO (mlx) | `sharpa_inhand_grasp` (Sharpa in-hand grasp) | Configured | Configured |
+ | PPO (mlx) | `a2_joystick_flat` (a2 joystick flat) | Configured | - |
+diff --git a/src/unilab/base/backend/base.py b/src/unilab/base/backend/base.py
+index 6367de98..8b655e33 100644
+--- a/src/unilab/base/backend/base.py
++++ b/src/unilab/base/backend/base.py
+@@ -25,6 +25,19 @@ class BackendPlayCapabilities:
+     supports_native_video_capture: bool = False
+ 
+ 
++@dataclass(frozen=True)
++class ContactPenetrationDetail:
++    """Maximum self/object penetration contacts for one environment."""
++
++    env_id: int
++    self_depth: float
++    self_body_pair: tuple[str, str] | None
++    self_geom_pair: tuple[str, str] | None
++    object_depth: float
++    object_body_pair: tuple[str, str] | None
++    object_geom_pair: tuple[str, str] | None
++
++
+ class BackendHeightScanner(abc.ABC):
+     """Backend-owned height-field scanner created on the env init path."""
+ 
+@@ -184,6 +197,51 @@ class SimBackend(abc.ABC):
+         """Return the backend geom-friction table."""
+         raise NotImplementedError(f"{self.__class__.__name__} does not expose geom friction")
+ 
++    def get_geom_pair_distances(
++        self,
++        env_ids: np.ndarray,
++        geom_pairs: np.ndarray,
++        *,
++        max_distance: float,
++    ) -> np.ndarray:
++        """Return signed surface distances for explicit geom pairs.
++
++        This is a low-frequency diagnostic API. The result has shape
++        ``(len(env_ids), len(geom_pairs))``; negative values indicate overlap.
++        """
++        raise NotImplementedError(
++            f"{self.__class__.__name__} does not expose geom-pair distances"
++        )
++
++    def get_contact_penetration_depths(
++        self,
++        env_ids: np.ndarray,
++        *,
++        self_collision_body_ids: np.ndarray,
++        object_body_id: int,
++    ) -> tuple[np.ndarray, np.ndarray]:
++        """Return maximum self and object penetration for selected environments.
++
++        This is a low-frequency validation API for cache generation and similar
++        acceptance paths. Returned depths are non-negative and have shape
++        ``(len(env_ids),)``.
++        """
++        raise NotImplementedError(
++            f"{self.__class__.__name__} does not expose contact penetration depths"
++        )
++
++    def get_contact_penetration_details(
++        self,
++        env_ids: np.ndarray,
++        *,
++        self_collision_body_ids: np.ndarray,
++        object_body_id: int,
++    ) -> tuple[ContactPenetrationDetail, ...]:
++        """Return maximum penetration contact identities on a validation path."""
++        raise NotImplementedError(
++            f"{self.__class__.__name__} does not expose contact penetration details"
++        )
++
+     def get_gravity(self) -> np.ndarray:
+         """Return the backend gravity vector."""
+         raise NotImplementedError(f"{self.__class__.__name__} does not expose gravity")
+diff --git a/src/unilab/base/backend/mujoco/backend.py b/src/unilab/base/backend/mujoco/backend.py
+index 89881fb8..1afc99e1 100644
+--- a/src/unilab/base/backend/mujoco/backend.py
++++ b/src/unilab/base/backend/mujoco/backend.py
+@@ -37,6 +37,7 @@ from ..base import (
+     BackendHeightScanner,
+     BackendPlayCapabilities,
+     BackendPlayRenderPlan,
++    ContactPenetrationDetail,
+     SimBackend,
+     normalize_play_render_mode,
+ )
+@@ -725,6 +726,158 @@ class MuJoCoBackend(SimBackend):
+     def get_geom_friction(self) -> np.ndarray:
+         return np.asarray(self._model.geom_friction, dtype=np.float64).copy()
+ 
++    def get_geom_pair_distances(
++        self,
++        env_ids: np.ndarray,
++        geom_pairs: np.ndarray,
++        *,
++        max_distance: float,
++    ) -> np.ndarray:
++        rows = np.asarray(env_ids, dtype=np.intp).reshape(-1)
++        pairs = np.asarray(geom_pairs, dtype=np.int32)
++        if np.any(rows < 0) or np.any(rows >= self._num_envs):
++            raise IndexError(f"env_ids must be within [0, {self._num_envs})")
++        if pairs.ndim != 2 or pairs.shape[1] != 2:
++            raise ValueError(f"geom_pairs must have shape (?, 2), got {pairs.shape}")
++        if not np.isfinite(max_distance) or max_distance <= 0.0:
++            raise ValueError("max_distance must be positive and finite")
++
++        distances = np.empty((len(rows), len(pairs)), dtype=self._np_dtype)
++        data_by_variant: dict[int, mujoco.MjData] = {}
++        state_spec = mujoco.mjtState.mjSTATE_FULLPHYSICS
++        for output_index, env_id in enumerate(rows):
++            variant_index = int(self._model_assignments[env_id])
++            model = self._model_variants[variant_index]
++            if np.any(pairs < 0) or np.any(pairs >= model.ngeom):
++                raise ValueError("geom_pairs contains an invalid MuJoCo geom id")
++            data = data_by_variant.setdefault(variant_index, mujoco.MjData(model))
++            mujoco.mj_setState(
++                model,
++                data,
++                np.asarray(self._physics_state[env_id], dtype=np.float64),
++                state_spec,
++            )
++            mujoco.mj_forward(model, data)
++            for pair_index, (geom1, geom2) in enumerate(pairs):
++                distances[output_index, pair_index] = mujoco.mj_geomDistance(
++                    model,
++                    data,
++                    int(geom1),
++                    int(geom2),
++                    float(max_distance),
++                    None,
++                )
++        return distances
++
++    def get_contact_penetration_depths(
++        self,
++        env_ids: np.ndarray,
++        *,
++        self_collision_body_ids: np.ndarray,
++        object_body_id: int,
++    ) -> tuple[np.ndarray, np.ndarray]:
++        details = self.get_contact_penetration_details(
++            env_ids,
++            self_collision_body_ids=self_collision_body_ids,
++            object_body_id=object_body_id,
++        )
++        return (
++            np.asarray([detail.self_depth for detail in details], dtype=self._np_dtype),
++            np.asarray([detail.object_depth for detail in details], dtype=self._np_dtype),
++        )
++
++    def get_contact_penetration_details(
++        self,
++        env_ids: np.ndarray,
++        *,
++        self_collision_body_ids: np.ndarray,
++        object_body_id: int,
++    ) -> tuple[ContactPenetrationDetail, ...]:
++        rows = np.asarray(env_ids, dtype=np.intp).reshape(-1)
++        if np.any(rows < 0) or np.any(rows >= self._num_envs):
++            raise IndexError(f"env_ids must be within [0, {self._num_envs})")
++
++        hand_body_ids = {
++            int(body_id) for body_id in np.asarray(self_collision_body_ids).reshape(-1)
++        }
++        object_id = int(object_body_id)
++        if object_id in hand_body_ids:
++            raise ValueError("object_body_id must not belong to the self-collision body set")
++
++        details: list[ContactPenetrationDetail] = []
++        data_by_variant: dict[int, mujoco.MjData] = {}
++        state_spec = mujoco.mjtState.mjSTATE_FULLPHYSICS
++
++        for env_id in rows:
++            variant_index = int(self._model_assignments[env_id])
++            model = self._model_variants[variant_index]
++            if any(body_id < 0 or body_id >= model.nbody for body_id in hand_body_ids):
++                raise ValueError("self_collision_body_ids contains an invalid MuJoCo body id")
++            if object_id < 0 or object_id >= model.nbody:
++                raise ValueError(f"Invalid object_body_id {object_id}")
++
++            data = data_by_variant.setdefault(variant_index, mujoco.MjData(model))
++            mujoco.mj_setState(
++                model,
++                data,
++                np.asarray(self._physics_state[env_id], dtype=np.float64),
++                state_spec,
++            )
++            mujoco.mj_forward(model, data)
++
++            max_self_depth = 0.0
++            max_object_depth = 0.0
++            max_self_contact: tuple[int, int, int, int] | None = None
++            max_object_contact: tuple[int, int, int, int] | None = None
++            for contact in data.contact:
++                depth = max(0.0, -float(contact.dist))
++                if depth == 0.0:
++                    continue
++                body1 = int(model.geom_bodyid[contact.geom1])
++                body2 = int(model.geom_bodyid[contact.geom2])
++                if body1 in hand_body_ids and body2 in hand_body_ids and depth > max_self_depth:
++                    max_self_depth = depth
++                    max_self_contact = (body1, body2, int(contact.geom1), int(contact.geom2))
++                elif (body1 == object_id and body2 in hand_body_ids) or (
++                    body2 == object_id and body1 in hand_body_ids
++                ) and depth > max_object_depth:
++                    max_object_depth = depth
++                    max_object_contact = (body1, body2, int(contact.geom1), int(contact.geom2))
++
++            def names(
++                contact_ids: tuple[int, int, int, int] | None,
++            ) -> tuple[tuple[str, str] | None, tuple[str, str] | None]:
++                if contact_ids is None:
++                    return None, None
++                body1, body2, geom1, geom2 = contact_ids
++                body_names = tuple(
++                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, body_id)
++                    or f"<body:{body_id}>"
++                    for body_id in (body1, body2)
++                )
++                geom_names = tuple(
++                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, geom_id)
++                    or f"<geom:{geom_id}>"
++                    for geom_id in (geom1, geom2)
++                )
++                return body_names, geom_names
++
++            self_body_pair, self_geom_pair = names(max_self_contact)
++            object_body_pair, object_geom_pair = names(max_object_contact)
++            details.append(
++                ContactPenetrationDetail(
++                    env_id=int(env_id),
++                    self_depth=max_self_depth,
++                    self_body_pair=self_body_pair,
++                    self_geom_pair=self_geom_pair,
++                    object_depth=max_object_depth,
++                    object_body_pair=object_body_pair,
++                    object_geom_pair=object_geom_pair,
++                )
++            )
++
++        return tuple(details)
++
+     def get_gravity(self) -> np.ndarray:
+         return np.asarray(self._model.opt.gravity, dtype=np.float64).copy()
+ 
+diff --git a/src/unilab/envs/manipulation/__init__.py b/src/unilab/envs/manipulation/__init__.py
+index 16b529f1..2639bc40 100644
+--- a/src/unilab/envs/manipulation/__init__.py
++++ b/src/unilab/envs/manipulation/__init__.py
+@@ -2,6 +2,7 @@
+ 
+ __unilab_registry_modules__ = (
+     "unilab.envs.manipulation.allegro_inhand",
++    "unilab.envs.manipulation.leap_inhand",
+     "unilab.envs.manipulation.sharpa_inhand",
+     "unilab.envs.manipulation.stewart",
+ )
+diff --git a/src/unilab/envs/manipulation/allegro_inhand/base.py b/src/unilab/envs/manipulation/allegro_inhand/base.py
+index bc71df8b..f9599ec3 100644
+--- a/src/unilab/envs/manipulation/allegro_inhand/base.py
++++ b/src/unilab/envs/manipulation/allegro_inhand/base.py
+@@ -34,6 +34,10 @@ class AllegroBaseCfg(EnvCfg):
+ 
+ class AllegroBaseEnv(NpEnv):
+     _NUM_HAND_DOF: int = 16
++    _BASE_BODY_NAME: str = "palm"
++    _OBJECT_BODY_NAME: str = "ball"
++    _LOG_PREFIX: str = "allegro_inhand"
++    _GRASP_GENERATION_TASK: str | None = "allegro_inhand_grasp"
+     _FINGERTIP_BODY_NAMES: tuple[str, ...] = ("ff_tip", "mf_tip", "rf_tip", "th_tip")
+     _cfg: AllegroBaseCfg
+     _init_qpos: np.ndarray
+@@ -60,7 +64,7 @@ class AllegroBaseEnv(NpEnv):
+         self.nq = int(self._init_qpos.shape[0])
+         self.nv = int(self._init_qvel.shape[0])
+ 
+-        self._ball_body_ids = self._backend.get_body_ids(["ball"])
++        self._ball_body_ids = self._backend.get_body_ids([self._OBJECT_BODY_NAME])
+         self._fingertip_body_ids = self._backend.get_body_ids(self._FINGERTIP_BODY_NAMES)
+ 
+     def _init_action_space(self) -> None:
+diff --git a/src/unilab/envs/manipulation/allegro_inhand/rotation.py b/src/unilab/envs/manipulation/allegro_inhand/rotation.py
+index 74173a80..6217ef5f 100644
+--- a/src/unilab/envs/manipulation/allegro_inhand/rotation.py
++++ b/src/unilab/envs/manipulation/allegro_inhand/rotation.py
+@@ -148,20 +148,27 @@ class AllegroRotationDomainRandomizationProvider(DomainRandomizationProvider):
+ 
+         cache_path = resolve_grasp_cache_path(env.cfg.grasp_cache_path)
+         if not cache_path.exists():
++            generation_task = getattr(env, "_GRASP_GENERATION_TASK", "allegro_inhand_grasp")
++            log_prefix = getattr(env, "_LOG_PREFIX", "allegro_inhand")
++            generation_hint = (
++                f"Generate one with `uv run train --algo ppo --task {generation_task} "
++                "--sim mujoco training.no_play=true`, or "
++                if generation_task is not None
++                else ""
++            )
+             print(
+-                "[allegro_inhand] Grasp cache is missing; no Hugging Face download will be "
+-                f"attempted. Expected local cache: {cache_path}. Generate one with "
+-                "`uv run train --algo ppo --task allegro_inhand_grasp --sim mujoco "
+-                "training.no_play=true`, or point `env.grasp_cache_path` at an existing "
+-                "local cache."
++                f"[{log_prefix}] Grasp cache is missing; no Hugging Face download will "
++                f"be attempted. Expected local cache: {cache_path}. {generation_hint}Point "
++                "`env.grasp_cache_path` at an existing local cache."
+             )
+             env._grasp_cache = None
+             env._grasp_cache_loaded = True
+             return None
+         env._grasp_cache = np.load(cache_path).astype(np.float64)
+         env._grasp_cache_loaded = True
++        log_prefix = getattr(env, "_LOG_PREFIX", "allegro_inhand")
+         print(
+-            "[allegro_inhand] Loaded grasp cache: "
++            f"[{log_prefix}] Loaded grasp cache: "
+             f"{cache_path}, shape={env._grasp_cache.shape}, dtype={env._grasp_cache.dtype}"
+         )
+         return cast(np.ndarray | None, env._grasp_cache)
+@@ -273,7 +280,7 @@ class AllegroRotationPPO(AllegroBaseEnv):
+             cfg.scene,
+             num_envs,
+             cfg.sim_dt,
+-            base_name="palm",
++            base_name=self._BASE_BODY_NAME,
+             push_body_name=cfg.domain_rand.push_body_name,
+             add_body_sensors=True,
+             position_actuator_gains={
+@@ -294,7 +301,10 @@ class AllegroRotationPPO(AllegroBaseEnv):
+         self._grasp_cache_loaded = False
+ 
+         self._init_reward_functions()
+-        self._init_domain_randomization(AllegroRotationDomainRandomizationProvider())
++        self._init_domain_randomization(self._make_domain_randomization_provider())
++
++    def _make_domain_randomization_provider(self) -> DomainRandomizationProvider:
++        return AllegroRotationDomainRandomizationProvider()
+ 
+     @property
+     def obs_groups_spec(self) -> dict[str, int]:
+diff --git a/src/unilab/tools/import_robot.py b/src/unilab/tools/import_robot.py
+index 135f476e..f3602014 100644
+--- a/src/unilab/tools/import_robot.py
++++ b/src/unilab/tools/import_robot.py
+@@ -284,6 +284,17 @@ def _scene_keyframe_values(robot_xml: Path) -> tuple[list[float], list[float]]:
+     return qpos, ctrl
+ 
+ 
++def _robot_has_free_joint(robot_xml: Path) -> bool:
++    root = ET.parse(robot_xml).getroot()
++    root_body = root.find("./worldbody/body")
++    if root_body is None:
++        raise ValueError("robot XML must define a root body under <worldbody>")
++    return (
++        root_body.find("./freejoint") is not None
++        or root_body.find("./joint[@type='free']") is not None
++    )
++
++
+ def _write_scene_xml(robot_xml: Path, scene_xml: Path, robot_name: str) -> None:
+     qpos, ctrl = _scene_keyframe_values(robot_xml)
+     root = ET.Element("mujoco", {"model": f"{robot_name} scene"})
+@@ -511,7 +522,11 @@ def _compile_tuning_scene(robot_xml: Path, scene_xml: Path) -> Any:
+     import mujoco
+ 
+     mujoco_api: Any = mujoco
+-    merged = _materialize_tuning_scene(robot_xml, scene_xml)
++    merged = _materialize_tuning_scene(
++        robot_xml,
++        scene_xml,
++        add_height_joint=_robot_has_free_joint(robot_xml),
++    )
+     try:
+         return mujoco_api.MjModel.from_xml_path(str(merged))
+     finally:
+diff --git a/src/unilab/utils/support_matrix.py b/src/unilab/utils/support_matrix.py
+index d392c74b..5454cc7e 100644
+--- a/src/unilab/utils/support_matrix.py
++++ b/src/unilab/utils/support_matrix.py
+@@ -29,8 +29,11 @@ _TASK_ORDER = {
+     "x2_wall_flip_tracking": 8,
+     "allegro_inhand": 9,
+     "allegro_sac": 10,
+-    "sharpa_inhand": 11,
+-    "sharpa_inhand_grasp": 12,
++    "leap_inhand": 11,
++    "leap_inhand_ball": 12,
++    "leap_inhand_toss": 13,
++    "sharpa_inhand": 14,
++    "sharpa_inhand_grasp": 15,
+ }
+ _TASK_LABELS = {
+     "go1_joystick_flat": "Go1 joystick",
+@@ -44,6 +47,9 @@ _TASK_LABELS = {
+     "x2_wall_flip_tracking": "X2 wall flip tracking",
+     "allegro_inhand": "Allegro in-hand",
+     "allegro_sac": "Allegro SAC in-hand",
++    "leap_inhand": "LEAP Hand in-hand",
++    "leap_inhand_ball": "LEAP Hand ball rotation",
++    "leap_inhand_toss": "LEAP Hand toss and catch",
+     "sharpa_inhand": "Sharpa in-hand",
+     "sharpa_inhand_grasp": "Sharpa in-hand grasp",
+ }
+diff --git a/tests/base/test_sim_backend_smoke.py b/tests/base/test_sim_backend_smoke.py
+index 4785d8ae..57b6e446 100644
+--- a/tests/base/test_sim_backend_smoke.py
++++ b/tests/base/test_sim_backend_smoke.py
+@@ -32,6 +32,7 @@ BASIC_ROBOTS = [
+ _G1 = dict(model_file=_xml("g1"), base_name="pelvis")
+ _ALLEGRO = dict(model_file=_xml("allegro_hand", "scene.xml"), base_name="palm")
+ _SHARPA = dict(model_file=_xml("sharpa_wave", "scene.xml"), base_name="right_hand_C_MC")
++_LEAP = dict(model_file=_xml("leap_hand", "scene_ball.xml"), base_name="palm_lower")
+ 
+ NUM_ENVS = 2
+ SIM_DT = 0.005
+@@ -369,6 +370,81 @@ def test_mujoco_metadata_getters_return_stable_copies():
+     assert not np.isclose(dof_armature[-1], model.dof_armature[-1])
+ 
+ 
++def test_mujoco_contact_penetration_depths_for_leap_cache_rows():
++    from unilab.base.backend.mujoco.backend import MuJoCoBackend
++
++    bkd = MuJoCoBackend(
++        SceneCfg(model_file=_LEAP["model_file"]),
++        NUM_ENVS,
++        SIM_DT,
++        base_name=_LEAP["base_name"],
++    )
++    bkd.materialize()
++    cache = np.load(
++        ASSETS_ROOT_PATH / "robots" / "leap_hand" / "caches" / "cube_grasp_s10_1k.npy"
++    )
++    env_ids = np.arange(NUM_ENVS, dtype=np.int32)
++    bkd.set_state(env_ids, cache[:NUM_ENVS], np.zeros((NUM_ENVS, bkd.model.nv)))
++
++    palm_id = bkd.get_body_id("palm_lower")
++    object_id = bkd.get_body_id("leap_object")
++    self_depths, object_depths = bkd.get_contact_penetration_depths(
++        env_ids,
++        self_collision_body_ids=bkd.get_body_subtree_ids(palm_id),
++        object_body_id=object_id,
++    )
++    details = bkd.get_contact_penetration_details(
++        env_ids,
++        self_collision_body_ids=bkd.get_body_subtree_ids(palm_id),
++        object_body_id=object_id,
++    )
++
++    _shape(self_depths, NUM_ENVS)
++    _shape(object_depths, NUM_ENVS)
++    assert np.all(self_depths >= 0.0)
++    assert np.all(object_depths >= 0.0)
++    assert len(details) == NUM_ENVS
++    np.testing.assert_allclose([detail.self_depth for detail in details], self_depths)
++    np.testing.assert_allclose([detail.object_depth for detail in details], object_depths)
++    for env_id, detail in enumerate(details):
++        assert detail.env_id == env_id
++        if detail.self_depth > 0.0:
++            assert detail.self_body_pair is not None
++            assert detail.self_geom_pair is not None
++        if detail.object_depth > 0.0:
++            assert detail.object_body_pair is not None
++            assert detail.object_geom_pair is not None
++
++
++def test_mujoco_geom_pair_distances_for_leap_fingertips():
++    from unilab.base.backend.mujoco.backend import MuJoCoBackend
++
++    bkd = MuJoCoBackend(
++        SceneCfg(model_file=_LEAP["model_file"]),
++        NUM_ENVS,
++        SIM_DT,
++        base_name=_LEAP["base_name"],
++    )
++    bkd.materialize()
++    env_ids = np.arange(NUM_ENVS, dtype=np.int32)
++    qpos = np.broadcast_to(bkd.get_keyframe_qpos("home"), (NUM_ENVS, bkd.model.nq)).copy()
++    bkd.set_state(env_ids, qpos, np.zeros((NUM_ENVS, bkd.model.nv)))
++    object_geom_id = bkd.get_geom_id("leap_object_col")
++    pairs = np.asarray(
++        [
++            [bkd.get_geom_id("index_tip_col"), object_geom_id],
++            [bkd.get_geom_id("thumb_tip_col"), object_geom_id],
++        ],
++        dtype=np.int32,
++    )
++
++    distances = bkd.get_geom_pair_distances(env_ids, pairs, max_distance=0.2)
++
++    _shape(distances, NUM_ENVS, 2)
++    assert np.all(np.isfinite(distances))
++    np.testing.assert_allclose(distances[0], distances[1])
++
++
+ def test_mujoco_copy_body_state_matches_split_queries():
+     from unilab.base.backend.mujoco.backend import MuJoCoBackend
+ 
+diff --git a/tests/scripts/test_support_matrix.py b/tests/scripts/test_support_matrix.py
+index caa26308..c1191b1d 100644
+--- a/tests/scripts/test_support_matrix.py
++++ b/tests/scripts/test_support_matrix.py
+@@ -48,3 +48,20 @@ def test_support_matrix_marks_sharpa_motrix_phase1_support():
+ 
+     assert allegro_appo_row.cells["mujoco"].level == EvidenceLevel.TESTED
+     assert allegro_appo_row.cells["motrix"].level == EvidenceLevel.TESTED
++
++
++def test_support_matrix_marks_leap_ppo_backends_as_tested():
++    row = _row("PPO (torch)", "leap_inhand")
++
++    assert row.cells["mujoco"].level == EvidenceLevel.TESTED
++    assert row.cells["motrix"].level == EvidenceLevel.TESTED
++
++    ball_row = _row("PPO (torch)", "leap_inhand_ball")
++
++    assert ball_row.cells["mujoco"].level == EvidenceLevel.TESTED
++    assert ball_row.cells["motrix"].level == EvidenceLevel.TESTED
++
++    toss_row = _row("PPO (torch)", "leap_inhand_toss")
++
++    assert toss_row.cells["mujoco"].level == EvidenceLevel.TESTED
++    assert toss_row.cells["motrix"].level == EvidenceLevel.TESTED
+diff --git a/tests/test_import_robot.py b/tests/test_import_robot.py
+index 9aaa4833..d3760bb9 100644
+--- a/tests/test_import_robot.py
++++ b/tests/test_import_robot.py
+@@ -160,6 +160,57 @@ def test_write_scene_xml_creates_only_home_keyframe(tmp_path: Path) -> None:
+     assert root.find("./sensor") is None
+ 
+ 
++def test_robot_has_free_joint_distinguishes_fixed_base(tmp_path: Path) -> None:
++    mod = _load_script()
++    floating = tmp_path / "floating.xml"
++    fixed = tmp_path / "fixed.xml"
++    floating.write_text(
++        "<mujoco><worldbody><body><freejoint/></body></worldbody></mujoco>",
++        encoding="utf-8",
++    )
++    fixed.write_text(
++        "<mujoco><worldbody><body><joint name='finger'/></body></worldbody></mujoco>",
++        encoding="utf-8",
++    )
++
++    assert mod._robot_has_free_joint(floating)
++    assert not mod._robot_has_free_joint(fixed)
++
++
++def test_compile_tuning_scene_skips_height_joint_for_fixed_base(
++    tmp_path: Path, monkeypatch: Any
++) -> None:
++    mod = _load_script()
++    robot_xml = tmp_path / "fixed.xml"
++    scene_xml = tmp_path / "scene.xml"
++    robot_xml.write_text(
++        "<mujoco><worldbody><body><joint name='finger'/></body></worldbody></mujoco>",
++        encoding="utf-8",
++    )
++    scene_xml.write_text("<mujoco/>", encoding="utf-8")
++    merged = tmp_path / "merged.xml"
++    merged.write_text("<mujoco/>", encoding="utf-8")
++    calls: list[bool] = []
++
++    def fake_materialize(*args: Any, add_height_joint: bool, **kwargs: Any) -> Path:
++        del args, kwargs
++        calls.append(add_height_joint)
++        return merged
++
++    class FakeModel:
++        @staticmethod
++        def from_xml_path(path: str) -> object:
++            assert path == str(merged)
++            return object()
++
++    monkeypatch.setattr(mod, "_materialize_tuning_scene", fake_materialize)
++    monkeypatch.setitem(__import__("sys").modules, "mujoco", type("M", (), {"MjModel": FakeModel}))
++
++    mod._compile_tuning_scene(robot_xml, scene_xml)
++
++    assert calls == [False]
++
++
+ def test_tuning_scene_visuals_add_floor_and_light() -> None:
+     mod = _load_script()
+     root = ET.fromstring("<mujoco><worldbody /></mujoco>")
+diff --git a/tests/training/test_sim2sim_resolver.py b/tests/training/test_sim2sim_resolver.py
+index ef31e413..9c76a681 100644
+--- a/tests/training/test_sim2sim_resolver.py
++++ b/tests/training/test_sim2sim_resolver.py
+@@ -345,3 +345,62 @@ def test_g1_walk_flat_cross_backend_play_is_guarded(tmp_path):
+     motrix = _compose_task("g1_walk_flat/motrix")
+     with pytest.raises(CrossBackendIncompatibleError):
+         resolve_sim2sim_config(tmp_path, motrix)
++
++
++def test_leap_inhand_cross_backend_contract_is_transferable(tmp_path):
++    snapshot = extract_contract_snapshot(_compose_task("leap_inhand/mujoco"))
++    (tmp_path / "run_config.json").write_text(
++        json.dumps({"contract_snapshot": snapshot}), encoding="utf-8"
++    )
++
++    motrix = _compose_task("leap_inhand/motrix")
++
++    assert resolve_sim2sim_config(tmp_path, motrix) is motrix
++
++
++def test_leap_inhand_ball_matches_allegro_reward_and_transfers(tmp_path):
++    allegro = _compose_task("allegro_inhand/mujoco")
++    mujoco = _compose_task("leap_inhand_ball/mujoco")
++
++    assert OmegaConf.to_container(mujoco.reward.scales, resolve=True) == OmegaConf.to_container(
++        allegro.reward.scales, resolve=True
++    )
++    assert mujoco.reward.angvel_clip_min == allegro.reward.angvel_clip_min
++    assert mujoco.reward.angvel_clip_max == allegro.reward.angvel_clip_max
++    assert mujoco.reward.reset_z_threshold == pytest.approx(0.4)
++    assert OmegaConf.to_container(mujoco.algo, resolve=True) == OmegaConf.to_container(
++        allegro.algo, resolve=True
++    )
++    assert mujoco.env.control_config.action_scale == pytest.approx(1.0 / 24.0)
++    assert mujoco.env.control_config.kp == pytest.approx(3.0)
++    assert mujoco.env.grasp_cache_path == "robots/leap_hand/caches/cube_grasp_s10_1k.npy"
++
++    snapshot = extract_contract_snapshot(mujoco)
++    (tmp_path / "run_config.json").write_text(
++        json.dumps({"contract_snapshot": snapshot}), encoding="utf-8"
++    )
++    motrix = _compose_task("leap_inhand_ball/motrix")
++
++    assert motrix.env.sim_dt == pytest.approx(0.01)
++    assert resolve_sim2sim_config(tmp_path, motrix) is motrix
++
++
++def test_leap_inhand_toss_cross_backend_contract_is_transferable(tmp_path):
++    mujoco = _compose_task("leap_inhand_toss/mujoco")
++    snapshot = extract_contract_snapshot(mujoco)
++    (tmp_path / "run_config.json").write_text(
++        json.dumps({"contract_snapshot": snapshot}), encoding="utf-8"
++    )
++
++    motrix = _compose_task("leap_inhand_toss/motrix")
++
++    assert mujoco.algo.save_interval == 25
++    assert motrix.algo.save_interval == 25
++    assert mujoco.env.max_episode_seconds == 15.0
++    assert motrix.env.max_episode_seconds == 15.0
++    assert mujoco.env.support_timeout_seconds == motrix.env.support_timeout_seconds == 5.0
++    assert mujoco.env.flight_timeout_seconds == motrix.env.flight_timeout_seconds == 1.2
++    assert mujoco.env.impact_timeout_seconds == motrix.env.impact_timeout_seconds == 0.5
++    assert mujoco.env.return_timeout_seconds == motrix.env.return_timeout_seconds == 2.5
++    assert mujoco.env.capture_timeout_seconds == motrix.env.capture_timeout_seconds == 3.0
++    assert resolve_sim2sim_config(tmp_path, motrix) is motrix

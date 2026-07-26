@@ -1,0 +1,22 @@
+{
+  "status": "completed",
+  "completed_iterations": 200,
+  "total_env_steps": 26345472,
+  "final_mean_reward": 0.3841251167654991,
+  "best_mean_reward": 0.6723981499671936,
+  "mean_episode_length": 34.19,
+  "last_checkpoint": "D:\\UniLab\\logs\\rsl_rl_ppo\\AllegroInhandRotation\\2026-07-16_17-03-43_mujoco\\model_200.pt",
+  "training_wall_time_sec": 5491.169929027557,
+  "play_video_path": "D:\\UniLab\\logs\\rsl_rl_ppo\\AllegroInhandRotation\\2026-07-16_17-03-43_mujoco\\play_video.mp4",
+  "algo": "ppo",
+  "task": "AllegroInhandRotation",
+  "sim_backend": "mujoco",
+  "log_dir": "D:\\UniLab\\logs\\rsl_rl_ppo\\AllegroInhandRotation\\2026-07-16_17-03-43_mujoco",
+  "start_time_utc": "2026-07-17T00:03:43.366738+00:00",
+  "end_time_utc": "2026-07-17T01:36:22.202396+00:00",
+  "wall_time_sec": 5558.642765200013,
+  "wandb_run_url": null,
+  "configured_seed": 1,
+  "configured_seed_source": "algo.seed",
+  "effective_seed": 1
+}
