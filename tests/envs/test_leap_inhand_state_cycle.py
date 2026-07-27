@@ -22,6 +22,7 @@ from unilab.envs.manipulation.leap_inhand.state_cycle_rotation import (
     build_state_cycle_reset_arrays,
     compute_pose_distance,
     compute_pose_progress,
+    compute_state_cycle_reward,
     reset_phase_for_pose,
     rotation_condition,
 )
@@ -115,6 +116,91 @@ def test_a_to_b_requires_positive_net_rotation_threshold() -> None:
     )
 
     np.testing.assert_array_equal(result, [False, True, False])
+
+
+def test_zero_rotation_requirement_accepts_negative_drift() -> None:
+    phases = np.asarray(
+        [StateCyclePhase.READY_TO_A, StateCyclePhase.B_TO_READY],
+        dtype=np.int8,
+    )
+    minimum_angles = np.asarray([0.0, 0.03, 0.0])
+
+    result = rotation_condition(
+        phases,
+        np.asarray([-0.01, -0.02]),
+        minimum_angles,
+    )
+
+    np.testing.assert_array_equal(result, [True, True])
+
+
+def _reward_terms(**overrides: np.ndarray):
+    values = {
+        "phases": np.asarray([StateCyclePhase.A_TO_B], dtype=np.int8),
+        "pose_progress": np.zeros(1),
+        "pose_distance": np.zeros(1),
+        "axis_delta": np.zeros(1),
+        "edge_net_angle_before": np.zeros(1),
+        "required_angle": np.asarray([0.03]),
+        "position_error": np.zeros(1),
+        "ball_linvel": np.zeros((1, 3)),
+        "transition_event": np.zeros(1, dtype=bool),
+        "cycle_event": np.zeros(1, dtype=bool),
+        "timeout": np.zeros(1, dtype=bool),
+        "workspace_failure": np.zeros(1, dtype=bool),
+    }
+    values.update(overrides)
+    return compute_state_cycle_reward(
+        reward_cfg=StateCycleRewardConfig(),
+        ctrl_dt=0.05,
+        **values,
+    )
+
+
+def test_pose_progress_reward_is_not_scaled_by_ctrl_dt() -> None:
+    terms = _reward_terms(pose_progress=np.asarray([0.10]))
+
+    np.testing.assert_allclose(terms.pose_progress, [0.40])
+    np.testing.assert_allclose(terms.total, [0.40])
+
+
+def test_pose_tracking_reward_has_zero_upper_bound_at_target() -> None:
+    at_target = _reward_terms(pose_distance=np.asarray([0.0]))
+    far = _reward_terms(pose_distance=np.asarray([1.0]))
+
+    np.testing.assert_allclose(at_target.pose_tracking, [0.0])
+    assert far.pose_tracking[0] < 0.0
+    assert far.pose_tracking[0] >= -0.25 * 0.05
+
+
+def test_positive_rotation_reward_is_capped_at_remaining_angle() -> None:
+    terms = _reward_terms(
+        axis_delta=np.asarray([0.20]),
+        edge_net_angle_before=np.asarray([0.0]),
+        required_angle=np.asarray([0.03]),
+    )
+
+    np.testing.assert_allclose(terms.rotation_progress, [3.0 * 0.03])
+
+
+def test_reverse_rotation_reward_is_negative() -> None:
+    terms = _reward_terms(axis_delta=np.asarray([-0.01]))
+
+    np.testing.assert_allclose(terms.reverse_rotation, [-4.0 * 0.01])
+    assert terms.total[0] < 0.0
+
+
+def test_workspace_failure_suppresses_timeout_penalty() -> None:
+    both = _reward_terms(
+        timeout=np.asarray([True]),
+        workspace_failure=np.asarray([True]),
+    )
+    timeout_only = _reward_terms(timeout=np.asarray([True]))
+
+    np.testing.assert_allclose(both.timeout, [0.0])
+    np.testing.assert_allclose(both.failure, [-1.0])
+    np.testing.assert_allclose(both.total, [-1.0])
+    np.testing.assert_allclose(timeout_only.timeout, [-0.25])
 
 
 def test_hold_requires_four_consecutive_valid_steps() -> None:
@@ -215,6 +301,6 @@ def test_state_cycle_environment_reset_and_step() -> None:
         assert np.isfinite(next_state.reward).all()
         assert "termination/workspace_rate" in next_state.info["log"]
         assert "termination/timeout_rate" in next_state.info["log"]
+        assert "reward/timeout" in next_state.info["log"]
     finally:
         env.close()
-
