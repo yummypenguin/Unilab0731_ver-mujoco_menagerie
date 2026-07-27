@@ -1,0 +1,9 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_state_cycle/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallStateCycleRotation
+  sim_backend: motrix
+

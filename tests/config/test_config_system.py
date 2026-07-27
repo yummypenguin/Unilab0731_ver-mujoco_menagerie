@@ -295,6 +295,63 @@ def test_v3b_cache_gaiting_config_values(backend: str):
 
 
 @pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+def test_ppo_leap_state_cycle_composes_as_independent_owner(backend: str):
+    cfg = _compose(
+        "ppo",
+        overrides=[f"task=leap_inhand_ball_state_cycle/{backend}"],
+    )
+
+    assert cfg.training.task_name == "LeapInhandBallStateCycleRotation"
+    assert cfg.training.sim_backend == backend
+    assert cfg.env.state_cycle.a_to_b.minimum_net_angle_rad == pytest.approx(0.03)
+    assert cfg.env.state_cycle.ready_to_a.hold_steps == 4
+    assert cfg.env.state_cycle.b_to_ready.target_pose == "ready"
+    assert OmegaConf.select(cfg, "state_cycle") is None
+
+
+@pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+def test_v4_state_cycle_keeps_v3b_training_and_environment_background(backend: str):
+    v3b = _compose(
+        "ppo",
+        overrides=[f"task=leap_inhand_ball_cache_gaiting/{backend}"],
+    )
+    v4 = _compose(
+        "ppo",
+        overrides=[f"task=leap_inhand_ball_state_cycle/{backend}"],
+    )
+
+    for path in (
+        "algo.num_envs",
+        "algo.num_steps_per_env",
+        "algo.max_iterations",
+        "algo.save_interval",
+        "algo.actor.hidden_dims",
+        "algo.actor.activation",
+        "algo.actor.obs_normalization",
+        "algo.actor.distribution_cfg.init_std",
+        "algo.critic.hidden_dims",
+        "algo.critic.activation",
+        "algo.critic.obs_normalization",
+        "algo.algorithm.value_loss_coef",
+        "algo.algorithm.entropy_coef",
+        "algo.algorithm.desired_kl",
+        "env.sim_dt",
+        "env.ctrl_dt",
+        "env.rotation_axis",
+        "env.joint_velocity_scale",
+        "env.noise_config.level",
+        "env.control_config.action_scale",
+        "env.control_config.kp",
+        "env.control_config.kd",
+        "env.domain_rand.randomize_base_mass",
+        "env.domain_rand.random_com",
+        "env.domain_rand.randomize_gravity",
+        "env.domain_rand.push_robots",
+    ):
+        assert OmegaConf.select(v4, path) == OmegaConf.select(v3b, path), path
+
+
+@pytest.mark.parametrize("backend", ["mujoco", "motrix"])
 def test_ppo_leap_direct_rotation_uses_one_fixed_positive_target(backend: str):
     cfg = _compose(
         "ppo",
