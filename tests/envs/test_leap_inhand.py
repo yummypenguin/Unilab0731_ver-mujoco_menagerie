@@ -61,8 +61,10 @@ from unilab.envs.manipulation.leap_inhand.sustained_cache_rotation import (
     compute_allegro_style_rotate_reward,
     compute_index_ring_opposition_quality,
     compute_position_error_reward,
+    compute_position_safety_gate,
     compute_reset_safe_opposition_progress,
     compute_support_pose_distance,
+    compute_target_speed_gated_rotate_reward,
     compute_tip_collision_reference_positions,
 )
 from unilab.envs.manipulation.leap_inhand.sustained_rotation import (
@@ -1532,8 +1534,15 @@ def test_leap_sustained_cache_rotation_reset_and_step(backend: str) -> None:
         assert np.isfinite(next_state.reward).all()
         assert not np.any(next_state.terminated)
         assert "reward/rotate" in next_state.info["log"]
+        assert "reward/rotate_ungated" in next_state.info["log"]
+        assert "reward/failure" in next_state.info["log"]
         assert "reward/obj_linvel" in next_state.info["log"]
         assert "reward/position_error" in next_state.info["log"]
+        assert "rotation/target_speed_rad_s" in next_state.info["log"]
+        assert "rotation/orthogonal_speed_rad_s" in next_state.info["log"]
+        assert "rotation/normalized_progress" in next_state.info["log"]
+        assert "rotation/axis_purity" in next_state.info["log"]
+        assert "rotation/position_gate" in next_state.info["log"]
         assert "object/linvel_l1_m_s" in next_state.info["log"]
         assert "object/position_error_m" in next_state.info["log"]
         assert "contact/fingertip_count" in next_state.info["log"]
@@ -1971,10 +1980,15 @@ def test_sustained_cache_rotation_reward_config_defaults() -> None:
     assert cfg.positive_spin_base_contact_scale == 1.0
     assert cfg.positive_spin_index_contact_scale == 0.0
     assert cfg.positive_spin_middle_contact_scale == 0.0
-    assert cfg.support_pose_progress_scale == 0.25
+    assert cfg.support_pose_progress_scale == 0.0
     assert cfg.support_pose_progress_clip == 0.04
-    assert cfg.opposition_progress_scale == 0.20
+    assert cfg.opposition_progress_scale == 0.0
     assert cfg.opposition_progress_clip == 0.05
+    assert cfg.scales["position_error"] == -6.0
+    assert cfg.scales["failure"] == -1.0
+    assert cfg.position_gate_power == 2.0
+    assert cfg.failure_penalty == 1.0
+    assert cfg.failure_position_radius == 0.030
 
 
 def test_support_shaping_is_not_enabled_for_direct_rotation_reward_config() -> None:
@@ -2086,3 +2100,196 @@ def test_reset_safe_opposition_progress_zeroes_out_step_zero() -> None:
     reward = scale * np.clip(raw_progress, -clip, clip)
     np.testing.assert_allclose(reward, [0.0, 0.01])
     assert reward.dtype == np.float32
+
+
+def test_position_safety_gate_uses_quadratic_grey_zone() -> None:
+    error = np.asarray(
+        [0.0, 0.015, 0.020, 0.0225, 0.025, 0.030, 0.040],
+        dtype=np.float64,
+    )
+    gate = compute_position_safety_gate(
+        error,
+        gate_position_radius=0.015,
+        failure_position_radius=0.030,
+        power=2.0,
+    )
+    np.testing.assert_allclose(
+        gate,
+        [
+            1.0,
+            1.0,
+            (10.0 / 15.0) ** 2,
+            0.25,
+            (5.0 / 15.0) ** 2,
+            0.0,
+            0.0,
+        ],
+    )
+
+
+def test_target_speed_saturation() -> None:
+    ball_angvel = np.asarray(
+        [
+            [0.0, 0.0, -0.60],
+            [0.0, 0.0, -0.30],
+            [0.0, 0.0, 0.00],
+            [0.0, 0.0, 0.15],
+            [0.0, 0.0, 0.30],
+            [0.0, 0.0, 0.47],
+        ],
+        dtype=np.float64,
+    )
+    rotation_axis = np.asarray([0.0, 0.0, 1.0], dtype=np.float64)
+    target_speed = np.full(6, 0.30, dtype=np.float64)
+    orthogonal_tolerance = np.full(6, 0.10, dtype=np.float64)
+    position_gate = np.ones(6, dtype=np.float64)
+
+    (
+        axis_speed,
+        orthogonal_speed,
+        normalized_progress,
+        axis_purity,
+        base_rotate_rate,
+        gated_rotate_rate,
+    ) = compute_target_speed_gated_rotate_reward(
+        ball_angvel,
+        rotation_axis,
+        target_speed,
+        orthogonal_tolerance,
+        position_gate,
+        scale=1.25,
+    )
+
+    np.testing.assert_allclose(
+        gated_rotate_rate,
+        [-0.375, -0.375, 0.0, 0.1875, 0.375, 0.375],
+    )
+
+
+def test_positive_reward_is_position_gated() -> None:
+    ball_angvel = np.asarray(
+        [
+            [0.0, 0.0, 0.30],
+            [0.0, 0.0, 0.30],
+            [0.0, 0.0, 0.30],
+        ],
+        dtype=np.float64,
+    )
+    rotation_axis = np.asarray([0.0, 0.0, 1.0], dtype=np.float64)
+    target_speed = np.full(3, 0.30, dtype=np.float64)
+    orthogonal_tolerance = np.full(3, 0.10, dtype=np.float64)
+    position_gate = np.asarray([1.0, 0.25, 0.0], dtype=np.float64)
+
+    (
+        axis_speed,
+        orthogonal_speed,
+        normalized_progress,
+        axis_purity,
+        base_rotate_rate,
+        gated_rotate_rate,
+    ) = compute_target_speed_gated_rotate_reward(
+        ball_angvel,
+        rotation_axis,
+        target_speed,
+        orthogonal_tolerance,
+        position_gate,
+        scale=1.25,
+    )
+
+    np.testing.assert_allclose(
+        gated_rotate_rate,
+        [0.375, 0.09375, 0.0],
+    )
+
+
+def test_negative_reward_is_not_position_gated() -> None:
+    ball_angvel = np.asarray(
+        [
+            [0.0, 0.0, -0.30],
+            [0.0, 0.0, -0.30],
+            [0.0, 0.0, -0.30],
+        ],
+        dtype=np.float64,
+    )
+    rotation_axis = np.asarray([0.0, 0.0, 1.0], dtype=np.float64)
+    target_speed = np.full(3, 0.30, dtype=np.float64)
+    orthogonal_tolerance = np.full(3, 0.10, dtype=np.float64)
+    position_gate = np.asarray([1.0, 0.25, 0.0], dtype=np.float64)
+
+    (
+        axis_speed,
+        orthogonal_speed,
+        normalized_progress,
+        axis_purity,
+        base_rotate_rate,
+        gated_rotate_rate,
+    ) = compute_target_speed_gated_rotate_reward(
+        ball_angvel,
+        rotation_axis,
+        target_speed,
+        orthogonal_tolerance,
+        position_gate,
+        scale=1.25,
+    )
+
+    np.testing.assert_allclose(
+        gated_rotate_rate,
+        [-0.375, -0.375, -0.375],
+    )
+
+
+def test_axis_purity_scales_positive_rotation() -> None:
+    ball_angvel = np.asarray(
+        [
+            [0.0, 0.0, 0.30],
+            [0.10, 0.0, 0.30],
+            [0.20, 0.0, 0.30],
+        ],
+        dtype=np.float64,
+    )
+    rotation_axis = np.asarray([0.0, 0.0, 1.0], dtype=np.float64)
+    target_speed = np.full(3, 0.30, dtype=np.float64)
+    orthogonal_tolerance = np.full(3, 0.10, dtype=np.float64)
+    position_gate = np.ones(3, dtype=np.float64)
+
+    (
+        axis_speed,
+        orthogonal_speed,
+        normalized_progress,
+        axis_purity,
+        base_rotate_rate,
+        gated_rotate_rate,
+    ) = compute_target_speed_gated_rotate_reward(
+        ball_angvel,
+        rotation_axis,
+        target_speed,
+        orthogonal_tolerance,
+        position_gate,
+        scale=1.25,
+    )
+
+    np.testing.assert_allclose(axis_purity, [1.0, np.exp(-1.0), np.exp(-4.0)])
+    np.testing.assert_allclose(
+        gated_rotate_rate,
+        0.375 * axis_purity,
+    )
+
+
+def test_terminal_penalty_is_not_scaled_by_ctrl_dt() -> None:
+    terminated = np.asarray([False, True], dtype=bool)
+    failure_penalty = 1.0
+    failure_reward = -failure_penalty * terminated.astype(np.float64)
+
+    np.testing.assert_allclose(failure_reward, [0.0, -1.0])
+
+
+def test_sustained_cache_rotation_reward_config_v3_defaults() -> None:
+    cfg = AllegroStyleRotationRewardConfig()
+
+    assert cfg.scales["position_error"] == -6.0
+    assert cfg.scales["failure"] == -1.0
+    assert cfg.position_gate_power == 2.0
+    assert cfg.failure_penalty == 1.0
+    assert cfg.failure_position_radius == 0.030
+    assert cfg.support_pose_progress_scale == 0.0
+    assert cfg.opposition_progress_scale == 0.0

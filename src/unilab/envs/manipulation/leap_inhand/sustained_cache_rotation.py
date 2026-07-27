@@ -17,6 +17,8 @@ from .sustained_rotation import (
     LeapInhandBallSustainedRotationCfg,
     LeapInhandBallSustainedRotationEnv,
     SustainedRotationRewardConfig,
+    compute_anchor_proximity,
+    compute_sustained_spin_terms,
 )
 
 SUPPORT_JOINT_INDICES = np.asarray(
@@ -64,7 +66,7 @@ class AllegroStyleRotationRewardConfig(SustainedRotationRewardConfig):
         default_factory=lambda: {
             "rotate": 1.25,
             "obj_linvel": -0.3,
-            "position_error": -5.0,
+            "position_error": -6.0,
             "spin_progress": 0.0,
             "spin_continuity": 0.0,
             "retention": 0.0,
@@ -73,7 +75,7 @@ class AllegroStyleRotationRewardConfig(SustainedRotationRewardConfig):
             "action_rate": 0.0,
             "torque": 0.0,
             "work": 0.0,
-            "failure": 0.0,
+            "failure": -1.0,
         }
     )
     angvel_clip_min: float = -0.5
@@ -81,10 +83,89 @@ class AllegroStyleRotationRewardConfig(SustainedRotationRewardConfig):
     positive_spin_base_contact_scale: float = 1.0
     positive_spin_index_contact_scale: float = 0.0
     positive_spin_middle_contact_scale: float = 0.0
-    support_pose_progress_scale: float = 0.25
+    support_pose_progress_scale: float = 0.0
     support_pose_progress_clip: float = 0.04
-    opposition_progress_scale: float = 0.20
+    opposition_progress_scale: float = 0.0
     opposition_progress_clip: float = 0.05
+    position_gate_power: float = 2.0
+    failure_penalty: float = 1.0
+    failure_position_radius: float = 0.030
+
+
+def compute_position_safety_gate(
+    position_error: np.ndarray,
+    *,
+    gate_position_radius: float,
+    failure_position_radius: float,
+    power: float,
+) -> np.ndarray:
+    """Return [0, 1] safety gate for positive spin reward."""
+    linear_gate = compute_anchor_proximity(
+        position_error,
+        gate_position_radius,
+        failure_position_radius,
+    )
+    return np.power(linear_gate, power).astype(position_error.dtype, copy=False)
+
+
+def compute_target_speed_gated_rotate_reward(
+    ball_angvel: np.ndarray,
+    rotation_axis: np.ndarray,
+    target_speed: np.ndarray,
+    orthogonal_tolerance: np.ndarray,
+    position_gate: np.ndarray,
+    *,
+    scale: float,
+) -> tuple[
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+    np.ndarray,
+]:
+    """Return target-speed normalized and position-gated rotation rates."""
+    rotation_axis_batch = np.broadcast_to(
+        rotation_axis,
+        ball_angvel.shape,
+    )
+    (
+        axis_speed,
+        orthogonal_speed,
+        normalized_progress,
+        _visible_progress,
+        axis_purity,
+    ) = compute_sustained_spin_terms(
+        ball_angvel,
+        rotation_axis_batch,
+        target_speed,
+        orthogonal_tolerance,
+    )
+
+    rotation_amplitude = scale * target_speed
+
+    positive_progress = np.maximum(normalized_progress, 0.0)
+    positive_rotate_rate = (
+        rotation_amplitude
+        * positive_progress
+        * axis_purity
+        * position_gate
+    )
+
+    negative_progress = np.minimum(normalized_progress, 0.0)
+    negative_rotate_rate = rotation_amplitude * negative_progress
+
+    base_rotate_rate = rotation_amplitude * normalized_progress
+    gated_rotate_rate = positive_rotate_rate + negative_rotate_rate
+
+    return (
+        axis_speed,
+        orthogonal_speed,
+        normalized_progress,
+        axis_purity,
+        base_rotate_rate,
+        gated_rotate_rate,
+    )
 
 
 def compute_support_pose_distance(
@@ -288,6 +369,24 @@ class LeapInhandBallSustainedCacheRotationCfg(
                 and reward_config.opposition_progress_clip > 0.0
             ):
                 raise ValueError("progress clips must be finite and positive")
+            if not (
+                np.isfinite(reward_config.position_gate_power)
+                and reward_config.position_gate_power > 0.0
+            ):
+                raise ValueError("position_gate_power must be positive and finite")
+            if not (
+                np.isfinite(reward_config.failure_penalty)
+                and reward_config.failure_penalty >= 0.0
+            ):
+                raise ValueError("failure_penalty must be finite and non-negative")
+            if not (
+                self.curriculum.gate_position_radius
+                < reward_config.failure_position_radius
+                < self.termination_workspace_radius
+            ):
+                raise ValueError(
+                    "reward position radii must satisfy gate_position_radius < failure_position_radius < termination_workspace_radius"
+                )
         if not np.isfinite(self.termination_workspace_radius) or (
             self.termination_workspace_radius <= 0.0
         ):
@@ -327,53 +426,83 @@ class LeapInhandBallSustainedCacheRotationEnv(
             AllegroStyleRotationRewardConfig,
         )
 
+        anchor_pos = np.asarray(info["rotation_anchor_pos"], dtype=dtype)
+        position_error, position_error_reward = compute_position_error_reward(
+            ball_pos,
+            anchor_pos,
+            scale=(
+                self._reward_cfg.scales["position_error"]
+                if support_shaping_enabled
+                else self._reward_cfg.scales.get("position_error", -6.0)
+            ),
+        )
+        terminated = self._compute_terminated(position_error)
+
         if support_shaping_enabled:
             rotate_scale = self._reward_cfg.scales["rotate"]
-            clip_min = self._reward_cfg.angvel_clip_min
-            clip_max = self._reward_cfg.angvel_clip_max
             base_contact_scale = self._reward_cfg.positive_spin_base_contact_scale
             index_contact_scale = self._reward_cfg.positive_spin_index_contact_scale
             middle_contact_scale = self._reward_cfg.positive_spin_middle_contact_scale
             obj_linvel_scale = self._reward_cfg.scales["obj_linvel"]
-            position_error_scale = self._reward_cfg.scales["position_error"]
+            position_gate_power = self._reward_cfg.position_gate_power
+            failure_position_radius = self._reward_cfg.failure_position_radius
+            failure_penalty = self._reward_cfg.failure_penalty
         else:
             rotate_scale = self._reward_cfg.scales.get("rotate", 1.25)
-            clip_min = getattr(self._reward_cfg, "angvel_clip_min", -0.5)
-            clip_max = getattr(self._reward_cfg, "angvel_clip_max", 0.5)
             base_contact_scale = getattr(self._reward_cfg, "positive_spin_base_contact_scale", 1.0)
             index_contact_scale = getattr(self._reward_cfg, "positive_spin_index_contact_scale", 0.0)
             middle_contact_scale = getattr(self._reward_cfg, "positive_spin_middle_contact_scale", 0.0)
             obj_linvel_scale = self._reward_cfg.scales.get("obj_linvel", -0.3)
-            position_error_scale = self._reward_cfg.scales.get("position_error", -5.0)
+            position_gate_power = getattr(self._reward_cfg, "position_gate_power", 2.0)
+            failure_position_radius = getattr(self._reward_cfg, "failure_position_radius", 0.030)
+            failure_penalty = getattr(self._reward_cfg, "failure_penalty", 1.0)
 
-        clipped_axis_speed, base_rotate_reward = compute_allegro_style_rotate_reward(
+        position_gate = compute_position_safety_gate(
+            position_error,
+            gate_position_radius=self._cfg.curriculum.gate_position_radius,
+            failure_position_radius=failure_position_radius,
+            power=position_gate_power,
+        )
+
+        target_speed = np.full(
+            self._num_envs,
+            self._cfg.curriculum.target_speeds[0],
+            dtype=dtype,
+        )
+        orthogonal_tolerance = np.full(
+            self._num_envs,
+            self._cfg.curriculum.orthogonal_speed_tolerances[0],
+            dtype=dtype,
+        )
+
+        (
+            axis_speed,
+            orthogonal_speed,
+            normalized_progress,
+            axis_purity,
+            base_rotate_reward,
+            gated_rotate_reward,
+        ) = compute_target_speed_gated_rotate_reward(
             ball_angvel,
             self._rotation_axis_w,
+            target_speed,
+            orthogonal_tolerance,
+            position_gate,
             scale=rotate_scale,
-            clip_min=clip_min,
-            clip_max=clip_max,
         )
+
         fingertip_contacts = self._contacts(self._all_env_ids)
         participation_scale, rotate_reward = apply_positive_spin_finger_participation(
-            base_rotate_reward,
+            gated_rotate_reward,
             fingertip_contacts,
             base_contact_scale=base_contact_scale,
             index_contact_scale=index_contact_scale,
             middle_contact_scale=middle_contact_scale,
         )
-        axis_speed = ball_angvel @ self._rotation_axis_w
         linear_speed_l1, obj_linvel_reward = compute_allegro_style_obj_linvel_reward(
             ball_linvel,
             scale=obj_linvel_scale,
         )
-
-        anchor_pos = np.asarray(info["rotation_anchor_pos"], dtype=dtype)
-        position_error, position_error_reward = compute_position_error_reward(
-            ball_pos,
-            anchor_pos,
-            scale=position_error_scale,
-        )
-        terminated = self._compute_terminated(position_error)
 
         palm_contact_bool = self._palm_contacts(self._all_env_ids).astype(bool)
         fingertip_contact_count = np.sum(fingertip_contacts, axis=1)
@@ -382,13 +511,13 @@ class LeapInhandBallSustainedCacheRotationEnv(
             fingertip_contacts=fingertip_contacts.astype(bool),
             palm_contact=palm_contact_bool,
             contact_count=fingertip_contact_count,
-            target_speed=np.full(self._num_envs, 0.30, dtype=dtype),
-            tolerance=np.full(self._num_envs, 0.10, dtype=dtype),
+            target_speed=target_speed,
+            tolerance=orthogonal_tolerance,
             axis_speed=axis_speed,
             axis_speed_ema=axis_speed,
-            orthogonal_speed_ema=np.zeros(self._num_envs, dtype=dtype),
+            orthogonal_speed_ema=orthogonal_speed,
             position_error=position_error,
-            anchor_proximity=np.zeros(self._num_envs, dtype=dtype),
+            anchor_proximity=position_gate,
             retention_ok=np.ones(self._num_envs, dtype=bool),
             no_failure_signal=~terminated,
             stage_valid=np.ones(self._num_envs, dtype=bool),
@@ -472,6 +601,11 @@ class LeapInhandBallSustainedCacheRotationEnv(
             reward += opposition_progress_reward
             info["prev_opposition_potential"] = current_opposition_potential.copy()
 
+        failure_reward = (-failure_penalty * terminated.astype(dtype)).astype(
+            dtype, copy=False
+        )
+        reward += failure_reward
+
         info["curr_dof_pos"] = dof_pos.copy()
         info["curr_ball_pos"] = ball_pos.copy()
         info["curr_ball_quat"] = ball_quat.copy()
@@ -486,15 +620,22 @@ class LeapInhandBallSustainedCacheRotationEnv(
             palm_contact = self._palm_contacts(self._all_env_ids)
             log = {
                 "reward/rotate_base": float(np.mean(base_rotate_reward)),
+                "reward/rotate_ungated": float(np.mean(base_rotate_reward)),
                 "reward/rotate": float(np.mean(rotate_reward)),
                 "reward/finger_participation": float(
                     np.mean(rotate_reward - base_rotate_reward)
                 ),
                 "reward/obj_linvel": float(np.mean(obj_linvel_reward)),
                 "reward/position_error": float(np.mean(position_error_reward)),
+                "reward/failure": float(np.mean(failure_reward)),
                 "reward/total": float(np.mean(reward)),
                 "rotation/axis_speed_rad_s": float(np.mean(axis_speed)),
-                "rotation/clipped_axis_speed_rad_s": float(np.mean(clipped_axis_speed)),
+                "rotation/clipped_axis_speed_rad_s": float(np.mean(axis_speed)),
+                "rotation/target_speed_rad_s": float(np.mean(target_speed)),
+                "rotation/orthogonal_speed_rad_s": float(np.mean(orthogonal_speed)),
+                "rotation/normalized_progress": float(np.mean(normalized_progress)),
+                "rotation/axis_purity": float(np.mean(axis_purity)),
+                "rotation/position_gate": float(np.mean(position_gate)),
                 "rotation/positive_spin_participation_scale": float(
                     np.mean(participation_scale)
                 ),
@@ -567,7 +708,9 @@ __all__ = [
     "compute_allegro_style_rotate_reward",
     "compute_index_ring_opposition_quality",
     "compute_position_error_reward",
+    "compute_position_safety_gate",
     "compute_reset_safe_opposition_progress",
     "compute_support_pose_distance",
+    "compute_target_speed_gated_rotate_reward",
     "compute_tip_collision_reference_positions",
 ]

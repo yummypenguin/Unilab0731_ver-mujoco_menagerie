@@ -11,7 +11,7 @@ reward:
   scales:
     rotate: 1.25
     obj_linvel: -0.3
-    position_error: -5.0
+    position_error: -6.0
     spin_progress: 0.0
     spin_continuity: 0.0
     retention: 0.0
@@ -20,16 +20,24 @@ reward:
     action_rate: 0.0
     torque: 0.0
     work: 0.0
-    failure: 0.0
+    failure: -1.0
+
+  # Legacy fields retained for config compatibility.
   angvel_clip_min: -0.5
   angvel_clip_max: 0.5
+
   positive_spin_base_contact_scale: 1.0
   positive_spin_index_contact_scale: 0.0
   positive_spin_middle_contact_scale: 0.0
-  support_pose_progress_scale: 0.25
+
+  # V3-A disables fixed-pose and index-ring delta shaping.
+  support_pose_progress_scale: 0.0
   support_pose_progress_clip: 0.04
-  opposition_progress_scale: 0.20
+  opposition_progress_scale: 0.0
   opposition_progress_clip: 0.05
+
+  position_gate_power: 2.0
+
   spin_progress_scale: 0.0
   spin_continuity_penalty_scale: 0.0
   direct_spin_reward: false
@@ -42,7 +50,9 @@ reward:
   stage_bonuses: []
   positive_spin_retention_floors: [1.0]
   final_success_bonus: 0.0
-  failure_penalty: 0.0
+
+  failure_penalty: 1.0
+  failure_position_radius: 0.030
 
 env:
   reset_source: cache
