@@ -23,6 +23,7 @@ from unilab.envs.manipulation.leap_inhand.state_cycle_rotation import (
     compute_pose_distance,
     compute_pose_progress,
     compute_state_cycle_reward,
+    compute_timeout_event,
     reset_phase_for_pose,
     rotation_condition,
 )
@@ -139,6 +140,7 @@ def _reward_terms(**overrides: np.ndarray):
         "phases": np.asarray([StateCyclePhase.A_TO_B], dtype=np.int8),
         "pose_progress": np.zeros(1),
         "pose_distance": np.zeros(1),
+        "phase_start_pose_distance": np.zeros(1),
         "axis_delta": np.zeros(1),
         "edge_net_angle_before": np.zeros(1),
         "required_angle": np.asarray([0.03]),
@@ -201,6 +203,32 @@ def test_workspace_failure_suppresses_timeout_penalty() -> None:
     np.testing.assert_allclose(both.failure, [-1.0])
     np.testing.assert_allclose(both.total, [-1.0])
     np.testing.assert_allclose(timeout_only.timeout, [-0.25])
+
+
+def test_timeout_claws_back_net_phase_pose_progress() -> None:
+    terms = _reward_terms(
+        pose_progress=np.asarray([0.10]),
+        pose_distance=np.asarray([0.0]),
+        phase_start_pose_distance=np.asarray([0.10]),
+        timeout=np.asarray([True]),
+    )
+
+    np.testing.assert_allclose(terms.pose_progress, [0.40])
+    np.testing.assert_allclose(terms.timeout, [-0.65])
+    np.testing.assert_allclose(terms.total, [-0.25])
+
+
+def test_last_legal_step_can_succeed_before_timeout() -> None:
+    phase_steps = np.asarray([30, 30], dtype=np.uint32)
+    timeout_steps = np.asarray([30, 30], dtype=np.uint32)
+    timeout = compute_timeout_event(
+        phase_steps,
+        timeout_steps,
+        transition_event=np.asarray([True, False]),
+        workspace_failure=np.asarray([False, False]),
+    )
+
+    np.testing.assert_array_equal(timeout, [False, True])
 
 
 def test_hold_requires_four_consecutive_valid_steps() -> None:
@@ -302,5 +330,46 @@ def test_state_cycle_environment_reset_and_step() -> None:
         assert "termination/workspace_rate" in next_state.info["log"]
         assert "termination/timeout_rate" in next_state.info["log"]
         assert "reward/timeout" in next_state.info["log"]
+    finally:
+        env.close()
+
+
+def test_recorded_waypoints_settle_without_palm_contact() -> None:
+    pytest.importorskip("mujoco")
+    try:
+        from mujoco.batch_env import BatchEnvPool as _  # noqa: F401
+    except Exception:
+        pytest.skip("mujoco.batch_env is unavailable")
+
+    ensure_registries()
+    env = registry.make(
+        "LeapInhandBallStateCycleRotation",
+        sim_backend="mujoco",
+        num_envs=1,
+        env_cfg_override={
+            "sim_dt": 0.005,
+            "ctrl_dt": 0.05,
+            "reward_config": asdict(StateCycleRewardConfig()),
+            "state_cycle": asdict(StateCycleConfig()),
+        },
+    )
+    try:
+        for pose_name in RESET_POSE_NAMES:
+            env._sample_reset_pose_names = (
+                lambda num_reset, name=pose_name: [name] * num_reset
+            )
+            env.reset(np.asarray([0], dtype=np.int32))
+            for _ in range(5):
+                env.step(np.zeros((1, 16), dtype=np.float32))
+            fingertip_contacts = env._contacts(np.asarray([0], dtype=np.int32))[0]
+            palm_contact = bool(
+                env._palm_contacts(np.asarray([0], dtype=np.int32))[0] > 0.5
+            )
+            print(
+                f"{pose_name}: fingertips={fingertip_contacts.astype(int).tolist()} "
+                f"palm={int(palm_contact)}"
+            )
+            assert np.sum(fingertip_contacts) >= 2, pose_name
+            assert not palm_contact, pose_name
     finally:
         env.close()

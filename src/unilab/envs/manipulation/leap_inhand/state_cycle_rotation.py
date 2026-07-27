@@ -187,6 +187,7 @@ def compute_state_cycle_reward(
     phases: np.ndarray,
     pose_progress: np.ndarray,
     pose_distance: np.ndarray,
+    phase_start_pose_distance: np.ndarray,
     axis_delta: np.ndarray,
     edge_net_angle_before: np.ndarray,
     required_angle: np.ndarray,
@@ -239,7 +240,14 @@ def compute_state_cycle_reward(
     )
     cycle_event_reward = reward_cfg.cycle_success_bonus * np.asarray(cycle_event)
     timeout_event = np.asarray(timeout) & ~np.asarray(workspace_failure)
-    timeout_reward = -reward_cfg.timeout_penalty * timeout_event
+    phase_pose_progress = np.maximum(
+        np.asarray(phase_start_pose_distance) - np.asarray(pose_distance),
+        0.0,
+    )
+    timeout_reward = -(
+        reward_cfg.timeout_penalty
+        + reward_cfg.pose_progress_scale * phase_pose_progress
+    ) * timeout_event
     failure_reward = -reward_cfg.failure_penalty * np.asarray(workspace_failure)
     total = (
         pose_progress_reward
@@ -265,6 +273,20 @@ def compute_state_cycle_reward(
         timeout=timeout_reward,
         failure=failure_reward,
         total=total,
+    )
+
+
+def compute_timeout_event(
+    phase_steps: np.ndarray,
+    timeout_steps: np.ndarray,
+    transition_event: np.ndarray,
+    workspace_failure: np.ndarray,
+) -> np.ndarray:
+    """Allow success on the final legal step and keep failures exclusive."""
+    return (
+        (np.asarray(phase_steps) >= np.asarray(timeout_steps))
+        & ~np.asarray(transition_event)
+        & ~np.asarray(workspace_failure)
     )
 
 
@@ -403,6 +425,7 @@ class LeapStateCycleResetProvider(DomainRandomizationProvider):
             "state_cycle_edge_start_quat": np.asarray(qpos[:, 19:23], dtype=dtype).copy(),
             "state_cycle_edge_net_angle": np.zeros(num_reset, dtype=dtype),
             "state_cycle_prev_pose_distance": previous_distance.astype(dtype),
+            "state_cycle_phase_start_pose_distance": previous_distance.astype(dtype).copy(),
             "state_cycle_cycles_completed": np.zeros(num_reset, dtype=np.uint32),
             "state_cycle_transition_success": np.zeros(num_reset, dtype=bool),
             "state_cycle_timeout": np.zeros(num_reset, dtype=bool),
@@ -648,28 +671,36 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             ball_pos - np.asarray(info["rotation_anchor_pos"], dtype=dtype), axis=1
         )
         workspace_failure = workspace_error > self._cfg.termination_workspace_radius
-        timeout = phase_steps >= self._timeout_steps[phases_before]
-        terminated = workspace_failure | timeout
         rotation_ok = rotation_condition(
             phases_before,
             edge_net_angle,
             self._minimum_angles,
         )
         palm_contact = self._palm_contacts(self._all_env_ids) > 0.5
-        transition_valid = (
+        raw_transition_valid = (
             (pose_distance <= pose_tolerance)
             & (position_error <= position_tolerance)
             & (ball_speed <= max_ball_speed)
             & (contact_count >= minimum_contacts)
             & rotation_ok
             & ~palm_contact
-            & ~terminated
+            & ~workspace_failure
         )
         advance = advance_state_cycle(
             phases_before,
             np.asarray(info["state_cycle_success_hold_steps"], dtype=np.uint32),
-            transition_valid,
+            raw_transition_valid,
             self._hold_steps_required,
+        )
+        timeout = compute_timeout_event(
+            phase_steps,
+            self._timeout_steps[phases_before],
+            advance.transition_event,
+            workspace_failure,
+        )
+        terminated = workspace_failure | timeout
+        phase_start_pose_distance = np.asarray(
+            info["state_cycle_phase_start_pose_distance"], dtype=dtype
         )
 
         reward_terms = compute_state_cycle_reward(
@@ -678,6 +709,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             phases=phases_before,
             pose_progress=pose_progress,
             pose_distance=pose_distance,
+            phase_start_pose_distance=phase_start_pose_distance,
             axis_delta=axis_delta,
             edge_net_angle_before=edge_net_angle_before,
             required_angle=required_angle,
@@ -709,6 +741,9 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         previous_pose_distance[:] = np.where(
             advance.transition_event, next_pose_distance, pose_distance
         )
+        phase_start_pose_distance[advance.transition_event] = next_pose_distance[
+            advance.transition_event
+        ]
 
         info["state_cycle_phase"] = phases
         info["state_cycle_phase_steps"] = phase_steps
@@ -716,6 +751,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         info["state_cycle_edge_start_quat"] = edge_start_quat
         info["state_cycle_edge_net_angle"] = edge_net_angle
         info["state_cycle_prev_pose_distance"] = previous_pose_distance
+        info["state_cycle_phase_start_pose_distance"] = phase_start_pose_distance
         info["state_cycle_cycles_completed"] = cycles_completed
         info["state_cycle_transition_success"] = advance.transition_event
         info["state_cycle_timeout"] = timeout
