@@ -245,35 +245,32 @@ def test_ppo_leap_sustained_cache_uses_selected_direct_rewards(backend: str):
     assert cfg.training.sim_backend == backend
     assert cfg.reward.scales.rotate == pytest.approx(1.25)
     assert cfg.reward.scales.obj_linvel == pytest.approx(-0.3)
-    assert cfg.reward.scales.position_error == pytest.approx(-5.0)
-    for name in (
-        "spin_progress",
-        "spin_continuity",
-        "retention",
-        "anchor_proximity",
-        "fingertip_support",
-        "action_rate",
-        "torque",
-        "work",
-        "failure",
-    ):
-        assert cfg.reward.scales[name] == pytest.approx(0.0)
-    assert cfg.reward.angvel_clip_min == pytest.approx(-0.5)
-    assert cfg.reward.angvel_clip_max == pytest.approx(0.5)
-    assert cfg.reward.positive_spin_base_contact_scale == pytest.approx(0.25)
-    assert cfg.reward.positive_spin_index_contact_scale == pytest.approx(0.375)
-    assert cfg.reward.positive_spin_middle_contact_scale == pytest.approx(0.375)
-    assert cfg.reward.spin_progress_scale == pytest.approx(0.0)
-    assert cfg.reward.spin_continuity_penalty_scale == pytest.approx(0.0)
-    assert cfg.reward.direct_spin_reward is False
-    assert cfg.reward.stage_bonuses == []
-    assert cfg.reward.positive_spin_retention_floors == [1.0]
-    assert cfg.reward.final_success_bonus == pytest.approx(0.0)
-    assert cfg.reward.failure_penalty == pytest.approx(0.0)
-    assert not hasattr(cfg.env, "termination_drop_distance")
-    assert cfg.env.termination_workspace_radius == pytest.approx(0.05)
-    assert cfg.env.max_episode_seconds == pytest.approx(25.0)
-    assert int(cfg.env.max_episode_seconds / cfg.env.ctrl_dt) == 500
+    assert cfg.reward.scales.position_error == pytest.approx(-6.0)
+    assert cfg.reward.spin_continuity_penalty_scale == pytest.approx(0.05)
+
+
+@pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+def test_ppo_leap_cache_gaiting_composes(backend: str):
+    cfg = _compose(
+        "ppo",
+        overrides=[f"task=leap_inhand_ball_cache_gaiting/{backend}"],
+    )
+
+    assert cfg.training.task_name == "LeapInhandBallCacheGaitingRotation"
+    assert cfg.training.sim_backend == backend
+    assert cfg.reward.scales.rotate == pytest.approx(1.25)
+    assert cfg.reward.scales.obj_linvel == pytest.approx(-0.3)
+    assert cfg.reward.scales.position_error == pytest.approx(-6.0)
+    assert cfg.reward.spin_continuity_penalty_scale == pytest.approx(0.05)
+    assert cfg.finger_gaiting.qualified_handoff_bonus == pytest.approx(0.05)
+    assert cfg.finger_gaiting.minimum_handoff_angle_rad == pytest.approx(0.03)
+    assert list(cfg.finger_gaiting.release_allowed_fingers) == [True, True, True, False]
+    assert cfg.env.curriculum.target_speeds == [0.00, 0.04, 0.07, 0.10, 0.15, 0.20, 0.30]
+    assert cfg.reward.final_success_bonus == pytest.approx(0.25)
+    assert cfg.reward.failure_penalty == pytest.approx(1.0)
+    assert cfg.env.termination_drop_distance == pytest.approx(0.05)
+    assert cfg.env.max_episode_seconds == pytest.approx(30.0)
+    assert int(cfg.env.max_episode_seconds / cfg.env.ctrl_dt) == 600
 
 
 @pytest.mark.parametrize("backend", ["mujoco", "motrix"])

@@ -1,0 +1,8 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_cache_gaiting/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallCacheGaitingRotation
+  sim_backend: motrix

@@ -35,6 +35,15 @@ class FingerGaitingConfig:
     stable_support_scale: float = 0.20
     release_progress_scale: float = 0.05
     qualified_handoff_bonus: float = 0.25
+    minimum_handoff_angle_rad: float = 0.0
+    release_allowed_fingers: list[bool] = field(
+        default_factory=lambda: [
+            True,
+            True,
+            True,
+            True,
+        ]
+    )
 
 
 @dataclass
@@ -45,6 +54,7 @@ class FingerGaitingTransition:
     cooldown_steps: np.ndarray
     qualified_handoff: np.ndarray
     release_progress: np.ndarray
+    release_start_angle: np.ndarray
 
 
 def normalize_finger_gaiting_observation(
@@ -58,37 +68,54 @@ def normalize_finger_gaiting_observation(
     maximum_release_steps: int,
     maximum_target_speed: float,
     maximum_cooldown_steps: int,
+    release_start_angle: np.ndarray | None = None,
+    cumulative_angle: np.ndarray | None = None,
+    minimum_handoff_angle_rad: float = 0.0,
 ) -> np.ndarray:
     """Normalize the complete Markov state used by the handoff reward gate."""
-    active = np.asarray(release_active, dtype=get_global_dtype())
+    dtype = get_global_dtype()
+    active = np.asarray(release_active, dtype=dtype)
     release_progress = np.clip(
-        np.asarray(release_steps, dtype=get_global_dtype()) / max(maximum_release_steps, 1),
+        np.asarray(release_steps, dtype=dtype) / max(maximum_release_steps, 1),
         0.0,
         1.0,
     )
     start_speed = np.clip(
-        np.asarray(release_start_speed, dtype=get_global_dtype()) / max(maximum_target_speed, 1e-6),
+        np.asarray(release_start_speed, dtype=dtype) / max(maximum_target_speed, 1e-6),
         0.0,
         1.0,
     )
     cooldown = np.clip(
-        np.asarray(cooldown_steps, dtype=get_global_dtype()) / max(maximum_cooldown_steps, 1),
+        np.asarray(cooldown_steps, dtype=dtype) / max(maximum_cooldown_steps, 1),
         0.0,
         1.0,
     )[:, None]
-    required = np.asarray(required_handoffs, dtype=get_global_dtype())
+    required = np.asarray(required_handoffs, dtype=dtype)
     handoff_progress = np.zeros_like(required)
     has_requirement = required > 0.0
     handoff_progress[has_requirement] = np.clip(
-        np.asarray(stage_handoffs, dtype=get_global_dtype())[has_requirement]
+        np.asarray(stage_handoffs, dtype=dtype)[has_requirement]
         / required[has_requirement],
         0.0,
         1.0,
     )
+
+    obs_blocks = [active, release_progress, start_speed, cooldown, handoff_progress[:, None]]
+    if release_start_angle is not None and cumulative_angle is not None:
+        start_angle = np.asarray(release_start_angle, dtype=dtype)
+        cum_angle = np.asarray(cumulative_angle, dtype=dtype)[:, None]
+        denom = max(minimum_handoff_angle_rad, 1e-6)
+        release_angle_progress = np.where(
+            active > 0,
+            np.clip((cum_angle - start_angle) / denom, 0.0, 1.0),
+            0.0,
+        )
+        obs_blocks.append(release_angle_progress)
+
     return np.concatenate(
-        [active, release_progress, start_speed, cooldown, handoff_progress[:, None]],
+        obs_blocks,
         axis=1,
-        dtype=get_global_dtype(),
+        dtype=dtype,
     )
 
 
@@ -105,6 +132,8 @@ def advance_finger_gaiting(
     target_speed: np.ndarray,
     cfg: FingerGaitingConfig,
     stationary_handoff_allowed: np.ndarray | None = None,
+    release_start_angle: np.ndarray | None = None,
+    cumulative_angle: np.ndarray | None = None,
 ) -> FingerGaitingTransition:
     """Advance debounced release/recontact state and emit at most one handoff."""
     contacts = np.asarray(contacts, dtype=bool)
@@ -115,6 +144,18 @@ def advance_finger_gaiting(
     cooldown_steps = np.maximum(
         np.asarray(cooldown_steps, dtype=np.uint8).astype(np.int16) - 1, 0
     ).astype(np.uint8)
+
+    dtype = get_global_dtype()
+    if release_start_angle is None:
+        release_start_angle = np.zeros(contacts.shape, dtype=dtype)
+    else:
+        release_start_angle = np.asarray(release_start_angle, dtype=dtype).copy()
+
+    release_allowed_mask = np.asarray(
+        getattr(cfg, "release_allowed_fingers", [True, True, True, True]),
+        dtype=bool,
+    )
+    minimum_handoff_angle_rad = getattr(cfg, "minimum_handoff_angle_rad", 0.0)
 
     contact_count = np.sum(contacts, axis=1)
     other_contacts = contact_count[:, None] - contacts.astype(np.int16)
@@ -136,6 +177,14 @@ def advance_finger_gaiting(
     recovery_ok = ~rotating[:, None] | (
         axis_speed_ema[:, None] >= cfg.recovery_speed_ratio * start_speed_before
     )
+
+    if cumulative_angle is not None:
+        cum_angle = np.asarray(cumulative_angle, dtype=dtype)[:, None]
+        handoff_angle = cum_angle - release_start_angle
+        angle_ok = handoff_angle >= minimum_handoff_angle_rad
+    else:
+        angle_ok = np.ones(contacts.shape, dtype=bool)
+
     qualified = (
         recontact
         & support_ok
@@ -144,6 +193,8 @@ def advance_finger_gaiting(
         & (steps_before >= cfg.minimum_release_steps)
         & (steps_before <= cfg.maximum_release_steps)
         & recovery_ok
+        & angle_ok
+        & release_allowed_mask[None, :]
     )
     has_qualified = np.any(qualified, axis=1)
     first_finger = np.argmax(qualified, axis=1)
@@ -153,6 +204,7 @@ def advance_finger_gaiting(
     active[recontact] = False
     release_steps[recontact] = 0
     release_start_speed[recontact] = 0.0
+    release_start_angle[recontact] = 0.0
 
     continuing = active_before & ~contacts
     valid_release = continuing & support_ok & eligible[:, None]
@@ -163,6 +215,7 @@ def advance_finger_gaiting(
     active[cancelled] = False
     release_steps[cancelled] = 0
     release_start_speed[cancelled] = 0.0
+    release_start_angle[cancelled] = 0.0
 
     start = (
         previous_contacts
@@ -171,10 +224,14 @@ def advance_finger_gaiting(
         & event_eligible[:, None]
         & (cooldown_steps[:, None] == 0)
         & ~active
+        & release_allowed_mask[None, :]
     )
     active[start] = True
     release_steps[start] = 1
     release_start_speed[start] = np.broadcast_to(axis_speed_ema[:, None], contacts.shape)[start]
+    if cumulative_angle is not None:
+        cum_angle = np.asarray(cumulative_angle, dtype=dtype)[:, None]
+        release_start_angle[start] = np.broadcast_to(cum_angle, contacts.shape)[start]
 
     cooldown_steps[has_qualified] = cfg.handoff_cooldown_steps
     progress = np.max(
@@ -192,6 +249,7 @@ def advance_finger_gaiting(
         cooldown_steps=cooldown_steps,
         qualified_handoff=qualified,
         release_progress=progress,
+        release_start_angle=release_start_angle,
     )
 
 
@@ -209,6 +267,7 @@ class LeapFingerGaitingResetProvider(LeapSustainedRotationResetProvider):
                 "gaiting_release_active": np.zeros((num_reset, 4), dtype=bool),
                 "gaiting_release_steps": np.zeros((num_reset, 4), dtype=np.uint8),
                 "gaiting_release_start_speed": np.zeros((num_reset, 4), dtype=dtype),
+                "gaiting_release_start_angle": np.zeros((num_reset, 4), dtype=dtype),
                 "gaiting_cooldown_steps": np.zeros(num_reset, dtype=np.uint8),
                 "gaiting_stage_handoffs": np.zeros(num_reset, dtype=np.uint8),
                 "gaiting_total_handoffs": np.zeros(num_reset, dtype=np.uint16),

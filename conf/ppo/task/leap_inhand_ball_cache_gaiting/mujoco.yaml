@@ -1,0 +1,139 @@
+# @package _global_
+defaults:
+  - /task/leap_inhand_ball_finger_gaiting/mujoco
+  - _self_
+
+training:
+  task_name: LeapInhandBallCacheGaitingRotation
+  sim_backend: mujoco
+
+reward:
+  scales:
+    rotate: 1.25
+    obj_linvel: -0.3
+    position_error: -6.0
+    spin_progress: 0.0
+
+    # Metadata mirror only.
+    spin_continuity: -0.05
+
+    retention: 0.0
+    anchor_proximity: 0.0
+    fingertip_support: 0.0
+    action_rate: 0.0
+    torque: 0.0
+    work: 0.0
+    failure: -1.0
+
+  spin_progress_scale: 0.0
+  spin_continuity_penalty_scale: 0.05
+  retention_scale: 0.0
+  anchor_proximity_scale: 0.0
+  fingertip_support_scale: 0.0
+  action_rate_scale: 0.0
+  torque_scale: 0.0
+  work_scale: 0.0
+
+  stage_bonuses:
+    - 0.02
+    - 0.03
+    - 0.04
+    - 0.05
+    - 0.075
+    - 0.10
+
+  final_success_bonus: 0.25
+  positive_spin_retention_floors: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
+  failure_penalty: 1.0
+  failure_position_radius: 0.050
+  position_gate_outer_radius: 0.030
+
+finger_gaiting:
+  required_handoffs_by_stage:
+    - 0
+    - 1
+    - 1
+    - 2
+    - 2
+    - 3
+    - 4
+
+  minimum_contacts_by_stage:
+    - 3
+    - 3
+    - 3
+    - 2
+    - 2
+    - 2
+    - 2
+
+  minimum_other_contacts: 2
+  minimum_release_steps: 2
+  maximum_release_steps: 10
+  handoff_cooldown_steps: 4
+
+  minimum_speed_ratio: 0.60
+  recovery_speed_ratio: 0.80
+
+  stable_support_scale: 0.0
+  release_progress_scale: 0.0
+  qualified_handoff_bonus: 0.05
+
+  minimum_handoff_angle_rad: 0.03
+
+  release_allowed_fingers:
+    - true   # index
+    - true   # middle
+    - true   # ring
+    - false  # thumb
+
+env:
+  reset_source: cache
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k.npy
+  termination_drop_distance: 0.05
+  max_episode_seconds: 30.0
+
+  curriculum:
+    direct_target_mode: false
+
+    target_speeds:
+      - 0.00
+      - 0.04
+      - 0.07
+      - 0.10
+      - 0.15
+      - 0.20
+      - 0.30
+
+    stage_durations_seconds:
+      - 1.0
+      - 1.5
+      - 2.0
+      - 2.5
+      - 3.0
+      - 4.0
+      - 6.0
+
+    orthogonal_speed_tolerances:
+      - 0.10
+      - 0.10
+      - 0.08
+      - 0.07
+      - 0.06
+      - 0.07
+      - 0.10
+
+    energy_level_scales:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+
+    sustain_ratio: 0.80
+    gate_position_radius: 0.015
+    minimum_fingertip_contacts: 2
+    ema_time_constant: 0.10

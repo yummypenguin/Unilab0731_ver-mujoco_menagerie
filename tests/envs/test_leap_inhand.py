@@ -49,6 +49,11 @@ from unilab.envs.manipulation.leap_inhand.finger_gaiting_rotation import (
     normalize_finger_gaiting_observation,
 )
 from unilab.envs.manipulation.leap_inhand.rotation_v2 import compute_rotation_terms
+from unilab.envs.manipulation.leap_inhand.sustained_cache_gaiting_rotation import (
+    CacheGaitingRewardConfig,
+    LeapInhandBallCacheGaitingRotationCfg,
+    LeapInhandBallCacheGaitingRotationEnv,
+)
 from unilab.envs.manipulation.leap_inhand.sustained_cache_rotation import (
     LEAP_TIP_COLLISION_LOCAL_POS,
     STATE_A_SUPPORT_QPOS,
@@ -2345,3 +2350,158 @@ def test_stall_penalty_is_scaled_by_ctrl_dt() -> None:
     ctrl_dt = 0.05
     step_penalty = penalty_rate * ctrl_dt
     np.testing.assert_allclose(step_penalty, [-0.0025])
+
+
+@pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+def test_leap_cache_gaiting_rotation_reset_and_step(backend: str) -> None:
+    if backend == "mujoco":
+        pytest.importorskip("mujoco")
+        try:
+            from mujoco.batch_env import BatchEnvPool as _  # noqa: F401
+        except Exception:
+            pytest.skip("mujoco.batch_env is unavailable")
+    else:
+        pytest.importorskip("motrixsim", reason="motrixsim not installed")
+
+    ensure_registries()
+    env = registry.make(
+        "LeapInhandBallCacheGaitingRotation",
+        sim_backend=backend,
+        num_envs=2,
+        env_cfg_override={
+            "sim_dt": 0.01 if backend == "motrix" else 0.005,
+            "ctrl_dt": 0.05,
+            "reset_source": "cache",
+            "grasp_cache_path": "robots/leap_hand/caches/ball_grasp_official_50k.npy",
+            "termination_drop_distance": 0.05,
+            "reward_config": asdict(CacheGaitingRewardConfig()),
+        },
+    )
+    try:
+        obs, info = env.reset(np.arange(2, dtype=np.int32))
+        assert obs["obs"].shape == (2, 118)
+        assert np.isfinite(obs["obs"]).all()
+        assert "rotation_net_angle_rad" in info
+        assert "gaiting_release_start_angle" in info
+
+        next_state = env.step(np.zeros((2, 16), dtype=np.float32))
+        assert next_state.obs["obs"].shape == (2, 118)
+        assert np.isfinite(next_state.obs["obs"]).all()
+        assert np.isfinite(next_state.reward).all()
+        assert not np.any(next_state.terminated)
+        assert "reward/rotate" in next_state.info["log"]
+        assert "reward/stall" in next_state.info["log"]
+        assert "rotation/net_angle_rad_mean" in next_state.info["log"]
+        assert "gaiting/qualified_handoff_rate" in next_state.info["log"]
+    finally:
+        env.close()
+
+
+def test_v3b_thumb_release_is_blocked_by_allowed_mask() -> None:
+    cfg = FingerGaitingConfig(
+        release_allowed_fingers=[True, True, True, False],
+        minimum_other_contacts=2,
+    )
+    contacts = np.array([[True, True, True, False]], dtype=bool)
+    prev_contacts = np.array([[True, True, True, True]], dtype=bool)
+    transition = advance_finger_gaiting(
+        contacts=contacts,
+        previous_contacts=prev_contacts,
+        active=np.zeros((1, 4), dtype=bool),
+        release_steps=np.zeros((1, 4), dtype=np.uint8),
+        release_start_speed=np.zeros((1, 4)),
+        cooldown_steps=np.zeros(1, dtype=np.uint8),
+        eligible=np.array([True]),
+        axis_speed_ema=np.array([0.10]),
+        target_speed=np.array([0.10]),
+        cfg=cfg,
+    )
+    assert not transition.active[0, 3]
+
+
+def test_v3b_minimum_handoff_angle_rad_requires_positive_net_angle() -> None:
+    cfg = FingerGaitingConfig(
+        minimum_handoff_angle_rad=0.03,
+        minimum_release_steps=2,
+        maximum_release_steps=10,
+        minimum_speed_ratio=0.60,
+        recovery_speed_ratio=0.80,
+    )
+    contacts = np.array([[True, True, True, True]], dtype=bool)
+    prev_contacts = np.array([[True, True, True, False]], dtype=bool)
+
+    transition_insufficient = advance_finger_gaiting(
+        contacts=contacts,
+        previous_contacts=prev_contacts,
+        active=np.array([[False, False, False, True]], dtype=bool),
+        release_steps=np.array([[0, 0, 0, 3]], dtype=np.uint8),
+        release_start_speed=np.array([[0.0, 0.0, 0.0, 0.10]]),
+        cooldown_steps=np.zeros(1, dtype=np.uint8),
+        eligible=np.array([True]),
+        axis_speed_ema=np.array([0.10]),
+        target_speed=np.array([0.10]),
+        cfg=cfg,
+        release_start_angle=np.array([[0.0, 0.0, 0.0, 0.0]]),
+        cumulative_angle=np.array([0.01]),
+    )
+    assert not np.any(transition_insufficient.qualified_handoff)
+
+    transition_sufficient = advance_finger_gaiting(
+        contacts=contacts,
+        previous_contacts=prev_contacts,
+        active=np.array([[False, False, False, True]], dtype=bool),
+        release_steps=np.array([[0, 0, 0, 3]], dtype=np.uint8),
+        release_start_speed=np.array([[0.0, 0.0, 0.0, 0.10]]),
+        cooldown_steps=np.zeros(1, dtype=np.uint8),
+        eligible=np.array([True]),
+        axis_speed_ema=np.array([0.10]),
+        target_speed=np.array([0.10]),
+        cfg=cfg,
+        release_start_angle=np.array([[0.0, 0.0, 0.0, 0.0]]),
+        cumulative_angle=np.array([0.04]),
+    )
+    assert transition_sufficient.qualified_handoff[0, 3]
+
+
+def test_v3b_cumulative_angle_tracking_and_efficiency() -> None:
+    deltas = [0.1, 0.1, -0.05]
+    net_angle = 0.0
+    positive_angle = 0.0
+    absolute_angle = 0.0
+    for d in deltas:
+        net_angle += d
+        positive_angle += max(d, 0.0)
+        absolute_angle += abs(d)
+
+    efficiency = abs(net_angle) / max(absolute_angle, 1e-6)
+    np.testing.assert_allclose(net_angle, 0.15)
+    np.testing.assert_allclose(positive_angle, 0.20)
+    np.testing.assert_allclose(absolute_angle, 0.25)
+    np.testing.assert_allclose(efficiency, 0.60)
+
+
+def test_v3b_hold_stage_does_not_apply_stall_penalty() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg)
+    axis_speed = np.array([0.0])
+    target_speed = np.array([0.0])
+    position_error = np.array([0.005])
+
+    _, log = env._compute_reward_adjustment(
+        info={},
+        fingertip_contacts=np.ones((1, 4), dtype=bool),
+        palm_contact=np.zeros(1, dtype=bool),
+        contact_count=np.array([4]),
+        target_speed=target_speed,
+        tolerance=np.array([0.10]),
+        axis_speed=axis_speed,
+        axis_speed_ema=axis_speed,
+        orthogonal_speed_ema=np.array([0.0]),
+        position_error=position_error,
+        anchor_proximity=np.array([1.0]),
+        retention_ok=np.array([True]),
+        no_failure_signal=np.array([True]),
+        stage_valid=np.array([True]),
+        stage_duration_progress=np.array([1.0]),
+    )
+    assert log["reward/stall"] == pytest.approx(0.0)
