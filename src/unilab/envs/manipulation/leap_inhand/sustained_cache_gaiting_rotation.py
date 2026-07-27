@@ -395,9 +395,10 @@ class LeapInhandBallCacheGaitingRotationEnv(
         terminated = self._compute_terminated(position_error)
 
         levels = np.asarray(info.get("rotation_level", np.zeros(self._num_envs, dtype=np.int32)), dtype=np.intp).copy()
-        target_speed = self._target_speeds[levels].astype(dtype, copy=False)
-        tolerance = self._orthogonal_tolerances[levels].astype(dtype, copy=False)
-        required_contacts = self._minimum_stage_contacts[levels]
+        levels_before = levels.copy()
+        target_speed = self._target_speeds[levels_before].astype(dtype, copy=False)
+        tolerance = self._orthogonal_tolerances[levels_before].astype(dtype, copy=False)
+        required_contacts = self._minimum_stage_contacts[levels_before]
 
         axis_speed = (ball_angvel @ self._rotation_axis_w).astype(dtype, copy=False)
         orthogonal_vel = ball_angvel - axis_speed[:, None] * self._rotation_axis_w[None, :]
@@ -448,7 +449,7 @@ class LeapInhandBallCacheGaitingRotationEnv(
         retention_ok = position_error <= self._cfg.curriculum.gate_position_radius
         support_ok = fingertip_contact_count >= required_contacts
         orthogonal_ok = orthogonal_speed_ema <= tolerance
-        hold_stage = (levels == 0) & (not self._cfg.curriculum.direct_target_mode)
+        hold_stage = (levels_before == 0) & (not self._cfg.curriculum.direct_target_mode)
         stationary_target = target_speed <= 1e-6
         speed_ok = (
             hold_stage
@@ -462,7 +463,7 @@ class LeapInhandBallCacheGaitingRotationEnv(
             fingertip_contacts=fingertip_contacts,
             palm_contact=palm_contact_bool,
             contact_count=fingertip_contact_count,
-            levels=levels,
+            levels=levels_before,
             target_speed=target_speed,
             axis_speed_ema=axis_speed_ema,
             retention_ok=retention_ok,
@@ -478,10 +479,10 @@ class LeapInhandBallCacheGaitingRotationEnv(
         stage_steps[:] = next_stage_steps
 
         stage_complete = (
-            next_stage_steps >= self._stage_steps_required[levels]
+            next_stage_steps >= self._stage_steps_required[levels_before]
         ) & stage_update.completion_ready
 
-        promote = stage_complete & (levels < len(self._target_speeds) - 1)
+        promote = stage_complete & (levels_before < len(self._target_speeds) - 1)
         levels[promote] += 1
         next_stage_steps[promote] = 0
 
@@ -491,7 +492,7 @@ class LeapInhandBallCacheGaitingRotationEnv(
         info["rotation_stage_steps"] = next_stage_steps
 
         stage_duration_progress = np.clip(
-            next_stage_steps / self._stage_steps_required[levels], 0.0, 1.0
+            next_stage_steps / self._stage_steps_required[levels_before], 0.0, 1.0
         ).astype(dtype)
 
         reward_adjustment, reward_adjustment_log = self._compute_reward_adjustment(
@@ -517,22 +518,26 @@ class LeapInhandBallCacheGaitingRotationEnv(
         reward += stage_update.event_reward
 
         stage_bonus = (
-            promote & (levels < len(self._target_speeds))
-        ).astype(dtype) * self._stage_bonuses[
-            np.clip(levels - 1, 0, len(self._stage_bonuses) - 1)
-        ]
-        reward += stage_bonus
-
-        final_event = stage_complete & (levels == len(self._target_speeds) - 1)
-        final_success_bonus = (
-            final_event.astype(dtype) * self._reward_cfg.final_success_bonus
+            promote.astype(dtype)
+            * self._stage_bonuses[
+                np.clip(levels_before, 0, len(self._stage_bonuses) - 1)
+            ]
         )
-        reward += final_success_bonus
+        reward += stage_bonus
 
         rotation_success = np.asarray(
             info.get("rotation_success", np.zeros(self._num_envs, dtype=bool)),
             dtype=bool,
         )
+        final_event = (
+            stage_complete
+            & (levels_before == len(self._target_speeds) - 1)
+            & ~rotation_success
+        )
+        final_success_bonus = (
+            final_event.astype(dtype) * self._reward_cfg.final_success_bonus
+        )
+        reward += final_success_bonus
         info["rotation_success"] = rotation_success | final_event
 
         failure_penalty = self._reward_cfg.failure_penalty

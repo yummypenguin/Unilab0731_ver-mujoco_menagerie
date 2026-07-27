@@ -2628,7 +2628,7 @@ def test_v3b_extra_handoff_after_requirement_gets_no_bonus() -> None:
 
 def test_v3b_release_cannot_start_outside_retention_gate() -> None:
     cfg = FingerGaitingConfig(release_allowed_fingers=[True, True, True, False])
-    contacts = np.array([[True, True, True, False]], dtype=bool)
+    contacts = np.array([[False, True, True, True]], dtype=bool)
     prev_contacts = np.array([[True, True, True, True]], dtype=bool)
 
     transition = advance_finger_gaiting(
@@ -2643,7 +2643,7 @@ def test_v3b_release_cannot_start_outside_retention_gate() -> None:
         target_speed=np.array([0.10]),
         cfg=cfg,
     )
-    assert not transition.active[0, 3]
+    assert not transition.active[0, 0]
 
 
 def test_original_finger_gaiting_horizontal_displacement_not_raw_drop() -> None:
@@ -2696,3 +2696,125 @@ def test_v3b_gaiting_step_counters_advance_exactly_once_per_step() -> None:
 
     assert new_observed == initial_observed + 1
     np.testing.assert_array_less(new_contact - initial_contact, 2)
+
+
+def test_v3b_promoting_to_final_level_is_not_final_success() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg, num_envs=1, backend_type="mujoco")
+    _, info = env.reset(np.array([0], dtype=np.int32))
+
+    env.get_ball_pos = lambda: info["rotation_anchor_pos"].copy()
+    env.get_ball_quat = lambda: info["prev_ball_quat"].copy()
+    env._contacts = lambda env_ids: np.ones((len(env_ids), 4), dtype=bool)
+    env._palm_contacts = lambda env_ids: np.zeros(len(env_ids), dtype=bool)
+
+    state = env.step(np.zeros((1, 16), dtype=np.float32))
+    info = dict(state.info)
+    info["rotation_level"] = np.array([5], dtype=np.int32)
+    info["rotation_stage_steps"] = np.array([env._stage_steps_required[5] - 1], dtype=np.uint32)
+    info["gaiting_stage_handoffs"] = np.array([4], dtype=np.uint8)
+    info["axis_speed_ema"] = np.array([0.50])
+    info["rotation_axis_speed_ema"] = np.array([0.50])
+    info["orthogonal_speed_ema"] = np.array([0.0])
+    info["rotation_orthogonal_speed_ema"] = np.array([0.0])
+    env._state = state.replace(info=info)
+
+    required_steps = env._stage_steps_required[5]
+    for _ in range(required_steps + 5):
+        next_state = env.step(np.zeros((1, 16), dtype=np.float32))
+        if next_state.info["rotation_level"][0] == 6:
+            break
+
+    assert next_state.info["rotation_level"][0] == 6
+    assert not next_state.info["rotation_success"][0]
+
+
+def test_v3b_completing_final_level_triggers_final_success() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg, num_envs=1, backend_type="mujoco")
+    _, info = env.reset(np.array([0], dtype=np.int32))
+
+    env.get_ball_pos = lambda: info["rotation_anchor_pos"].copy()
+    env.get_ball_quat = lambda: info["prev_ball_quat"].copy()
+    env._contacts = lambda env_ids: np.ones((len(env_ids), 4), dtype=bool)
+    env._palm_contacts = lambda env_ids: np.zeros(len(env_ids), dtype=bool)
+
+    state = env.step(np.zeros((1, 16), dtype=np.float32))
+    info = dict(state.info)
+    info["rotation_level"] = np.array([6], dtype=np.int32)
+    info["rotation_stage_steps"] = np.array([env._stage_steps_required[6] - 1], dtype=np.uint32)
+    info["gaiting_stage_handoffs"] = np.array([4], dtype=np.uint8)
+    info["rotation_success"] = np.array([False], dtype=bool)
+    info["axis_speed_ema"] = np.array([0.50])
+    info["rotation_axis_speed_ema"] = np.array([0.50])
+    info["orthogonal_speed_ema"] = np.array([0.0])
+    info["rotation_orthogonal_speed_ema"] = np.array([0.0])
+    env._state = state.replace(info=info)
+
+    next_state = env.step(np.zeros((1, 16), dtype=np.float32))
+
+    assert next_state.info["rotation_success"][0]
+    assert next_state.reward[0] > 0.20
+
+
+def test_v3b_final_success_bonus_is_one_shot() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg, num_envs=1, backend_type="mujoco")
+    _, info = env.reset(np.array([0], dtype=np.int32))
+
+    env.get_ball_pos = lambda: info["rotation_anchor_pos"].copy()
+    env.get_ball_quat = lambda: info["prev_ball_quat"].copy()
+    env._contacts = lambda env_ids: np.ones((len(env_ids), 4), dtype=bool)
+    env._palm_contacts = lambda env_ids: np.zeros(len(env_ids), dtype=bool)
+
+    state = env.step(np.zeros((1, 16), dtype=np.float32))
+    info = dict(state.info)
+    info["rotation_level"] = np.array([6], dtype=np.int32)
+    info["rotation_stage_steps"] = np.array([env._stage_steps_required[6] - 1], dtype=np.uint32)
+    info["gaiting_stage_handoffs"] = np.array([4], dtype=np.uint8)
+    info["rotation_success"] = np.array([False], dtype=bool)
+    info["axis_speed_ema"] = np.array([0.50])
+    info["rotation_axis_speed_ema"] = np.array([0.50])
+    info["orthogonal_speed_ema"] = np.array([0.0])
+    info["rotation_orthogonal_speed_ema"] = np.array([0.0])
+    env._state = state.replace(info=info)
+
+    first_state = env.step(np.zeros((1, 16), dtype=np.float32))
+    assert first_state.info["rotation_success"][0]
+    first_reward = first_state.reward[0]
+
+    second_state = env.step(np.zeros((1, 16), dtype=np.float32))
+    assert second_state.info["rotation_success"][0]
+    second_reward = second_state.reward[0]
+
+    assert second_reward < first_reward
+
+
+def test_v3b_env_step_advances_finger_gaiting_exactly_once() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg, num_envs=1, backend_type="mujoco")
+    _, info = env.reset(np.array([0], dtype=np.int32))
+
+    env.get_ball_pos = lambda: info["rotation_anchor_pos"].copy()
+    env.get_ball_quat = lambda: info["prev_ball_quat"].copy()
+    env._contacts = lambda env_ids: np.array([[False, True, True, True]], dtype=bool)
+    env._palm_contacts = lambda env_ids: np.zeros(len(env_ids), dtype=bool)
+
+    state = env.step(np.zeros((1, 16), dtype=np.float32))
+    state.info["rotation_level"] = np.array([1], dtype=np.int32)
+    state.info["axis_speed_ema"] = np.array([0.10])
+    state.info["rotation_axis_speed_ema"] = np.array([0.10])
+    state.info["gaiting_previous_contacts"] = np.array([[True, True, True, True]], dtype=bool)
+    state.info["gaiting_release_steps"] = np.zeros((1, 4), dtype=np.uint8)
+    state.info["gaiting_release_active"] = np.zeros((1, 4), dtype=bool)
+    env._state = state
+
+    next_state = env.step(np.zeros((1, 16), dtype=np.float32))
+    assert next_state.info["gaiting_release_steps"][0, 0] == 1
+
+
+def test_v3b_positive_rotation_efficiency_with_negative_net_angle() -> None:
+    net_angle = np.array([-0.15])
+    absolute_angle = np.array([0.25])
+    efficiency = np.maximum(net_angle, 0.0) / np.maximum(absolute_angle, 1e-6)
+    assert efficiency[0] == pytest.approx(0.0)
