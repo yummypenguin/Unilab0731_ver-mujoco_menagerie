@@ -5,6 +5,7 @@ defaults:
 
 training:
   task_name: LeapInhandBallAllegroRotation
+  sim_backend: mujoco
 
 reward:
   scales:

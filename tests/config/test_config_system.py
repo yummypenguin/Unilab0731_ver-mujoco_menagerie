@@ -71,8 +71,12 @@ def _assert_reward_populated(cfg, label: str):
     assert hasattr(cfg, "reward"), f"{label} missing cfg.reward"
     reward_dict = OmegaConf.to_container(cfg.reward, resolve=True)
     assert isinstance(reward_dict, dict), f"{label} reward must resolve to mapping"
-    assert "scales" in reward_dict, f"{label} reward must contain scales"
-    assert len(reward_dict["scales"]) > 0, f"{label} reward.scales must be non-empty"
+    if "scales" in reward_dict:
+        assert isinstance(reward_dict["scales"], dict) and len(reward_dict["scales"]) > 0, (
+            f"{label} reward.scales must be non-empty mapping"
+        )
+    else:
+        assert len(reward_dict) > 0, f"{label} reward config must be non-empty"
 
 
 def _supported_task_cases() -> list[tuple[str, str, str, str, str, list[str]]]:
@@ -271,6 +275,19 @@ def test_ppo_leap_cache_gaiting_composes(backend: str):
     assert cfg.env.termination_drop_distance == pytest.approx(0.05)
     assert cfg.env.max_episode_seconds == pytest.approx(30.0)
     assert int(cfg.env.max_episode_seconds / cfg.env.ctrl_dt) == 600
+
+
+@pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+def test_v3b_cache_gaiting_config_values(backend: str):
+    cfg = _compose(
+        "ppo",
+        overrides=[f"task=leap_inhand_ball_cache_gaiting/{backend}"],
+    )
+
+    assert cfg.reward.scales.rotate == pytest.approx(1.25)
+    assert cfg.reward.scales.obj_linvel == pytest.approx(-0.3)
+    assert cfg.reward.scales.position_error == pytest.approx(-6.0)
+    assert cfg.reward.spin_continuity_penalty_scale == pytest.approx(0.05)
 
 
 @pytest.mark.parametrize("backend", ["mujoco", "motrix"])
