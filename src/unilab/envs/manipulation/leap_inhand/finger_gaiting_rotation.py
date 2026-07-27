@@ -349,7 +349,11 @@ class LeapInhandBallFingerGaitingRotationEnv(LeapInhandBallSustainedRotationEnv)
     def _compute_raw_drop(
         self, ball_pos: np.ndarray, anchor_pos: np.ndarray
     ) -> np.ndarray:
-        return np.linalg.norm(ball_pos - anchor_pos, axis=1) > self._cfg.termination_drop_distance
+        return compute_reset_relative_drop(
+            ball_pos,
+            anchor_pos,
+            self._cfg.termination_drop_distance,
+        )
 
     def __init__(
         self,

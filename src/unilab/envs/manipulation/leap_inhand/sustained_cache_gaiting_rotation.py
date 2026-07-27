@@ -409,11 +409,16 @@ class LeapInhandBallCacheGaitingRotationEnv(
             dtype=dtype,
         )
         axis_speed_ema = alpha * axis_speed + (1.0 - alpha) * np.asarray(
-            info.get("axis_speed_ema", axis_speed), dtype=dtype
+            info.get("axis_speed_ema", info.get("rotation_axis_speed_ema", axis_speed)), dtype=dtype
         )
         orthogonal_speed_ema = alpha * orthogonal_speed + (1.0 - alpha) * np.asarray(
-            info.get("orthogonal_speed_ema", orthogonal_speed), dtype=dtype
+            info.get("orthogonal_speed_ema", info.get("rotation_orthogonal_speed_ema", orthogonal_speed)), dtype=dtype
         )
+
+        info["axis_speed_ema"] = axis_speed_ema
+        info["rotation_axis_speed_ema"] = axis_speed_ema
+        info["orthogonal_speed_ema"] = orthogonal_speed_ema
+        info["rotation_orthogonal_speed_ema"] = orthogonal_speed_ema
 
         delta_axis_angle = axis_speed * self._cfg.ctrl_dt
         net_angle = np.asarray(info.get("rotation_net_angle_rad", np.zeros(self._num_envs, dtype=dtype)), dtype=dtype) + delta_axis_angle
@@ -427,6 +432,13 @@ class LeapInhandBallCacheGaitingRotationEnv(
         fingertip_contacts = self._contacts(self._all_env_ids)
         palm_contact_bool = self._palm_contacts(self._all_env_ids).astype(bool)
         fingertip_contact_count = np.sum(fingertip_contacts, axis=1)
+
+        contact_steps = np.asarray(info.get("gaiting_contact_steps", np.zeros((self._num_envs, 4), dtype=np.uint32)), dtype=np.uint32)
+        contact_steps += fingertip_contacts.astype(np.uint32)
+        observed_steps = np.asarray(info.get("gaiting_observed_steps", np.zeros(self._num_envs, dtype=np.uint32)), dtype=np.uint32)
+        observed_steps += 1
+        info["gaiting_contact_steps"] = contact_steps
+        info["gaiting_observed_steps"] = observed_steps
 
         linear_gate = compute_anchor_proximity(
             position_error,
