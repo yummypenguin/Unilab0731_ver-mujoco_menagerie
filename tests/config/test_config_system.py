@@ -266,9 +266,13 @@ def test_ppo_leap_cache_gaiting_composes(backend: str):
     assert cfg.reward.scales.obj_linvel == pytest.approx(-0.3)
     assert cfg.reward.scales.position_error == pytest.approx(-6.0)
     assert cfg.reward.spin_continuity_penalty_scale == pytest.approx(0.05)
-    assert cfg.finger_gaiting.qualified_handoff_bonus == pytest.approx(0.05)
-    assert cfg.finger_gaiting.minimum_handoff_angle_rad == pytest.approx(0.03)
-    assert list(cfg.finger_gaiting.release_allowed_fingers) == [True, True, True, False]
+    assert cfg.env.finger_gaiting.qualified_handoff_bonus == pytest.approx(0.05)
+    assert cfg.env.finger_gaiting.minimum_handoff_angle_rad == pytest.approx(0.03)
+    assert list(cfg.env.finger_gaiting.release_allowed_fingers) == [True, True, True, False]
+    assert list(cfg.env.finger_gaiting.required_handoffs_by_stage) == [0, 1, 1, 2, 2, 3, 4]
+    assert len(cfg.env.finger_gaiting.required_handoffs_by_stage) == len(cfg.env.curriculum.target_speeds)
+    assert len(cfg.env.finger_gaiting.minimum_contacts_by_stage) == len(cfg.env.curriculum.target_speeds)
+    assert OmegaConf.select(cfg, "finger_gaiting") is None
     assert cfg.env.curriculum.target_speeds == [0.00, 0.04, 0.07, 0.10, 0.15, 0.20, 0.30]
     assert cfg.reward.final_success_bonus == pytest.approx(0.25)
     assert cfg.reward.failure_penalty == pytest.approx(1.0)

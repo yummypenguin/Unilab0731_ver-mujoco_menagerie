@@ -49,50 +49,50 @@ reward:
   failure_position_radius: 0.050
   position_gate_outer_radius: 0.030
 
-finger_gaiting:
-  required_handoffs_by_stage:
-    - 0
-    - 1
-    - 1
-    - 2
-    - 2
-    - 3
-    - 4
-
-  minimum_contacts_by_stage:
-    - 3
-    - 3
-    - 3
-    - 2
-    - 2
-    - 2
-    - 2
-
-  minimum_other_contacts: 2
-  minimum_release_steps: 2
-  maximum_release_steps: 10
-  handoff_cooldown_steps: 4
-
-  minimum_speed_ratio: 0.60
-  recovery_speed_ratio: 0.80
-
-  stable_support_scale: 0.0
-  release_progress_scale: 0.0
-  qualified_handoff_bonus: 0.05
-
-  minimum_handoff_angle_rad: 0.03
-
-  release_allowed_fingers:
-    - true   # index
-    - true   # middle
-    - true   # ring
-    - false  # thumb
-
 env:
   reset_source: cache
   grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k.npy
   termination_drop_distance: 0.05
   max_episode_seconds: 30.0
+
+  finger_gaiting:
+    required_handoffs_by_stage:
+      - 0
+      - 1
+      - 1
+      - 2
+      - 2
+      - 3
+      - 4
+
+    minimum_contacts_by_stage:
+      - 3
+      - 3
+      - 3
+      - 2
+      - 2
+      - 2
+      - 2
+
+    minimum_other_contacts: 2
+    minimum_release_steps: 2
+    maximum_release_steps: 10
+    handoff_cooldown_steps: 4
+
+    minimum_speed_ratio: 0.60
+    recovery_speed_ratio: 0.80
+
+    stable_support_scale: 0.0
+    release_progress_scale: 0.0
+    qualified_handoff_bonus: 0.05
+
+    minimum_handoff_angle_rad: 0.03
+
+    release_allowed_fingers:
+      - true   # index
+      - true   # middle
+      - true   # ring
+      - false  # thumb
 
   curriculum:
     direct_target_mode: false
