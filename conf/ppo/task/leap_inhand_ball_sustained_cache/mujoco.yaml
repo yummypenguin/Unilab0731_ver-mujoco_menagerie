@@ -13,7 +13,10 @@ reward:
     obj_linvel: -0.3
     position_error: -6.0
     spin_progress: 0.0
-    spin_continuity: 0.0
+
+    # Metadata mirror only.
+    spin_continuity: -0.05
+
     retention: 0.0
     anchor_proximity: 0.0
     fingertip_support: 0.0
@@ -39,7 +42,7 @@ reward:
   position_gate_power: 2.0
 
   spin_progress_scale: 0.0
-  spin_continuity_penalty_scale: 0.0
+  spin_continuity_penalty_scale: 0.05
   direct_spin_reward: false
   retention_scale: 0.0
   anchor_proximity_scale: 0.0

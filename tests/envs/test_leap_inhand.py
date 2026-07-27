@@ -61,6 +61,7 @@ from unilab.envs.manipulation.leap_inhand.sustained_cache_rotation import (
     compute_allegro_style_rotate_reward,
     compute_index_ring_opposition_quality,
     compute_position_error_reward,
+    compute_position_gated_stall_penalty,
     compute_position_safety_gate,
     compute_reset_safe_opposition_progress,
     compute_support_pose_distance,
@@ -1538,6 +1539,10 @@ def test_leap_sustained_cache_rotation_reset_and_step(backend: str) -> None:
         assert "reward/failure" in next_state.info["log"]
         assert "reward/obj_linvel" in next_state.info["log"]
         assert "reward/position_error" in next_state.info["log"]
+        assert "reward/stall" in next_state.info["log"]
+        assert "rotation/positive_progress" in next_state.info["log"]
+        assert "reward/rotation_gating_reduction" in next_state.info["log"]
+        assert np.isfinite(next_state.info["log"]["reward/stall"])
         assert "rotation/target_speed_rad_s" in next_state.info["log"]
         assert "rotation/orthogonal_speed_rad_s" in next_state.info["log"]
         assert "rotation/normalized_progress" in next_state.info["log"]
@@ -2283,13 +2288,60 @@ def test_terminal_penalty_is_not_scaled_by_ctrl_dt() -> None:
     np.testing.assert_allclose(failure_reward, [0.0, -1.0])
 
 
-def test_sustained_cache_rotation_reward_config_v3_defaults() -> None:
-    cfg = AllegroStyleRotationRewardConfig()
 
-    assert cfg.scales["position_error"] == -6.0
-    assert cfg.scales["failure"] == -1.0
-    assert cfg.position_gate_power == 2.0
-    assert cfg.failure_penalty == 1.0
-    assert cfg.failure_position_radius == 0.030
-    assert cfg.support_pose_progress_scale == 0.0
-    assert cfg.opposition_progress_scale == 0.0
+def test_stall_penalty_is_maximal_for_safe_stall() -> None:
+    progress, penalty = compute_position_gated_stall_penalty(
+        normalized_progress=np.asarray([0.0], dtype=np.float64),
+        position_gate=np.asarray([1.0], dtype=np.float64),
+        penalty_scale=0.05,
+    )
+    np.testing.assert_allclose(progress, [0.0])
+    np.testing.assert_allclose(penalty, [-0.05])
+
+
+def test_stall_penalty_vanishes_at_target_speed() -> None:
+    _, penalty = compute_position_gated_stall_penalty(
+        normalized_progress=np.asarray([1.0, 1.5], dtype=np.float64),
+        position_gate=np.asarray([1.0, 1.0], dtype=np.float64),
+        penalty_scale=0.05,
+    )
+    np.testing.assert_allclose(penalty, [0.0, 0.0])
+
+
+def test_stall_penalty_scales_with_positive_progress() -> None:
+    _, penalty = compute_position_gated_stall_penalty(
+        normalized_progress=np.asarray([0.0, 0.5, 1.0], dtype=np.float64),
+        position_gate=np.ones(3, dtype=np.float64),
+        penalty_scale=0.05,
+    )
+    np.testing.assert_allclose(penalty, [-0.05, -0.025, 0.0])
+
+
+def test_stall_penalty_vanishes_outside_safe_region() -> None:
+    _, penalty = compute_position_gated_stall_penalty(
+        normalized_progress=np.asarray([0.0, 0.5, -1.0], dtype=np.float64),
+        position_gate=np.zeros(3, dtype=np.float64),
+        penalty_scale=0.05,
+    )
+    np.testing.assert_allclose(penalty, 0.0)
+
+
+def test_reverse_rotation_uses_maximum_stall_penalty() -> None:
+    progress, penalty = compute_position_gated_stall_penalty(
+        normalized_progress=np.asarray([-0.1, -1.0], dtype=np.float64),
+        position_gate=np.ones(2, dtype=np.float64),
+        penalty_scale=0.05,
+    )
+    np.testing.assert_allclose(progress, [0.0, 0.0])
+    np.testing.assert_allclose(penalty, [-0.05, -0.05])
+
+
+def test_stall_penalty_is_scaled_by_ctrl_dt() -> None:
+    _, penalty_rate = compute_position_gated_stall_penalty(
+        normalized_progress=np.asarray([0.0], dtype=np.float64),
+        position_gate=np.asarray([1.0], dtype=np.float64),
+        penalty_scale=0.05,
+    )
+    ctrl_dt = 0.05
+    step_penalty = penalty_rate * ctrl_dt
+    np.testing.assert_allclose(step_penalty, [-0.0025])

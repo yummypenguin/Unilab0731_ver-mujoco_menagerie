@@ -68,7 +68,8 @@ class AllegroStyleRotationRewardConfig(SustainedRotationRewardConfig):
             "obj_linvel": -0.3,
             "position_error": -6.0,
             "spin_progress": 0.0,
-            "spin_continuity": 0.0,
+            # Metadata mirror only; runtime uses spin_continuity_penalty_scale.
+            "spin_continuity": -0.05,
             "retention": 0.0,
             "anchor_proximity": 0.0,
             "fingertip_support": 0.0,
@@ -90,6 +91,7 @@ class AllegroStyleRotationRewardConfig(SustainedRotationRewardConfig):
     position_gate_power: float = 2.0
     failure_penalty: float = 1.0
     failure_position_radius: float = 0.030
+    spin_continuity_penalty_scale: float = 0.05
 
 
 def compute_position_safety_gate(
@@ -106,6 +108,35 @@ def compute_position_safety_gate(
         failure_position_radius,
     )
     return np.power(linear_gate, power).astype(position_error.dtype, copy=False)
+
+
+def compute_position_gated_stall_penalty(
+    normalized_progress: np.ndarray,
+    position_gate: np.ndarray,
+    *,
+    penalty_scale: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Penalize failure to rotate while the object remains in the safe region."""
+    positive_progress = np.clip(
+        normalized_progress,
+        0.0,
+        1.0,
+    )
+    stall_penalty_rate = (
+        -penalty_scale
+        * position_gate
+        * (1.0 - positive_progress)
+    )
+    return (
+        positive_progress.astype(
+            normalized_progress.dtype,
+            copy=False,
+        ),
+        stall_penalty_rate.astype(
+            normalized_progress.dtype,
+            copy=False,
+        ),
+    )
 
 
 def compute_target_speed_gated_rotate_reward(
@@ -380,6 +411,13 @@ class LeapInhandBallSustainedCacheRotationCfg(
             ):
                 raise ValueError("failure_penalty must be finite and non-negative")
             if not (
+                np.isfinite(reward_config.spin_continuity_penalty_scale)
+                and reward_config.spin_continuity_penalty_scale >= 0.0
+            ):
+                raise ValueError(
+                    "spin_continuity_penalty_scale must be finite and non-negative"
+                )
+            if not (
                 self.curriculum.gate_position_radius
                 < reward_config.failure_position_radius
                 < self.termination_workspace_radius
@@ -447,6 +485,7 @@ class LeapInhandBallSustainedCacheRotationEnv(
             position_gate_power = self._reward_cfg.position_gate_power
             failure_position_radius = self._reward_cfg.failure_position_radius
             failure_penalty = self._reward_cfg.failure_penalty
+            spin_continuity_penalty_scale = self._reward_cfg.spin_continuity_penalty_scale
         else:
             rotate_scale = self._reward_cfg.scales.get("rotate", 1.25)
             base_contact_scale = getattr(self._reward_cfg, "positive_spin_base_contact_scale", 1.0)
@@ -456,6 +495,7 @@ class LeapInhandBallSustainedCacheRotationEnv(
             position_gate_power = getattr(self._reward_cfg, "position_gate_power", 2.0)
             failure_position_radius = getattr(self._reward_cfg, "failure_position_radius", 0.030)
             failure_penalty = getattr(self._reward_cfg, "failure_penalty", 1.0)
+            spin_continuity_penalty_scale = getattr(self._reward_cfg, "spin_continuity_penalty_scale", 0.05)
 
         position_gate = compute_position_safety_gate(
             position_error,
@@ -489,6 +529,15 @@ class LeapInhandBallSustainedCacheRotationEnv(
             orthogonal_tolerance,
             position_gate,
             scale=rotate_scale,
+        )
+
+        (
+            positive_progress,
+            stall_penalty_rate,
+        ) = compute_position_gated_stall_penalty(
+            normalized_progress,
+            position_gate,
+            penalty_scale=spin_continuity_penalty_scale,
         )
 
         fingertip_contacts = self._contacts(self._all_env_ids)
@@ -527,6 +576,7 @@ class LeapInhandBallSustainedCacheRotationEnv(
             rotate_reward
             + obj_linvel_reward
             + position_error_reward
+            + stall_penalty_rate
             + reward_adjustment
         )
         reward = np.asarray(dense_reward * self._cfg.ctrl_dt, dtype=dtype)
@@ -623,10 +673,14 @@ class LeapInhandBallSustainedCacheRotationEnv(
                 "reward/rotate_ungated": float(np.mean(base_rotate_reward)),
                 "reward/rotate": float(np.mean(rotate_reward)),
                 "reward/finger_participation": float(
-                    np.mean(rotate_reward - base_rotate_reward)
+                    np.mean(rotate_reward - gated_rotate_reward)
+                ),
+                "reward/rotation_gating_reduction": float(
+                    np.mean(gated_rotate_reward - base_rotate_reward)
                 ),
                 "reward/obj_linvel": float(np.mean(obj_linvel_reward)),
                 "reward/position_error": float(np.mean(position_error_reward)),
+                "reward/stall": float(np.mean(stall_penalty_rate)),
                 "reward/failure": float(np.mean(failure_reward)),
                 "reward/total": float(np.mean(reward)),
                 "rotation/axis_speed_rad_s": float(np.mean(axis_speed)),
@@ -634,6 +688,7 @@ class LeapInhandBallSustainedCacheRotationEnv(
                 "rotation/target_speed_rad_s": float(np.mean(target_speed)),
                 "rotation/orthogonal_speed_rad_s": float(np.mean(orthogonal_speed)),
                 "rotation/normalized_progress": float(np.mean(normalized_progress)),
+                "rotation/positive_progress": float(np.mean(positive_progress)),
                 "rotation/axis_purity": float(np.mean(axis_purity)),
                 "rotation/position_gate": float(np.mean(position_gate)),
                 "rotation/positive_spin_participation_scale": float(
@@ -708,6 +763,7 @@ __all__ = [
     "compute_allegro_style_rotate_reward",
     "compute_index_ring_opposition_quality",
     "compute_position_error_reward",
+    "compute_position_gated_stall_penalty",
     "compute_position_safety_gate",
     "compute_reset_safe_opposition_progress",
     "compute_support_pose_distance",
