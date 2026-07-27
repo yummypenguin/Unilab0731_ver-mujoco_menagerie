@@ -13,7 +13,6 @@ from unilab.dtype_config import get_global_dtype
 from unilab.envs.manipulation.allegro_inhand.rotation import compute_ball_angvel
 from unilab.envs.manipulation.leap_inhand.finger_gaiting_rotation import (
     FingerGaitingConfig,
-    FingerGaitingTransition,
     LeapFingerGaitingResetProvider,
     LeapInhandBallFingerGaitingRotationCfg,
     LeapInhandBallFingerGaitingRotationEnv,
@@ -24,6 +23,7 @@ from unilab.envs.manipulation.leap_inhand.sustained_cache_rotation import (
     AllegroStyleRotationRewardConfig,
 )
 from unilab.envs.manipulation.leap_inhand.sustained_rotation import (
+    StageSkillUpdate,
     SustainedRotationCurriculumConfig,
     compute_anchor_proximity,
 )
@@ -159,6 +159,19 @@ class LeapInhandBallCacheGaitingRotationEnv(
     _reward_cfg: CacheGaitingRewardConfig
     _NUM_CACHE_GAITING_OBS = 118
 
+    def __init__(
+        self,
+        cfg: LeapInhandBallCacheGaitingRotationCfg,
+        num_envs: int = 1,
+        backend_type: str = "mujoco",
+    ) -> None:
+        super().__init__(cfg, num_envs=num_envs, backend_type=backend_type)
+        reward_cfg = self._reward_cfg
+        self._stage_bonuses = np.asarray(
+            reward_cfg.stage_bonuses if reward_cfg else [],
+            dtype=self._np_dtype,
+        )
+
     def _make_domain_randomization_provider(self) -> LeapCacheGaitingResetProvider:
         return LeapCacheGaitingResetProvider()
 
@@ -198,6 +211,95 @@ class LeapInhandBallCacheGaitingRotationEnv(
             minimum_handoff_angle_rad=self._cfg.finger_gaiting.minimum_handoff_angle_rad,
         )
         return {"obs": np.concatenate([base_obs, gaiting_obs], axis=1, dtype=get_global_dtype())}
+
+    def _update_stage_skill(
+        self,
+        *,
+        info: dict[str, Any],
+        fingertip_contacts: np.ndarray,
+        palm_contact: np.ndarray,
+        contact_count: np.ndarray,
+        levels: np.ndarray,
+        target_speed: np.ndarray,
+        axis_speed_ema: np.ndarray,
+        retention_ok: np.ndarray,
+        no_failure_signal: np.ndarray,
+        base_stage_valid: np.ndarray,
+        release_start_angle: np.ndarray | None = None,
+        cumulative_angle: np.ndarray | None = None,
+    ) -> StageSkillUpdate:
+        dtype = self._np_dtype
+        cfg = self._cfg.finger_gaiting
+        eligible = retention_ok & no_failure_signal & ~palm_contact
+        required = self._required_handoffs[levels]
+
+        start_angle = (
+            release_start_angle
+            if release_start_angle is not None
+            else info.get("gaiting_release_start_angle", np.zeros((self._num_envs, 4), dtype=dtype))
+        )
+        curr_angle = (
+            cumulative_angle
+            if cumulative_angle is not None
+            else info.get("rotation_net_angle_rad", np.zeros(self._num_envs, dtype=dtype))
+        )
+
+        stationary_allowed = np.zeros(self._num_envs, dtype=bool)
+        if hasattr(self._reward_cfg, "stationary_handoff_stages"):
+            for stage_idx in self._reward_cfg.stationary_handoff_stages:
+                stationary_allowed |= levels == stage_idx
+
+        gaiting_transition = advance_finger_gaiting(
+            contacts=fingertip_contacts,
+            previous_contacts=np.asarray(info.get("gaiting_previous_contacts", np.zeros((self._num_envs, 4), dtype=bool)), dtype=bool),
+            active=np.asarray(info.get("gaiting_release_active", np.zeros((self._num_envs, 4), dtype=bool)), dtype=bool),
+            release_steps=np.asarray(info.get("gaiting_release_steps", np.zeros((self._num_envs, 4), dtype=np.uint8)), dtype=np.uint8),
+            release_start_speed=np.asarray(info.get("gaiting_release_start_speed", np.zeros((self._num_envs, 4), dtype=dtype)), dtype=dtype),
+            cooldown_steps=np.asarray(info.get("gaiting_cooldown_steps", np.zeros(self._num_envs, dtype=np.uint8)), dtype=np.uint8),
+            eligible=eligible,
+            axis_speed_ema=axis_speed_ema,
+            target_speed=target_speed,
+            cfg=cfg,
+            stationary_handoff_allowed=stationary_allowed,
+            release_start_angle=start_angle,
+            cumulative_angle=curr_angle,
+        )
+
+        info["gaiting_previous_contacts"] = fingertip_contacts.copy()
+        info["gaiting_release_active"] = gaiting_transition.active.copy()
+        info["gaiting_release_steps"] = gaiting_transition.release_steps.copy()
+        info["gaiting_release_start_speed"] = gaiting_transition.release_start_speed.copy()
+        info["gaiting_release_start_angle"] = gaiting_transition.release_start_angle.copy()
+        info["gaiting_cooldown_steps"] = gaiting_transition.cooldown_steps.copy()
+
+        stage_handoffs = np.asarray(info.get("gaiting_stage_handoffs", np.zeros(self._num_envs, dtype=np.uint8)), dtype=np.uint8).copy()
+        total_handoffs = np.asarray(info.get("gaiting_total_handoffs", np.zeros(self._num_envs, dtype=np.uint16)), dtype=np.uint16).copy()
+
+        useful_handoff = gaiting_transition.qualified_handoff & (stage_handoffs[:, None] < required[:, None]) & retention_ok[:, None]
+        has_useful = np.any(useful_handoff, axis=1)
+
+        stage_handoffs[has_useful] = np.minimum(stage_handoffs[has_useful] + 1, 255).astype(np.uint8)
+        total_handoffs[has_useful] = np.minimum(total_handoffs[has_useful] + 1, 65535).astype(np.uint16)
+        info["gaiting_stage_handoffs"] = stage_handoffs
+        info["gaiting_total_handoffs"] = total_handoffs
+
+        recovery_quality = (0.5 + 0.5 * np.clip(axis_speed_ema / np.maximum(target_speed, 1e-6), 0.0, 1.0)).astype(dtype, copy=False)
+        event_reward = (cfg.qualified_handoff_bonus * has_useful.astype(dtype) * recovery_quality).astype(dtype, copy=False)
+
+        minimum_contacts = self._minimum_stage_contacts[levels]
+        validity_mask = contact_count >= minimum_contacts
+        completion_ready = stage_handoffs >= required
+
+        return StageSkillUpdate(
+            validity_mask=validity_mask,
+            completion_ready=completion_ready,
+            dense_reward=np.zeros(self._num_envs, dtype=dtype),
+            event_reward=event_reward,
+            log={
+                "gaiting/qualified_handoff_rate": float(np.mean(has_useful)),
+                "gaiting/total_handoffs_mean": float(np.mean(total_handoffs)),
+            },
+        )
 
     def _compute_reward_adjustment(
         self,
@@ -288,12 +390,11 @@ class LeapInhandBallCacheGaitingRotationEnv(
 
         ball_angvel = compute_ball_angvel(ball_quat, prev_ball_quat, self._cfg.ctrl_dt)
 
-
         anchor_pos = np.asarray(info["rotation_anchor_pos"], dtype=dtype)
         position_error = np.linalg.norm(ball_pos - anchor_pos, axis=1).astype(dtype, copy=False)
         terminated = self._compute_terminated(position_error)
 
-        levels = np.asarray(info.get("rotation_level", np.zeros(self._num_envs, dtype=np.int32)), dtype=np.intp)
+        levels = np.asarray(info.get("rotation_level", np.zeros(self._num_envs, dtype=np.int32)), dtype=np.intp).copy()
         target_speed = self._target_speeds[levels].astype(dtype, copy=False)
         tolerance = self._orthogonal_tolerances[levels].astype(dtype, copy=False)
         required_contacts = self._minimum_stage_contacts[levels]
@@ -327,46 +428,6 @@ class LeapInhandBallCacheGaitingRotationEnv(
         palm_contact_bool = self._palm_contacts(self._all_env_ids).astype(bool)
         fingertip_contact_count = np.sum(fingertip_contacts, axis=1)
 
-        stationary_allowed = np.zeros(self._num_envs, dtype=bool)
-        if hasattr(self._reward_cfg, "stationary_handoff_stages"):
-            for stage_idx in self._reward_cfg.stationary_handoff_stages:
-                stationary_allowed |= levels == stage_idx
-
-        gaiting_transition = advance_finger_gaiting(
-            contacts=fingertip_contacts,
-            previous_contacts=np.asarray(info.get("gaiting_previous_contacts", np.zeros((self._num_envs, 4), dtype=bool)), dtype=bool),
-            active=np.asarray(info.get("gaiting_release_active", np.zeros((self._num_envs, 4), dtype=bool)), dtype=bool),
-            release_steps=np.asarray(info.get("gaiting_release_steps", np.zeros((self._num_envs, 4), dtype=np.uint8)), dtype=np.uint8),
-            release_start_speed=np.asarray(info.get("gaiting_release_start_speed", np.zeros((self._num_envs, 4), dtype=dtype)), dtype=dtype),
-            cooldown_steps=np.asarray(info.get("gaiting_cooldown_steps", np.zeros(self._num_envs, dtype=np.uint8)), dtype=np.uint8),
-            eligible=~terminated & ~palm_contact_bool,
-            axis_speed_ema=axis_speed_ema,
-            target_speed=target_speed,
-            cfg=self._cfg.finger_gaiting,
-            stationary_handoff_allowed=stationary_allowed,
-            release_start_angle=np.asarray(info.get("gaiting_release_start_angle", np.zeros((self._num_envs, 4), dtype=dtype)), dtype=dtype),
-            cumulative_angle=net_angle,
-        )
-
-        useful_handoff = gaiting_transition.qualified_handoff & (position_error[:, None] <= self._cfg.curriculum.gate_position_radius)
-        has_useful = np.any(useful_handoff, axis=1)
-        recovery_quality = (0.5 + 0.5 * np.clip(axis_speed_ema / np.maximum(target_speed, 1e-6), 0.0, 1.0)).astype(dtype, copy=False)
-        event_reward = (self._cfg.finger_gaiting.qualified_handoff_bonus * has_useful.astype(dtype) * recovery_quality).astype(dtype, copy=False)
-
-        info["gaiting_previous_contacts"] = fingertip_contacts.copy()
-        info["gaiting_release_active"] = gaiting_transition.active.copy()
-        info["gaiting_release_steps"] = gaiting_transition.release_steps.copy()
-        info["gaiting_release_start_speed"] = gaiting_transition.release_start_speed.copy()
-        info["gaiting_release_start_angle"] = gaiting_transition.release_start_angle.copy()
-        info["gaiting_cooldown_steps"] = gaiting_transition.cooldown_steps.copy()
-
-        stage_handoffs = np.asarray(info.get("gaiting_stage_handoffs", np.zeros(self._num_envs, dtype=np.uint8)), dtype=np.uint8).copy()
-        total_handoffs = np.asarray(info.get("gaiting_total_handoffs", np.zeros(self._num_envs, dtype=np.uint16)), dtype=np.uint16).copy()
-        stage_handoffs[has_useful] = np.minimum(stage_handoffs[has_useful] + 1, 255).astype(np.uint8)
-        total_handoffs[has_useful] = np.minimum(total_handoffs[has_useful] + 1, 65535).astype(np.uint16)
-        info["gaiting_stage_handoffs"] = stage_handoffs
-        info["gaiting_total_handoffs"] = total_handoffs
-
         linear_gate = compute_anchor_proximity(
             position_error,
             self._cfg.curriculum.gate_position_radius,
@@ -395,11 +456,28 @@ class LeapInhandBallCacheGaitingRotationEnv(
             retention_ok=retention_ok,
             no_failure_signal=~terminated,
             base_stage_valid=base_stage_valid,
+            release_start_angle=info.get("gaiting_release_start_angle", None),
+            cumulative_angle=net_angle,
         )
 
         stage_valid = base_stage_valid & stage_update.validity_mask
         stage_steps = np.asarray(info.get("rotation_stage_steps", np.zeros(self._num_envs, dtype=np.uint32)), dtype=np.uint32)
         next_stage_steps = np.where(stage_valid, stage_steps + 1, 0).astype(np.uint32)
+        stage_steps[:] = next_stage_steps
+
+        stage_complete = (
+            next_stage_steps >= self._stage_steps_required[levels]
+        ) & stage_update.completion_ready
+
+        promote = stage_complete & (levels < len(self._target_speeds) - 1)
+        levels[promote] += 1
+        next_stage_steps[promote] = 0
+
+        self._on_stage_promotion(info, promote)
+
+        info["rotation_level"] = levels
+        info["rotation_stage_steps"] = next_stage_steps
+
         stage_duration_progress = np.clip(
             next_stage_steps / self._stage_steps_required[levels], 0.0, 1.0
         ).astype(dtype)
@@ -422,9 +500,28 @@ class LeapInhandBallCacheGaitingRotationEnv(
             stage_duration_progress=stage_duration_progress,
         )
 
-        dense_reward = reward_adjustment
+        dense_reward = reward_adjustment + stage_update.dense_reward
         reward = np.asarray(dense_reward * self._cfg.ctrl_dt, dtype=dtype)
-        reward += event_reward
+        reward += stage_update.event_reward
+
+        stage_bonus = (
+            promote & (levels < len(self._target_speeds))
+        ).astype(dtype) * self._stage_bonuses[
+            np.clip(levels - 1, 0, len(self._stage_bonuses) - 1)
+        ]
+        reward += stage_bonus
+
+        final_event = stage_complete & (levels == len(self._target_speeds) - 1)
+        final_success_bonus = (
+            final_event.astype(dtype) * self._reward_cfg.final_success_bonus
+        )
+        reward += final_success_bonus
+
+        rotation_success = np.asarray(
+            info.get("rotation_success", np.zeros(self._num_envs, dtype=bool)),
+            dtype=bool,
+        )
+        info["rotation_success"] = rotation_success | final_event
 
         failure_penalty = self._reward_cfg.failure_penalty
         failure_reward = (-failure_penalty * terminated.astype(dtype)).astype(dtype, copy=False)
@@ -441,13 +538,26 @@ class LeapInhandBallCacheGaitingRotationEnv(
         step_count = np.asarray(info.get("steps", np.zeros(self._num_envs, dtype=np.uint32)))
 
         if self._enable_reward_log and int(step_count[0]) % 4 == 0:
-            efficiency = np.abs(net_angle) / np.maximum(absolute_angle, 1e-6)
+            efficiency = np.maximum(net_angle, 0.0) / np.maximum(absolute_angle, 1e-6)
             turns = net_angle / (2.0 * np.pi)
+            rotating = target_speed > 1e-6
+            above_target_frac = float(np.mean(axis_speed[rotating] >= target_speed[rotating])) if np.any(rotating) else 0.0
+
+            contact_steps = np.asarray(info.get("gaiting_contact_steps", np.zeros((self._num_envs, 4), dtype=np.uint32)))
+            observed_steps = np.maximum(np.asarray(info.get("gaiting_observed_steps", np.ones(self._num_envs, dtype=np.uint32))), 1)
+            duty_per_finger = np.mean(contact_steps / observed_steps[:, None], axis=0)
+
+            total_handoffs = np.asarray(info.get("gaiting_total_handoffs", np.zeros(self._num_envs, dtype=np.uint16)))
+
             log = {
                 "reward/dense": float(np.mean(dense_reward * self._cfg.ctrl_dt)),
-                "reward/event": float(np.mean(event_reward)),
+                "reward/event": float(np.mean(stage_update.event_reward)),
+                "reward/stage_bonus": float(np.mean(stage_bonus)),
+                "reward/final_success": float(np.mean(final_success_bonus)),
                 "reward/failure": float(np.mean(failure_reward)),
                 "reward/total": float(np.mean(reward)),
+                "rotation/level_mean": float(np.mean(levels)),
+                "rotation/level_max": int(np.max(levels)),
                 "rotation/axis_speed_rad_s": float(np.mean(axis_speed)),
                 "rotation/axis_speed_p10": float(np.percentile(axis_speed, 10)),
                 "rotation/axis_speed_p25": float(np.percentile(axis_speed, 25)),
@@ -464,18 +574,14 @@ class LeapInhandBallCacheGaitingRotationEnv(
                 "rotation/efficiency_median": float(np.median(efficiency)),
                 "rotation/above_0_05_fraction": float(np.mean(axis_speed >= 0.05)),
                 "rotation/above_0_10_fraction": float(np.mean(axis_speed >= 0.10)),
-                "rotation/above_target_fraction": float(np.mean(axis_speed >= target_speed)),
-                "gaiting/qualified_handoff_rate": float(np.mean(has_useful)),
+                "rotation/above_target_fraction": above_target_frac,
+                "gaiting/qualified_handoff_rate": stage_update.log.get("gaiting/qualified_handoff_rate", 0.0),
                 "gaiting/total_handoffs_mean": float(np.mean(total_handoffs)),
                 "gaiting/total_handoffs_median": float(np.median(total_handoffs)),
-                "gaiting/contact_duty_index": float(np.mean(fingertip_contacts[:, 0])),
-                "gaiting/contact_duty_middle": float(np.mean(fingertip_contacts[:, 1])),
-                "gaiting/contact_duty_ring": float(np.mean(fingertip_contacts[:, 2])),
-                "gaiting/contact_duty_thumb": float(np.mean(fingertip_contacts[:, 3])),
-                "gaiting/handoff_rate_index": float(np.mean(useful_handoff[:, 0])),
-                "gaiting/handoff_rate_middle": float(np.mean(useful_handoff[:, 1])),
-                "gaiting/handoff_rate_ring": float(np.mean(useful_handoff[:, 2])),
-                "gaiting/handoff_rate_thumb": float(np.mean(useful_handoff[:, 3])),
+                "gaiting/contact_duty_index": float(duty_per_finger[0]),
+                "gaiting/contact_duty_middle": float(duty_per_finger[1]),
+                "gaiting/contact_duty_ring": float(duty_per_finger[2]),
+                "gaiting/contact_duty_thumb": float(duty_per_finger[3]),
                 "object/position_error_m": float(np.mean(position_error)),
                 "termination/task_rate": float(np.mean(terminated)),
             }

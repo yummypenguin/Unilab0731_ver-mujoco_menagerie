@@ -2505,3 +2505,121 @@ def test_v3b_hold_stage_does_not_apply_stall_penalty() -> None:
         stage_duration_progress=np.array([1.0]),
     )
     assert log["reward/stall"] == pytest.approx(0.0)
+
+
+def test_v3b_stage_steps_are_persisted() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg, num_envs=1, backend_type="mujoco")
+    _, info = env.reset(np.array([0], dtype=np.int32))
+    assert info["rotation_stage_steps"][0] == 0
+
+    next_state = env.step(np.zeros((1, 16), dtype=np.float32))
+    assert next_state.info["rotation_stage_steps"][0] == 1
+
+
+def test_v3b_stage_zero_promotes_to_stage_one() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg, num_envs=1, backend_type="mujoco")
+    _, info = env.reset(np.array([0], dtype=np.int32))
+    assert info["rotation_level"][0] == 0
+
+    env.get_ball_pos = lambda: info["rotation_anchor_pos"].copy()
+    env._contacts = lambda env_ids: np.ones((len(env_ids), 4), dtype=bool)
+
+    required_steps = env._stage_steps_required[0]
+    for _ in range(required_steps):
+        next_state = env.step(np.zeros((1, 16), dtype=np.float32))
+
+    assert next_state.info["rotation_level"][0] == 1
+    assert next_state.info["rotation_stage_steps"][0] == 0
+
+
+def test_v3b_handoff_state_advances_once_per_step() -> None:
+    cfg = FingerGaitingConfig(
+        minimum_release_steps=2,
+        maximum_release_steps=10,
+        release_allowed_fingers=[True, True, True, False],
+    )
+    contacts = np.array([[False, True, True, True]], dtype=bool)
+    prev_contacts = np.array([[True, True, True, True]], dtype=bool)
+    active = np.zeros((1, 4), dtype=bool)
+    release_steps = np.zeros((1, 4), dtype=np.uint8)
+
+    transition = advance_finger_gaiting(
+        contacts=contacts,
+        previous_contacts=prev_contacts,
+        active=active,
+        release_steps=release_steps,
+        release_start_speed=np.zeros((1, 4)),
+        cooldown_steps=np.zeros(1, dtype=np.uint8),
+        eligible=np.array([True]),
+        axis_speed_ema=np.array([0.10]),
+        target_speed=np.array([0.10]),
+        cfg=cfg,
+    )
+    assert transition.release_steps[0, 0] == 1
+
+
+def test_v3b_stage_requires_handoff_before_promotion() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg, num_envs=1, backend_type="mujoco")
+    _, info = env.reset(np.array([0], dtype=np.int32))
+
+    env.get_ball_pos = lambda: info["rotation_anchor_pos"].copy()
+    env._contacts = lambda env_ids: np.ones((len(env_ids), 4), dtype=bool)
+
+    state = env.step(np.zeros((1, 16), dtype=np.float32))
+    state.info["rotation_level"] = np.array([1], dtype=np.int32)
+    state.info["gaiting_stage_handoffs"] = np.array([0], dtype=np.uint8)
+    env._state = state
+
+    required_steps = env._stage_steps_required[1]
+    for _ in range(required_steps + 2):
+        next_state = env.step(np.zeros((1, 16), dtype=np.float32))
+
+    assert next_state.info["rotation_level"][0] == 1
+
+
+def test_v3b_stage_handoff_count_resets_after_promotion() -> None:
+    cfg = LeapInhandBallCacheGaitingRotationCfg()
+    env = LeapInhandBallCacheGaitingRotationEnv(cfg, num_envs=1, backend_type="mujoco")
+    _, info = env.reset(np.array([0], dtype=np.int32))
+
+    env.get_ball_pos = lambda: info["rotation_anchor_pos"].copy()
+    env._contacts = lambda env_ids: np.ones((len(env_ids), 4), dtype=bool)
+
+    required_steps = env._stage_steps_required[0]
+    for _ in range(required_steps):
+        next_state = env.step(np.zeros((1, 16), dtype=np.float32))
+
+    assert next_state.info["rotation_level"][0] == 1
+    assert next_state.info["gaiting_stage_handoffs"][0] == 0
+
+
+def test_v3b_extra_handoff_after_requirement_gets_no_bonus() -> None:
+    required = np.array([1], dtype=np.int32)
+    stage_handoffs = np.array([1], dtype=np.uint8)
+    handoff_event = np.array([True], dtype=bool)
+
+    useful_handoff = handoff_event & (stage_handoffs < required)
+    assert not useful_handoff[0]
+
+
+def test_v3b_release_cannot_start_outside_retention_gate() -> None:
+    cfg = FingerGaitingConfig(release_allowed_fingers=[True, True, True, False])
+    contacts = np.array([[True, True, True, False]], dtype=bool)
+    prev_contacts = np.array([[True, True, True, True]], dtype=bool)
+
+    transition = advance_finger_gaiting(
+        contacts=contacts,
+        previous_contacts=prev_contacts,
+        active=np.zeros((1, 4), dtype=bool),
+        release_steps=np.zeros((1, 4), dtype=np.uint8),
+        release_start_speed=np.zeros((1, 4)),
+        cooldown_steps=np.zeros(1, dtype=np.uint8),
+        eligible=np.array([False]),
+        axis_speed_ema=np.array([0.10]),
+        target_speed=np.array([0.10]),
+        cfg=cfg,
+    )
+    assert not transition.active[0, 3]

@@ -322,6 +322,12 @@ class LeapInhandBallFingerGaitingRotationCfg(LeapInhandBallSustainedRotationCfg)
             raise ValueError("minimum_speed_ratio must be in (0, 1]")
         if not 0.0 < cfg.recovery_speed_ratio <= 1.0:
             raise ValueError("recovery_speed_ratio must be in (0, 1]")
+        if not (np.isfinite(cfg.minimum_handoff_angle_rad) and cfg.minimum_handoff_angle_rad >= 0.0):
+            raise ValueError("minimum_handoff_angle_rad must be finite and non-negative")
+        if len(cfg.release_allowed_fingers) != 4:
+            raise ValueError("release_allowed_fingers must have length 4")
+        if not all(isinstance(value, (bool, np.bool_)) for value in cfg.release_allowed_fingers):
+            raise ValueError("release_allowed_fingers elements must be boolean")
         for value, name in (
             (cfg.stable_support_scale, "stable_support_scale"),
             (cfg.release_progress_scale, "release_progress_scale"),
@@ -343,11 +349,7 @@ class LeapInhandBallFingerGaitingRotationEnv(LeapInhandBallSustainedRotationEnv)
     def _compute_raw_drop(
         self, ball_pos: np.ndarray, anchor_pos: np.ndarray
     ) -> np.ndarray:
-        return compute_reset_relative_drop(
-            ball_pos,
-            anchor_pos,
-            self._cfg.termination_drop_distance,
-        )
+        return np.linalg.norm(ball_pos - anchor_pos, axis=1) > self._cfg.termination_drop_distance
 
     def __init__(
         self,
@@ -406,10 +408,22 @@ class LeapInhandBallFingerGaitingRotationEnv(LeapInhandBallSustainedRotationEnv)
         retention_ok: np.ndarray,
         no_failure_signal: np.ndarray,
         base_stage_valid: np.ndarray,
+        release_start_angle: np.ndarray | None = None,
+        cumulative_angle: np.ndarray | None = None,
     ) -> StageSkillUpdate:
         cfg = self._cfg.finger_gaiting
         eligible = retention_ok & no_failure_signal & ~palm_contact
         required = self._required_handoffs[levels]
+        start_angle = (
+            release_start_angle
+            if release_start_angle is not None
+            else info.get("gaiting_release_start_angle", None)
+        )
+        curr_angle = (
+            cumulative_angle
+            if cumulative_angle is not None
+            else info.get("rotation_net_angle_rad", None)
+        )
         transition = advance_finger_gaiting(
             contacts=fingertip_contacts,
             previous_contacts=info["gaiting_previous_contacts"],
@@ -422,7 +436,11 @@ class LeapInhandBallFingerGaitingRotationEnv(LeapInhandBallSustainedRotationEnv)
             target_speed=target_speed,
             cfg=cfg,
             stationary_handoff_allowed=(target_speed <= 1e-6) & (required > 0),
+            release_start_angle=start_angle,
+            cumulative_angle=curr_angle,
         )
+        if start_angle is not None and "gaiting_release_start_angle" in info:
+            info["gaiting_release_start_angle"] = transition.release_start_angle.copy()
         handoff_event = np.any(transition.qualified_handoff, axis=1)
         stage_handoffs = np.asarray(info["gaiting_stage_handoffs"], dtype=np.uint8)
         useful_handoff = handoff_event & (stage_handoffs < required)
