@@ -303,6 +303,12 @@ def test_ppo_leap_state_cycle_composes_as_independent_owner(backend: str):
 
     assert cfg.training.task_name == "LeapInhandBallStateCycleRotation"
     assert cfg.training.sim_backend == backend
+    assert cfg.training.eval_only is False
+    assert cfg.evaluation.num_envs == 4096
+    assert cfg.evaluation.num_steps == 1800
+    assert cfg.evaluation.deterministic is True
+    assert cfg.evaluation.write_tensorboard is True
+    assert cfg.evaluation.output_dir is None
     assert cfg.reward.rotation_progress_scale == pytest.approx(3.0)
     assert cfg.reward.reverse_rotation_scale == pytest.approx(5.0)
     assert cfg.reward.rotation_target_axis_speed_rad_s == pytest.approx(0.50)
@@ -320,13 +326,21 @@ def test_ppo_leap_state_cycle_composes_as_independent_owner(backend: str):
     assert cfg.env.state_cycle.ready_to_a.minimum_net_angle_rad == pytest.approx(0.0)
     assert cfg.env.state_cycle.b_to_ready.minimum_net_angle_rad == pytest.approx(0.0)
     assert cfg.env.state_cycle.ready_to_a.hold_steps == 4
-    assert cfg.env.state_cycle.ready_to_a.timeout_seconds == pytest.approx(2.0)
+    assert cfg.env.state_cycle.ready_to_a.timeout_seconds == pytest.approx(1.5)
     assert cfg.env.state_cycle.a_to_b.timeout_seconds == pytest.approx(2.0)
     assert cfg.env.state_cycle.b_to_ready.timeout_seconds == pytest.approx(1.3)
-    ready_to_a_timeout_steps = int(
-        round(cfg.env.state_cycle.ready_to_a.timeout_seconds / cfg.env.ctrl_dt)
+    ready_to_a_timeout_steps = round(
+        cfg.env.state_cycle.ready_to_a.timeout_seconds / cfg.env.ctrl_dt
     )
-    assert ready_to_a_timeout_steps == 40
+    a_to_b_timeout_steps = round(
+        cfg.env.state_cycle.a_to_b.timeout_seconds / cfg.env.ctrl_dt
+    )
+    b_to_ready_timeout_steps = round(
+        cfg.env.state_cycle.b_to_ready.timeout_seconds / cfg.env.ctrl_dt
+    )
+    assert ready_to_a_timeout_steps == 30
+    assert a_to_b_timeout_steps == 40
+    assert b_to_ready_timeout_steps == 26
     assert cfg.env.state_cycle.b_to_ready.target_pose == "ready"
     assert OmegaConf.select(cfg, "state_cycle") is None
 

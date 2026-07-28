@@ -74,6 +74,7 @@ training:
     max_envs_to_dump: 5
     output_dir: null
   play_only: false
+  eval_only: false
   no_play: false
   sim2sim_strict: true
   play_render_mode: auto
@@ -90,6 +91,13 @@ training:
   log_root: null
   num_timesteps: null
   log_dir: null
+
+evaluation:
+  num_envs: 4096
+  num_steps: 1800
+  deterministic: true
+  write_tensorboard: true
+  output_dir: null
 
 interactive:
   action_mode: zero

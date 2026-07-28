@@ -1,4 +1,7 @@
+import csv
 import datetime
+import hashlib
+import json
 import statistics
 import sys
 import time
@@ -6,6 +9,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import hydra
+import numpy as np
 import torch
 from omegaconf import DictConfig, OmegaConf
 
@@ -32,6 +36,7 @@ from unilab.training import (
 )
 from unilab.training.experiment import (
     ExperimentTracker,
+    get_git_info,
     patch_rsl_rl_resume_state,
     patch_rsl_rl_wandb_writer,
 )
@@ -141,6 +146,272 @@ def apply_ppo_runtime_flags(
         return
     if not training_enabled:
         algorithm_cfg["enable_compile"] = False
+
+
+def aggregate_step_mean(rows: list[dict[str, float]], key: str) -> float:
+    """Average a scalar metric over evaluation logging points."""
+    values = [row[key] for row in rows if key in row]
+    return float(np.mean(values)) if values else 0.0
+
+
+def aggregate_count(rows: list[dict[str, float]], key: str) -> float:
+    """Sum event counts over evaluation logging points."""
+    return float(np.sum([row[key] for row in rows if key in row]))
+
+
+def aggregate_count_weighted_mean(
+    rows: list[dict[str, float]],
+    *,
+    metric_key: str,
+    count_key: str,
+) -> float:
+    """Aggregate terminal metrics using the corresponding event count."""
+    weighted_sum = 0.0
+    total_count = 0.0
+    for row in rows:
+        if metric_key not in row or count_key not in row:
+            continue
+        count = float(row[count_key])
+        weighted_sum += float(row[metric_key]) * count
+        total_count += count
+    return weighted_sum / total_count if total_count > 0.0 else 0.0
+
+
+def _distribution_stats(values: list[float] | list[int], prefix: str) -> dict[str, float]:
+    array = np.asarray(values, dtype=np.float64)
+    if array.size == 0:
+        return {
+            f"{prefix}_mean": 0.0,
+            f"{prefix}_p50": 0.0,
+            f"{prefix}_p90": 0.0,
+        }
+    return {
+        f"{prefix}_mean": float(np.mean(array)),
+        f"{prefix}_p50": float(np.percentile(array, 50)),
+        f"{prefix}_p90": float(np.percentile(array, 90)),
+    }
+
+
+def build_evaluation_summary(
+    *,
+    metric_rows: list[dict[str, float]],
+    completed_returns: list[float],
+    completed_lengths: list[int],
+    ctrl_dt: float,
+) -> dict[str, float | int]:
+    """Build correctly weighted episode, phase-timeout, and step summaries."""
+    summary: dict[str, float | int] = {
+        "episode/count": len(completed_returns),
+    }
+    summary.update(_distribution_stats(completed_returns, "episode/return"))
+    summary.update(_distribution_stats(completed_lengths, "episode/length"))
+    summary["episode/duration_seconds_mean"] = (
+        float(np.mean(completed_lengths)) * ctrl_dt if completed_lengths else 0.0
+    )
+
+    step_mean_prefixes = ("state_cycle/", "rotation/", "termination/")
+    step_keys = sorted(
+        {
+            key
+            for row in metric_rows
+            for key in row
+            if key != "evaluation_step" and key.startswith(step_mean_prefixes)
+        }
+    )
+    for key in step_keys:
+        summary[key] = aggregate_step_mean(metric_rows, key)
+
+    phases = ("READY_TO_A", "A_TO_B", "B_TO_READY")
+    total_timeout_count = 0.0
+    for phase in phases:
+        source_count_key = f"timeout/{phase}_count"
+        total_count_key = f"timeout/{phase}_total_count"
+        count = aggregate_count(metric_rows, source_count_key)
+        summary[total_count_key] = count
+        total_timeout_count += count
+    summary["timeout/total_count"] = total_timeout_count
+
+    terminal_metric_names = (
+        "pose_distance_mean",
+        "position_error_m_mean",
+        "ball_speed_m_s_mean",
+        "contact_count_mean",
+        "edge_net_angle_mean",
+        "remaining_angle_mean",
+        "hold_steps_mean",
+        "pose_ok_rate",
+        "position_ok_rate",
+        "speed_ok_rate",
+        "contact_ok_rate",
+        "rotation_ok_rate",
+        "no_palm_contact_rate",
+        "pose_blocked_rate",
+        "position_blocked_rate",
+        "speed_blocked_rate",
+        "contact_blocked_rate",
+        "rotation_blocked_rate",
+        "palm_blocked_rate",
+    )
+    for phase in phases:
+        count_key = f"timeout/{phase}_count"
+        phase_count = float(summary[f"timeout/{phase}_total_count"])
+        summary[f"timeout/{phase}_contribution"] = (
+            phase_count / total_timeout_count if total_timeout_count > 0.0 else 0.0
+        )
+        for metric_name in terminal_metric_names:
+            metric_key = f"timeout/{phase}_{metric_name}"
+            summary[metric_key] = aggregate_count_weighted_mean(
+                metric_rows,
+                metric_key=metric_key,
+                count_key=count_key,
+            )
+    return summary
+
+
+def _state_dict_sha256(state_dict: dict[str, torch.Tensor]) -> str:
+    digest = hashlib.sha256()
+    for key in sorted(state_dict):
+        digest.update(key.encode("utf-8"))
+        tensor = state_dict[key].detach().cpu().contiguous()
+        digest.update(tensor.numpy().tobytes())
+    return digest.hexdigest()
+
+
+def evaluation_policy_actions(
+    policy: Any,
+    obs: Any,
+    *,
+    deterministic: bool,
+) -> torch.Tensor:
+    """Select policy mean actions or explicit distribution samples."""
+    return cast(torch.Tensor, policy(obs, stochastic_output=not deterministic))
+
+
+def validate_evaluation_config(cfg: DictConfig) -> None:
+    """Validate evaluator-only values and mutually exclusive entry modes."""
+    eval_only = bool(OmegaConf.select(cfg, "training.eval_only", default=False))
+    play_only = bool(OmegaConf.select(cfg, "training.play_only", default=False))
+    if eval_only and play_only:
+        raise ValueError("training.eval_only and training.play_only cannot both be true.")
+    if int(cfg.evaluation.num_envs) <= 0:
+        raise ValueError("evaluation.num_envs must be positive")
+    if int(cfg.evaluation.num_steps) <= 0:
+        raise ValueError("evaluation.num_steps must be positive")
+    if not isinstance(cfg.evaluation.deterministic, bool):
+        raise TypeError("evaluation.deterministic must be bool")
+
+
+def _read_run_config(run_dir: Path) -> dict[str, Any]:
+    path = run_dir / "run_config.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise FileNotFoundError(f"Evaluation run config could not be read: {path}") from exc
+    if not isinstance(payload, dict) or not isinstance(payload.get("config"), dict):
+        raise ValueError(f"Evaluation run config has no full config mapping: {path}")
+    return payload
+
+
+def recover_evaluation_config(
+    source_run_dir: Path,
+    target_cfg: DictConfig,
+) -> DictConfig:
+    """Restore checkpoint config while preserving evaluator-only CLI settings."""
+    resolve_sim2sim_config(
+        source_run_dir,
+        target_cfg,
+        algo_name="ppo",
+        strict=True,
+    )
+    evaluation_settings = OmegaConf.to_container(target_cfg.evaluation, resolve=True)
+    selector = {
+        "load_run": OmegaConf.select(target_cfg, "algo.load_run"),
+        "checkpoint": OmegaConf.select(target_cfg, "algo.checkpoint"),
+        "seed": OmegaConf.select(target_cfg, "algo.seed"),
+    }
+    payload = _read_run_config(source_run_dir)
+    recovered = OmegaConf.create(payload["config"])
+    recovered.evaluation = OmegaConf.create(evaluation_settings)
+    recovered.training.eval_only = True
+    recovered.training.play_only = False
+    recovered.training.no_play = True
+    recovered.algo.load_run = selector["load_run"]
+    recovered.algo.checkpoint = selector["checkpoint"]
+    recovered.algo.seed = selector["seed"]
+    return recovered
+
+
+def _assert_v4_state_cycle_evaluation_contract(cfg: DictConfig, num_obs: int) -> None:
+    if str(cfg.training.task_name) != "LeapInhandBallStateCycleRotation":
+        return
+    assert float(cfg.env.state_cycle.ready_to_a.timeout_seconds) == 1.5
+    assert float(cfg.env.state_cycle.a_to_b.timeout_seconds) == 2.0
+    assert float(cfg.env.state_cycle.b_to_ready.timeout_seconds) == 1.3
+    assert float(cfg.env.ctrl_dt) == 0.05
+    assert float(cfg.env.termination_workspace_radius) == 0.05
+    assert float(cfg.reward.pose_tracking_scale) == 0.50
+    assert float(cfg.reward.rotation_progress_scale) == 3.0
+    assert float(cfg.reward.rotation_target_axis_speed_rad_s) == 0.50
+    assert float(cfg.reward.rotation_overspeed_scale) == 1.0
+    assert float(cfg.reward.failure_penalty) == 3.0
+    assert float(cfg.reward.failure_rotation_clawback_cap) == 5.0
+    if num_obs != 142:
+        raise AssertionError(f"Expected state-cycle observation dimension 142, got {num_obs}")
+
+
+def _evaluation_output_dir(
+    cfg: DictConfig,
+    *,
+    load_path: Path,
+    load_path_dir: Path,
+) -> Path:
+    configured = OmegaConf.select(cfg, "evaluation.output_dir", default=None)
+    if configured not in (None, ""):
+        return Path(str(configured)).resolve()
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    mode = "deterministic" if bool(cfg.evaluation.deterministic) else "stochastic"
+    name = f"{load_path_dir.name}_{load_path.stem}_instrumented_{mode}_{timestamp}"
+    return (
+        ROOT_DIR
+        / "logs"
+        / "evaluation"
+        / str(cfg.training.task_name)
+        / name
+    )
+
+
+def _required_state_cycle_evaluation_keys() -> set[str]:
+    keys: set[str] = set()
+    phases = ("READY_TO_A", "A_TO_B", "B_TO_READY")
+    for phase in phases:
+        keys.update(
+            {
+                f"state_cycle/pose_distance_{phase}_mean",
+                f"state_cycle/pose_ok_{phase}_rate",
+                f"state_cycle/position_ok_{phase}_rate",
+                f"state_cycle/contact_ok_{phase}_rate",
+                f"state_cycle/rotation_ok_{phase}_rate",
+                f"state_cycle/hold_steps_{phase}_mean",
+                f"state_cycle/remaining_angle_{phase}_mean",
+                f"state_cycle/timeout_{phase}_rate",
+                f"state_cycle/timeout_{phase}_conditional_rate",
+                f"timeout/{phase}_count",
+                f"timeout/{phase}_pose_distance_mean",
+                f"timeout/{phase}_position_error_m_mean",
+                f"timeout/{phase}_ball_speed_m_s_mean",
+                f"timeout/{phase}_contact_count_mean",
+                f"timeout/{phase}_edge_net_angle_mean",
+                f"timeout/{phase}_remaining_angle_mean",
+                f"timeout/{phase}_hold_steps_mean",
+                f"timeout/{phase}_pose_blocked_rate",
+                f"timeout/{phase}_position_blocked_rate",
+                f"timeout/{phase}_speed_blocked_rate",
+                f"timeout/{phase}_contact_blocked_rate",
+                f"timeout/{phase}_rotation_blocked_rate",
+                f"timeout/{phase}_palm_blocked_rate",
+            }
+        )
+    return keys
 
 
 def _format_play_checkpoint_error(
@@ -298,15 +569,225 @@ def play_rsl_rl(cfg: DictConfig, device: str) -> str | None:
     return play_video_path
 
 
+def evaluate_rsl_rl(cfg: DictConfig, device: str) -> Path:
+    """Run a checkpoint-only batch rollout with instrumented aggregation."""
+    validate_evaluation_config(cfg)
+    load_path, load_path_dir = parse_checkpoint_path(cfg, root_dir=ROOT_DIR)
+    if load_path is None or load_path_dir is None or not load_path.exists():
+        raise FileNotFoundError("Evaluation checkpoint could not be resolved.")
+    load_path = load_path.resolve()
+    load_path_dir = load_path_dir.resolve()
+    cfg = recover_evaluation_config(load_path_dir, cfg)
+    validate_evaluation_config(cfg)
+
+    num_envs = int(cfg.evaluation.num_envs)
+    num_steps = int(cfg.evaluation.num_steps)
+    deterministic = bool(cfg.evaluation.deterministic)
+    output_dir = _evaluation_output_dir(
+        cfg,
+        load_path=load_path,
+        load_path_dir=load_path_dir,
+    )
+    output_dir.mkdir(parents=True, exist_ok=False)
+
+    rl_cfg = _algo_config_dict(cfg)
+    wrapper_cls = _resolve_ppo_wrapper_cls(rl_cfg)
+    env_cfg_override = build_ppo_env_cfg_override(cfg)
+    env = create_env(
+        cfg,
+        num_envs=num_envs,
+        env_cfg_override=env_cfg_override,
+    )
+    if str(cfg.training.task_name) == "LeapInhandBallStateCycleRotation":
+        env.set_diagnostic_log_interval(1)
+    wrapped_env = wrapper_cls(env, device=device)
+    try:
+        _assert_v4_state_cycle_evaluation_contract(cfg, int(wrapped_env.num_obs))
+        train_cfg = normalize_ppo_train_cfg(rl_cfg)
+        apply_ppo_runtime_flags(train_cfg, cfg, training_enabled=False)
+        train_cfg.setdefault("runner", {})
+        train_cfg["runner"]["logger"] = "none"
+        train_cfg["logger"] = "none"
+        runner = cast(
+            Any,
+            OnPolicyRunner(
+                cast(Any, wrapped_env),
+                train_cfg,
+                log_dir=None,
+                device=device,
+            ),
+        )
+        with policy_load_dim_guard(
+            env_obs_dim=getattr(wrapped_env, "num_obs", None),
+            env_action_dim=getattr(wrapped_env, "num_actions", None),
+            algo_name="ppo",
+        ):
+            runner.load(str(load_path), map_location=device)
+        policy = runner.get_inference_policy(device=device)
+        actor_hash_before = _state_dict_sha256(policy.state_dict())
+
+        ready_seconds = float(cfg.env.state_cycle.ready_to_a.timeout_seconds)
+        a_to_b_seconds = float(cfg.env.state_cycle.a_to_b.timeout_seconds)
+        b_to_ready_seconds = float(cfg.env.state_cycle.b_to_ready.timeout_seconds)
+        ctrl_dt = float(cfg.env.ctrl_dt)
+        print(f"Resolved evaluation checkpoint:\n{load_path}\n")
+        print("Resolved V4 task config:")
+        print(
+            f"Ready->A timeout: {ready_seconds:.1f} s / "
+            f"{round(ready_seconds / ctrl_dt)} steps"
+        )
+        print(
+            f"A->B timeout:     {a_to_b_seconds:.1f} s / "
+            f"{round(a_to_b_seconds / ctrl_dt)} steps"
+        )
+        print(
+            f"B->Ready timeout: {b_to_ready_seconds:.1f} s / "
+            f"{round(b_to_ready_seconds / ctrl_dt)} steps\n"
+        )
+        print(f"Observation dim: {wrapped_env.num_obs}")
+        print("Training updates: disabled")
+        print(f"Deterministic policy: {str(deterministic).lower()}")
+
+        obs, _ = wrapped_env.reset()
+        episode_returns = np.zeros(num_envs, dtype=np.float64)
+        episode_lengths = np.zeros(num_envs, dtype=np.int64)
+        completed_returns: list[float] = []
+        completed_lengths: list[int] = []
+        metric_rows: list[dict[str, float]] = []
+
+        with torch.inference_mode():
+            for step_index in range(num_steps):
+                actions = evaluation_policy_actions(
+                    policy,
+                    obs,
+                    deterministic=deterministic,
+                )
+                next_obs, rewards, dones, infos = wrapped_env.step(actions)
+                rewards_np = rewards.detach().cpu().numpy()
+                dones_np = dones.detach().cpu().numpy().astype(bool)
+                if not np.isfinite(rewards_np).all():
+                    raise FloatingPointError(
+                        f"Non-finite evaluation reward at step {step_index}"
+                    )
+                episode_returns += rewards_np
+                episode_lengths += 1
+                if np.any(dones_np):
+                    completed_returns.extend(episode_returns[dones_np].tolist())
+                    completed_lengths.extend(episode_lengths[dones_np].tolist())
+                    episode_returns[dones_np] = 0.0
+                    episode_lengths[dones_np] = 0
+
+                raw_log = infos.get("log")
+                if isinstance(raw_log, dict):
+                    row = {"evaluation_step": float(step_index)}
+                    for key, value in raw_log.items():
+                        if isinstance(value, torch.Tensor):
+                            value = value.detach().cpu().item()
+                        elif isinstance(value, np.ndarray):
+                            value = value.item()
+                        scalar = float(value)
+                        if not np.isfinite(scalar):
+                            raise FloatingPointError(
+                                f"Non-finite evaluation metric {key!r} "
+                                f"at step {step_index}"
+                            )
+                        row[str(key)] = scalar
+                    metric_rows.append(row)
+                obs = next_obs
+
+        present_keys = {key for row in metric_rows for key in row}
+        if str(cfg.training.task_name) == "LeapInhandBallStateCycleRotation":
+            missing = sorted(_required_state_cycle_evaluation_keys() - present_keys)
+            if missing:
+                raise KeyError(f"Evaluation diagnostics are missing keys: {missing}")
+
+        actor_hash_after = _state_dict_sha256(policy.state_dict())
+        if actor_hash_before != actor_hash_after:
+            raise AssertionError("Evaluation modified actor policy weights")
+
+        summary = build_evaluation_summary(
+            metric_rows=metric_rows,
+            completed_returns=completed_returns,
+            completed_lengths=completed_lengths,
+            ctrl_dt=ctrl_dt,
+        )
+        run_payload = _read_run_config(load_path_dir)
+        source_git = run_payload.get("run", {}).get("git", {})
+        eval_config = {
+            "checkpoint": str(load_path),
+            "checkpoint_run": load_path_dir.name,
+            "checkpoint_commit": source_git.get("commit"),
+            "evaluation_code_commit": get_git_info(ROOT_DIR).get("commit"),
+            "num_envs": num_envs,
+            "num_steps": num_steps,
+            "seed": int(cfg.algo.seed),
+            "deterministic": deterministic,
+            "observation_dim": int(wrapped_env.num_obs),
+            "ctrl_dt": ctrl_dt,
+            "ready_to_a_timeout_seconds": ready_seconds,
+            "a_to_b_timeout_seconds": a_to_b_seconds,
+            "b_to_ready_timeout_seconds": b_to_ready_seconds,
+            "actor_hash_before": actor_hash_before,
+            "actor_hash_after": actor_hash_after,
+            "training_updates": False,
+        }
+        (output_dir / "eval_config.json").write_text(
+            json.dumps(eval_config, indent=2, ensure_ascii=False, allow_nan=False),
+            encoding="utf-8",
+        )
+        (output_dir / "eval_summary.json").write_text(
+            json.dumps(summary, indent=2, ensure_ascii=False, allow_nan=False),
+            encoding="utf-8",
+        )
+        fieldnames = ["evaluation_step"] + sorted(
+            present_keys - {"evaluation_step"}
+        )
+        with (output_dir / "eval_step_metrics.csv").open(
+            "w",
+            encoding="utf-8",
+            newline="",
+        ) as stream:
+            writer = csv.DictWriter(stream, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(metric_rows)
+
+        if bool(cfg.evaluation.write_tensorboard):
+            from torch.utils.tensorboard import SummaryWriter
+
+            writer = SummaryWriter(log_dir=str(output_dir))
+            try:
+                for row in metric_rows:
+                    eval_step = int(row["evaluation_step"])
+                    for key, value in row.items():
+                        if key != "evaluation_step":
+                            writer.add_scalar(key, value, eval_step)
+                for key, value in summary.items():
+                    writer.add_scalar(key, value, 0)
+            finally:
+                writer.close()
+        print(f"Evaluation output: {output_dir}")
+        print(f"Actor SHA256 before: {actor_hash_before}")
+        print(f"Actor SHA256 after:  {actor_hash_after}")
+        return output_dir
+    finally:
+        wrapped_env.close()
+
+
 @hydra.main(version_base="1.3", config_path="../conf/ppo", config_name="config")
 def main(cfg: DictConfig) -> None:
     ensure_registries()
+    validate_evaluation_config(cfg)
 
     seed_info = apply_configured_training_seed(cfg, torch_runtime=True, cuda=True)
-    env_cfg_override = build_ppo_env_cfg_override(cfg)
 
     device = get_default_device()
     print(f"Using device: {device}")
+
+    if bool(cfg.training.eval_only):
+        evaluate_rsl_rl(cfg, device)
+        return
+
+    env_cfg_override = build_ppo_env_cfg_override(cfg)
 
     # Compute effective max_iterations (supports num_timesteps override)
     max_iterations = cfg.algo.max_iterations

@@ -859,6 +859,13 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         )
         self._max_required_angle = max(float(np.max(self._minimum_angles)), 1e-6)
         self._cycle_target_angle = float(cfg.state_cycle.cycle_target_net_angle_rad)
+        self._diagnostic_log_interval_steps = 4
+
+    def set_diagnostic_log_interval(self, interval_steps: int) -> None:
+        """Set state-cycle diagnostic cadence for batch evaluation."""
+        if interval_steps <= 0:
+            raise ValueError("diagnostic log interval must be positive")
+        self._diagnostic_log_interval_steps = int(interval_steps)
 
     def _make_domain_randomization_provider(self) -> DomainRandomizationProvider:
         return LeapStateCycleResetProvider()
@@ -1299,7 +1306,10 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         reward_terms: dict[str, np.ndarray],
     ) -> None:
         step_count = info.get("steps", np.zeros(self._num_envs, dtype=np.uint32))
-        if not self._enable_reward_log or int(step_count[0]) % 4 != 0:
+        if (
+            not self._enable_reward_log
+            or int(step_count[0]) % self._diagnostic_log_interval_steps != 0
+        ):
             return
         log = info.get("log", {})
         log["state_cycle/phase_mean"] = float(np.mean(phases))

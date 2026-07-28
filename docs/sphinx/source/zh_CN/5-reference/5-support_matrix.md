@@ -62,6 +62,8 @@ uv run scripts/generate_support_matrix.py --write
 | PPO (torch) | `leap_inhand` (LEAP Hand in-hand) | Tested | Tested |
 | PPO (torch) | `leap_inhand_ball` (LEAP Hand ball rotation) | Tested | Tested |
 | PPO (torch) | `leap_inhand_ball_sustained` (LEAP Hand sustained ball rotation) | Tested | Tested |
+| PPO (torch) | `leap_inhand_ball_sustained_cache` (LEAP Hand cache-reset sustained ball rotation) | Tested | Tested |
+| PPO (torch) | `leap_inhand_ball_finger_gaiting` (LEAP Hand finger-gaiting ball rotation) | Tested | Tested |
 | PPO (torch) | `leap_inhand_toss` (LEAP Hand toss and catch) | Tested | Tested |
 | PPO (torch) | `sharpa_inhand` (Sharpa in-hand) | Tested | Tested |
 | PPO (torch) | `sharpa_inhand_grasp` (Sharpa in-hand grasp) | Tested | Tested |
@@ -76,8 +78,12 @@ uv run scripts/generate_support_matrix.py --write
 | PPO (torch) | `go2w_joystick_flat` (go2w joystick flat) | Tested | Tested |
 | PPO (torch) | `go2w_joystick_rough` (go2w joystick rough) | Tested | Tested |
 | PPO (torch) | `leap_inhand_ball_allegro` (leap inhand ball allegro) | Tested | Tested |
+| PPO (torch) | `leap_inhand_ball_cache` (leap inhand ball cache) | Tested | Tested |
+| PPO (torch) | `leap_inhand_ball_cache_gaiting` (leap inhand ball cache gaiting) | Tested | Tested |
+| PPO (torch) | `leap_inhand_ball_direct` (leap inhand ball direct) | Tested | Tested |
 | PPO (torch) | `leap_inhand_ball_grasp` (leap inhand ball grasp) | Tested | Tested |
 | PPO (torch) | `leap_inhand_ball_rotation_v2` (leap inhand ball rotation v2) | Tested | Tested |
+| PPO (torch) | `leap_inhand_ball_state_cycle` (leap inhand ball state cycle) | Tested | Tested |
 | PPO (torch) | `stewart_balance` (stewart balance) | Tested | Tested |
 | PPO (mlx) | `go1_joystick_flat` (Go1 joystick) | Tested | Tested |
 | PPO (mlx) | `go2_joystick_flat` (Go2 joystick) | Tested | Tested |
@@ -91,6 +97,8 @@ uv run scripts/generate_support_matrix.py --write
 | PPO (mlx) | `leap_inhand` (LEAP Hand in-hand) | Configured | Configured |
 | PPO (mlx) | `leap_inhand_ball` (LEAP Hand ball rotation) | Configured | Configured |
 | PPO (mlx) | `leap_inhand_ball_sustained` (LEAP Hand sustained ball rotation) | Configured | Configured |
+| PPO (mlx) | `leap_inhand_ball_sustained_cache` (LEAP Hand cache-reset sustained ball rotation) | Configured | Configured |
+| PPO (mlx) | `leap_inhand_ball_finger_gaiting` (LEAP Hand finger-gaiting ball rotation) | Configured | Configured |
 | PPO (mlx) | `leap_inhand_toss` (LEAP Hand toss and catch) | Configured | Configured |
 | PPO (mlx) | `sharpa_inhand` (Sharpa in-hand) | Configured | Configured |
 | PPO (mlx) | `sharpa_inhand_grasp` (Sharpa in-hand grasp) | Configured | Configured |
@@ -105,8 +113,12 @@ uv run scripts/generate_support_matrix.py --write
 | PPO (mlx) | `go2w_joystick_flat` (go2w joystick flat) | Configured | Configured |
 | PPO (mlx) | `go2w_joystick_rough` (go2w joystick rough) | Configured | Configured |
 | PPO (mlx) | `leap_inhand_ball_allegro` (leap inhand ball allegro) | Configured | Configured |
+| PPO (mlx) | `leap_inhand_ball_cache` (leap inhand ball cache) | Configured | Configured |
+| PPO (mlx) | `leap_inhand_ball_cache_gaiting` (leap inhand ball cache gaiting) | Configured | Configured |
+| PPO (mlx) | `leap_inhand_ball_direct` (leap inhand ball direct) | Configured | Configured |
 | PPO (mlx) | `leap_inhand_ball_grasp` (leap inhand ball grasp) | Configured | Configured |
 | PPO (mlx) | `leap_inhand_ball_rotation_v2` (leap inhand ball rotation v2) | Configured | Configured |
+| PPO (mlx) | `leap_inhand_ball_state_cycle` (leap inhand ball state cycle) | Configured | Configured |
 | PPO (mlx) | `stewart_balance` (stewart balance) | Configured | Configured |
 | APPO (torch) | `go1_joystick_flat` (Go1 joystick) | Tested | Tested |
 | APPO (torch) | `go2_joystick_flat` (Go2 joystick) | Tested | Tested |

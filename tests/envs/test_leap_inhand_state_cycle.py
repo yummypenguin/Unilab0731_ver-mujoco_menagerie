@@ -655,10 +655,10 @@ def test_timeout_diagnostics_attribute_terminal_row_to_phase_before() -> None:
     assert metrics["timeout/A_TO_B_count"] == 0.0
 
 
-def test_ready_to_a_timeout_boundary_is_40_steps_and_transition_wins() -> None:
-    timeout_steps = np.asarray([40, 40, 40], dtype=np.uint32)
+def test_ready_to_a_timeout_boundary_is_30_steps_and_transition_wins() -> None:
+    timeout_steps = np.asarray([30, 30, 30], dtype=np.uint32)
     timeout = compute_timeout_event(
-        np.asarray([39, 40, 40], dtype=np.uint32),
+        np.asarray([29, 30, 30], dtype=np.uint32),
         timeout_steps,
         transition_event=np.asarray([False, False, True]),
         workspace_failure=np.zeros(3, dtype=bool),
@@ -799,6 +799,9 @@ def test_state_cycle_environment_reset_and_step() -> None:
     )
     assert isinstance(env, LeapInhandBallStateCycleRotationEnv)
     try:
+        env.set_diagnostic_log_interval(1)
+        with pytest.raises(ValueError, match="must be positive"):
+            env.set_diagnostic_log_interval(0)
         env._sample_reset_pose_names = lambda num_reset: list(RESET_POSE_NAMES[:num_reset])
         obs, info = env.reset(np.arange(3, dtype=np.int32))
         assert obs["obs"].shape == (3, 142)
