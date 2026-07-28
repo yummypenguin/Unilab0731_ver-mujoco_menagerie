@@ -113,17 +113,22 @@ class StateCycleConfig:
 @dataclass
 class StateCycleRewardConfig:
     pose_progress_scale: float = 4.0
-    pose_tracking_scale: float = 0.25
+    pose_tracking_scale: float = 0.50
     pose_sigma: float = 0.08
     rotation_progress_scale: float = 3.0
     reverse_rotation_scale: float = 5.0
+    rotation_target_axis_speed_rad_s: float = 0.50
+    rotation_overspeed_scale: float = 1.00
+    rotation_workspace_full_radius_m: float = 0.015
+    rotation_workspace_zero_radius_m: float = 0.035
     position_error_scale: float = 6.0
     object_linvel_scale: float = 0.3
-    transition_success_bonus: float = 0.05
-    cycle_success_bonus: float = 0.20
-    invalid_cycle_penalty: float = 0.10
+    transition_success_bonus: float = 0.10
+    cycle_success_bonus: float = 0.30
+    invalid_cycle_penalty: float = 0.15
     timeout_penalty: float = 0.25
-    failure_penalty: float = 1.0
+    failure_penalty: float = 3.0
+    failure_rotation_clawback_cap: float = 5.0
 
 
 @dataclass(frozen=True)
@@ -139,6 +144,7 @@ class StateCycleRewardTerms:
     pose_progress: np.ndarray
     pose_tracking: np.ndarray
     rotation_progress: np.ndarray
+    rotation_overspeed: np.ndarray
     reverse_rotation: np.ndarray
     position_error: np.ndarray
     obj_linvel: np.ndarray
@@ -147,6 +153,10 @@ class StateCycleRewardTerms:
     invalid_cycle: np.ndarray
     timeout: np.ndarray
     failure: np.ndarray
+    timeout_rotation_clawback: np.ndarray
+    failure_rotation_clawback: np.ndarray
+    phase_rotation_reward_earned_current: np.ndarray
+    episode_rotation_reward_earned_current: np.ndarray
     total: np.ndarray
 
 
@@ -163,6 +173,21 @@ class StateCycleRotationUpdate:
     completed_cycle_angle_sum: np.ndarray
     completed_cycle_count: np.ndarray
     valid_rotation_cycles_completed: np.ndarray
+
+
+@dataclass(frozen=True)
+class StateCycleRotationStabilityGates:
+    workspace: np.ndarray
+    contact: np.ndarray
+    no_palm: np.ndarray
+    linvel: np.ndarray
+    stability: np.ndarray
+
+
+@dataclass(frozen=True)
+class StateCycleEarnedRewardUpdate:
+    phase: np.ndarray
+    episode: np.ndarray
 
 
 def compute_pose_distance(
@@ -258,6 +283,71 @@ def update_state_cycle_rotation(
     )
 
 
+def compute_rotation_stability_gates(
+    *,
+    reward_cfg: StateCycleRewardConfig,
+    workspace_error: np.ndarray,
+    ball_speed: np.ndarray,
+    contact_count: np.ndarray,
+    minimum_contacts: np.ndarray,
+    palm_contact: np.ndarray,
+    max_ball_speed: np.ndarray,
+) -> StateCycleRotationStabilityGates:
+    """Return smooth control-quality gates for positive rotation shaping."""
+    workspace = np.asarray(workspace_error)
+    dtype = workspace.dtype
+    workspace_denominator = max(
+        reward_cfg.rotation_workspace_zero_radius_m
+        - reward_cfg.rotation_workspace_full_radius_m,
+        1e-8,
+    )
+    workspace_gate = np.clip(
+        (reward_cfg.rotation_workspace_zero_radius_m - workspace)
+        / workspace_denominator,
+        0.0,
+        1.0,
+    ).astype(dtype, copy=False)
+    contact_gate = (
+        np.asarray(contact_count) >= np.asarray(minimum_contacts)
+    ).astype(dtype)
+    no_palm_gate = (~np.asarray(palm_contact, dtype=bool)).astype(dtype)
+    max_speed = np.asarray(max_ball_speed, dtype=dtype)
+    full_speed = 0.5 * max_speed
+    linvel_gate = np.clip(
+        (max_speed - np.asarray(ball_speed, dtype=dtype))
+        / np.maximum(max_speed - full_speed, 1e-8),
+        0.0,
+        1.0,
+    ).astype(dtype, copy=False)
+    stability_gate = workspace_gate * contact_gate * no_palm_gate * linvel_gate
+    return StateCycleRotationStabilityGates(
+        workspace=workspace_gate,
+        contact=contact_gate,
+        no_palm=no_palm_gate,
+        linvel=linvel_gate,
+        stability=stability_gate,
+    )
+
+
+def finalize_rotation_reward_buffers(
+    *,
+    phase_rotation_reward_earned_current: np.ndarray,
+    episode_rotation_reward_earned_current: np.ndarray,
+    transition_event: np.ndarray,
+    timeout: np.ndarray,
+    workspace_failure: np.ndarray,
+) -> StateCycleEarnedRewardUpdate:
+    """Clear earned-reward buffers only after terminal clawbacks are computed."""
+    phase = np.asarray(phase_rotation_reward_earned_current).copy()
+    episode = np.asarray(episode_rotation_reward_earned_current).copy()
+    terminal = np.asarray(timeout, dtype=bool) | np.asarray(
+        workspace_failure, dtype=bool
+    )
+    phase[np.asarray(transition_event, dtype=bool) | terminal] = 0.0
+    episode[terminal] = 0.0
+    return StateCycleEarnedRewardUpdate(phase=phase, episode=episode)
+
+
 def compute_state_cycle_reward(
     *,
     reward_cfg: StateCycleRewardConfig,
@@ -265,8 +355,10 @@ def compute_state_cycle_reward(
     pose_progress: np.ndarray,
     pose_distance: np.ndarray,
     phase_start_pose_distance: np.ndarray,
-    phase_positive_angle: np.ndarray,
+    phase_rotation_reward_earned_before: np.ndarray,
+    episode_rotation_reward_earned_before: np.ndarray,
     axis_delta: np.ndarray,
+    rotation_stability_gate: np.ndarray,
     position_error: np.ndarray,
     ball_linvel: np.ndarray,
     transition_event: np.ndarray,
@@ -276,52 +368,86 @@ def compute_state_cycle_reward(
     workspace_failure: np.ndarray,
 ) -> StateCycleRewardTerms:
     """Compute bounded per-step shaping and mutually exclusive failure events."""
-    pose_progress_reward = reward_cfg.pose_progress_scale * np.asarray(pose_progress)
+    axis_delta_array = np.asarray(axis_delta)
+    dtype = axis_delta_array.dtype
+
+    def reward_array(values: np.ndarray) -> np.ndarray:
+        return np.asarray(values, dtype=dtype)
+
+    pose_progress_reward = reward_cfg.pose_progress_scale * reward_array(pose_progress)
     pose_tracking_rate = reward_cfg.pose_tracking_scale * (
         np.exp(
             -np.square(
-                np.asarray(pose_distance) / max(reward_cfg.pose_sigma, 1e-8)
+                reward_array(pose_distance) / max(reward_cfg.pose_sigma, 1e-8)
             )
         )
         - 1.0
     )
 
-    positive_axis_delta = np.maximum(np.asarray(axis_delta), 0.0)
-    reverse_axis_delta = np.maximum(-np.asarray(axis_delta), 0.0)
-    rotation_progress_reward = reward_cfg.rotation_progress_scale * positive_axis_delta
+    positive_axis_delta = np.maximum(axis_delta_array, 0.0)
+    reverse_axis_delta = np.maximum(-axis_delta_array, 0.0)
+    target_axis_delta = reward_cfg.rotation_target_axis_speed_rad_s * ctrl_dt
+    useful_positive_delta = np.minimum(positive_axis_delta, target_axis_delta)
+    overspeed_delta = np.maximum(positive_axis_delta - target_axis_delta, 0.0)
+    rotation_progress_reward = (
+        reward_cfg.rotation_progress_scale
+        * useful_positive_delta
+        * reward_array(rotation_stability_gate)
+    )
+    rotation_overspeed_reward = (
+        -reward_cfg.rotation_overspeed_scale * overspeed_delta
+    )
     reverse_rotation_reward = -reward_cfg.reverse_rotation_scale * reverse_axis_delta
-    position_error_rate = -reward_cfg.position_error_scale * np.asarray(position_error)
+    phase_rotation_earned_current = (
+        reward_array(phase_rotation_reward_earned_before) + rotation_progress_reward
+    )
+    episode_rotation_earned_current = (
+        reward_array(episode_rotation_reward_earned_before) + rotation_progress_reward
+    )
+    position_error_rate = -reward_cfg.position_error_scale * reward_array(position_error)
     object_linvel_rate = -reward_cfg.object_linvel_scale * np.sum(
-        np.abs(ball_linvel), axis=1
+        np.abs(reward_array(ball_linvel)), axis=1
     )
     pose_tracking_reward = pose_tracking_rate * ctrl_dt
     position_error_reward = position_error_rate * ctrl_dt
     object_linvel_reward = object_linvel_rate * ctrl_dt
 
     transition_event_reward = (
-        reward_cfg.transition_success_bonus * np.asarray(transition_event)
+        reward_cfg.transition_success_bonus * reward_array(transition_event)
     )
-    cycle_event_reward = reward_cfg.cycle_success_bonus * np.asarray(
+    cycle_event_reward = reward_cfg.cycle_success_bonus * reward_array(
         rotation_cycle_success_event
     )
-    invalid_cycle_reward = -reward_cfg.invalid_cycle_penalty * np.asarray(
+    invalid_cycle_reward = -reward_cfg.invalid_cycle_penalty * reward_array(
         invalid_rotation_cycle_event
     )
     timeout_event = np.asarray(timeout) & ~np.asarray(workspace_failure)
     phase_pose_progress = np.maximum(
-        np.asarray(phase_start_pose_distance) - np.asarray(pose_distance),
+        reward_array(phase_start_pose_distance) - reward_array(pose_distance),
         0.0,
     )
     timeout_reward = -(
         reward_cfg.timeout_penalty
         + reward_cfg.pose_progress_scale * phase_pose_progress
-        + reward_cfg.rotation_progress_scale * np.asarray(phase_positive_angle)
+        + phase_rotation_earned_current
     ) * timeout_event
-    failure_reward = -reward_cfg.failure_penalty * np.asarray(workspace_failure)
+    workspace_failure_array = np.asarray(workspace_failure)
+    failure_rotation_clawback = np.minimum(
+        episode_rotation_earned_current,
+        reward_cfg.failure_rotation_clawback_cap,
+    )
+    failure_reward = -(
+        reward_cfg.failure_penalty + failure_rotation_clawback
+    ) * workspace_failure_array
+    timeout_rotation_clawback_term = -phase_rotation_earned_current * timeout_event
+    failure_rotation_clawback_term = (
+        -failure_rotation_clawback * workspace_failure_array
+    )
     total = (
         pose_progress_reward
         + pose_tracking_reward
         + rotation_progress_reward
+        + rotation_overspeed_reward
         + reverse_rotation_reward
         + position_error_reward
         + object_linvel_reward
@@ -332,18 +458,27 @@ def compute_state_cycle_reward(
         + failure_reward
     )
     return StateCycleRewardTerms(
-        pose_progress=pose_progress_reward,
-        pose_tracking=pose_tracking_reward,
-        rotation_progress=rotation_progress_reward,
-        reverse_rotation=reverse_rotation_reward,
-        position_error=position_error_reward,
-        obj_linvel=object_linvel_reward,
-        transition_event=transition_event_reward,
-        cycle_event=cycle_event_reward,
-        invalid_cycle=invalid_cycle_reward,
-        timeout=timeout_reward,
-        failure=failure_reward,
-        total=total,
+        pose_progress=reward_array(pose_progress_reward),
+        pose_tracking=reward_array(pose_tracking_reward),
+        rotation_progress=reward_array(rotation_progress_reward),
+        rotation_overspeed=reward_array(rotation_overspeed_reward),
+        reverse_rotation=reward_array(reverse_rotation_reward),
+        position_error=reward_array(position_error_reward),
+        obj_linvel=reward_array(object_linvel_reward),
+        transition_event=reward_array(transition_event_reward),
+        cycle_event=reward_array(cycle_event_reward),
+        invalid_cycle=reward_array(invalid_cycle_reward),
+        timeout=reward_array(timeout_reward),
+        failure=reward_array(failure_reward),
+        timeout_rotation_clawback=reward_array(timeout_rotation_clawback_term),
+        failure_rotation_clawback=reward_array(failure_rotation_clawback_term),
+        phase_rotation_reward_earned_current=reward_array(
+            phase_rotation_earned_current
+        ),
+        episode_rotation_reward_earned_current=reward_array(
+            episode_rotation_earned_current
+        ),
+        total=reward_array(total),
     )
 
 
@@ -472,6 +607,17 @@ class LeapInhandBallStateCycleRotationCfg(AllegroRotationPPOCfg):
         reward_values = vars(self.reward_config).values()
         if not all(np.isfinite(value) and value >= 0.0 for value in reward_values):
             raise ValueError("state-cycle reward values must be finite and non-negative")
+        reward_cfg = self.reward_config
+        if reward_cfg.rotation_target_axis_speed_rad_s <= 0.0:
+            raise ValueError("rotation_target_axis_speed_rad_s must be positive")
+        if not (
+            reward_cfg.rotation_workspace_full_radius_m
+            < reward_cfg.rotation_workspace_zero_radius_m
+            < self.termination_workspace_radius
+        ):
+            raise ValueError(
+                "rotation workspace radii must satisfy full < zero < termination"
+            )
 
 
 class LeapStateCycleResetProvider(DomainRandomizationProvider):
@@ -515,6 +661,12 @@ class LeapStateCycleResetProvider(DomainRandomizationProvider):
             "state_cycle_completed_cycle_count": np.zeros(num_reset, dtype=np.uint32),
             "state_cycle_valid_rotation_cycles_completed": np.zeros(
                 num_reset, dtype=np.uint32
+            ),
+            "state_cycle_phase_rotation_reward_earned": np.zeros(
+                num_reset, dtype=dtype
+            ),
+            "state_cycle_episode_rotation_reward_earned": np.zeros(
+                num_reset, dtype=dtype
             ),
             "state_cycle_prev_pose_distance": previous_distance.astype(dtype),
             "state_cycle_phase_start_pose_distance": previous_distance.astype(dtype).copy(),
@@ -785,6 +937,15 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             self._minimum_angles,
         )
         palm_contact = self._palm_contacts(self._all_env_ids) > 0.5
+        rotation_gates = compute_rotation_stability_gates(
+            reward_cfg=self._reward_cfg,
+            workspace_error=workspace_error,
+            ball_speed=ball_speed,
+            contact_count=contact_count,
+            minimum_contacts=minimum_contacts,
+            palm_contact=palm_contact,
+            max_ball_speed=max_ball_speed,
+        )
         raw_transition_valid = (
             (pose_distance <= pose_tolerance)
             & (position_error <= position_tolerance)
@@ -836,8 +997,14 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             pose_progress=pose_progress,
             pose_distance=pose_distance,
             phase_start_pose_distance=phase_start_pose_distance,
-            phase_positive_angle=rotation_update.phase_positive_angle_for_reward,
+            phase_rotation_reward_earned_before=info[
+                "state_cycle_phase_rotation_reward_earned"
+            ],
+            episode_rotation_reward_earned_before=info[
+                "state_cycle_episode_rotation_reward_earned"
+            ],
             axis_delta=axis_delta,
+            rotation_stability_gate=rotation_gates.stability,
             position_error=position_error,
             ball_linvel=ball_linvel,
             transition_event=advance.transition_event,
@@ -851,6 +1018,17 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             workspace_failure=workspace_failure,
         )
         reward = reward_terms.total
+        earned_reward_update = finalize_rotation_reward_buffers(
+            phase_rotation_reward_earned_current=(
+                reward_terms.phase_rotation_reward_earned_current
+            ),
+            episode_rotation_reward_earned_current=(
+                reward_terms.episode_rotation_reward_earned_current
+            ),
+            transition_event=advance.transition_event,
+            timeout=timeout,
+            workspace_failure=workspace_failure,
+        )
 
         cycles_completed = np.asarray(
             info["state_cycle_cycles_completed"], dtype=np.uint32
@@ -897,6 +1075,12 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         info["state_cycle_valid_rotation_cycles_completed"] = (
             rotation_update.valid_rotation_cycles_completed
         )
+        info["state_cycle_phase_rotation_reward_earned"] = (
+            earned_reward_update.phase
+        )
+        info["state_cycle_episode_rotation_reward_earned"] = (
+            earned_reward_update.episode
+        )
         info["state_cycle_prev_pose_distance"] = previous_pose_distance
         info["state_cycle_phase_start_pose_distance"] = phase_start_pose_distance
         info["state_cycle_cycles_completed"] = cycles_completed
@@ -923,6 +1107,13 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             ),
             edge_net_angle=edge_net_angle_for_log,
             axis_delta=axis_delta,
+            rotation_gates=rotation_gates,
+            phase_rotation_reward_earned_current=(
+                reward_terms.phase_rotation_reward_earned_current
+            ),
+            episode_rotation_reward_earned_current=(
+                reward_terms.episode_rotation_reward_earned_current
+            ),
             transition_event=advance.transition_event,
             rotation_cycle_success_event=(
                 rotation_update.rotation_cycle_success_event
@@ -939,6 +1130,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
                 "pose_progress": reward_terms.pose_progress,
                 "pose_tracking": reward_terms.pose_tracking,
                 "rotation_progress": reward_terms.rotation_progress,
+                "rotation_overspeed": reward_terms.rotation_overspeed,
                 "reverse_rotation": reward_terms.reverse_rotation,
                 "position_error": reward_terms.position_error,
                 "obj_linvel": reward_terms.obj_linvel,
@@ -947,6 +1139,12 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
                 "invalid_cycle": reward_terms.invalid_cycle,
                 "timeout": reward_terms.timeout,
                 "failure": reward_terms.failure,
+                "timeout_rotation_clawback": (
+                    reward_terms.timeout_rotation_clawback
+                ),
+                "failure_rotation_clawback": (
+                    reward_terms.failure_rotation_clawback
+                ),
             },
         )
         obs = self._compute_state_cycle_obs(self._all_env_ids, info)
@@ -963,6 +1161,9 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         remaining_angle: np.ndarray,
         edge_net_angle: np.ndarray,
         axis_delta: np.ndarray,
+        rotation_gates: StateCycleRotationStabilityGates,
+        phase_rotation_reward_earned_current: np.ndarray,
+        episode_rotation_reward_earned_current: np.ndarray,
         transition_event: np.ndarray,
         rotation_cycle_success_event: np.ndarray,
         timeout: np.ndarray,
@@ -1043,6 +1244,35 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         )
         log["rotation/valid_rotation_cycles_completed_mean"] = float(
             np.mean(valid_count)
+        )
+        axis_speed_rad_s = axis_delta / self._cfg.ctrl_dt
+        target_axis_delta = (
+            self._reward_cfg.rotation_target_axis_speed_rad_s * self._cfg.ctrl_dt
+        )
+        log["rotation/axis_speed_rad_s_mean"] = float(np.mean(axis_speed_rad_s))
+        log["rotation/axis_speed_rad_s_p50"] = float(np.median(axis_speed_rad_s))
+        log["rotation/axis_speed_rad_s_p90"] = float(
+            np.percentile(axis_speed_rad_s, 90)
+        )
+        log["rotation/target_axis_speed_rad_s"] = float(
+            self._reward_cfg.rotation_target_axis_speed_rad_s
+        )
+        log["rotation/overspeed_fraction"] = float(
+            np.mean(np.maximum(axis_delta, 0.0) > target_axis_delta)
+        )
+        log["rotation/workspace_gate_mean"] = float(
+            np.mean(rotation_gates.workspace)
+        )
+        log["rotation/linvel_gate_mean"] = float(np.mean(rotation_gates.linvel))
+        log["rotation/contact_gate_mean"] = float(np.mean(rotation_gates.contact))
+        log["rotation/stability_gate_mean"] = float(
+            np.mean(rotation_gates.stability)
+        )
+        log["rotation/phase_reward_earned_mean"] = float(
+            np.mean(phase_rotation_reward_earned_current)
+        )
+        log["rotation/episode_reward_earned_mean"] = float(
+            np.mean(episode_rotation_reward_earned_current)
         )
         for phase in StateCyclePhase:
             phase_mask = phases == int(phase)

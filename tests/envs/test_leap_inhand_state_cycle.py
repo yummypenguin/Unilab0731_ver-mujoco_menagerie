@@ -24,8 +24,10 @@ from unilab.envs.manipulation.leap_inhand.state_cycle_rotation import (
     build_state_cycle_reset_arrays,
     compute_pose_distance,
     compute_pose_progress,
+    compute_rotation_stability_gates,
     compute_state_cycle_reward,
     compute_timeout_event,
+    finalize_rotation_reward_buffers,
     reset_phase_for_pose,
     rotation_condition,
     update_state_cycle_rotation,
@@ -138,13 +140,20 @@ def test_zero_rotation_requirement_accepts_negative_drift() -> None:
     np.testing.assert_array_equal(result, [True, True])
 
 
-def _reward_terms(**overrides: np.ndarray):
+def _reward_terms(
+    *,
+    reward_cfg: StateCycleRewardConfig | None = None,
+    ctrl_dt: float = 0.05,
+    **overrides: np.ndarray,
+):
     values = {
         "pose_progress": np.zeros(1),
         "pose_distance": np.zeros(1),
         "phase_start_pose_distance": np.zeros(1),
-        "phase_positive_angle": np.zeros(1),
+        "phase_rotation_reward_earned_before": np.zeros(1),
+        "episode_rotation_reward_earned_before": np.zeros(1),
         "axis_delta": np.zeros(1),
+        "rotation_stability_gate": np.ones(1),
         "position_error": np.zeros(1),
         "ball_linvel": np.zeros((1, 3)),
         "transition_event": np.zeros(1, dtype=bool),
@@ -155,8 +164,8 @@ def _reward_terms(**overrides: np.ndarray):
     }
     values.update(overrides)
     return compute_state_cycle_reward(
-        reward_cfg=StateCycleRewardConfig(),
-        ctrl_dt=0.05,
+        reward_cfg=reward_cfg or StateCycleRewardConfig(),
+        ctrl_dt=ctrl_dt,
         **values,
     )
 
@@ -174,7 +183,7 @@ def test_pose_tracking_reward_has_zero_upper_bound_at_target() -> None:
 
     np.testing.assert_allclose(at_target.pose_tracking, [0.0])
     assert far.pose_tracking[0] < 0.0
-    assert far.pose_tracking[0] >= -0.25 * 0.05
+    assert far.pose_tracking[0] >= -0.50 * 0.05
 
 
 @pytest.mark.parametrize("phase", list(StateCyclePhase))
@@ -185,10 +194,23 @@ def test_positive_rotation_reward_applies_in_every_phase(phase: StateCyclePhase)
     np.testing.assert_allclose(terms.rotation_progress, [3.0 * 0.01])
 
 
-def test_positive_rotation_reward_is_not_capped_at_transition_angle() -> None:
-    terms = _reward_terms(axis_delta=np.asarray([0.20]))
+@pytest.mark.parametrize(
+    ("axis_delta", "expected_progress", "expected_overspeed"),
+    [
+        (0.01, 3.0 * 0.01, 0.0),
+        (0.025, 3.0 * 0.025, 0.0),
+        (0.08, 3.0 * 0.025, -(0.08 - 0.025)),
+    ],
+)
+def test_rotation_reward_saturates_at_target_axis_speed(
+    axis_delta: float,
+    expected_progress: float,
+    expected_overspeed: float,
+) -> None:
+    terms = _reward_terms(axis_delta=np.asarray([axis_delta]))
 
-    np.testing.assert_allclose(terms.rotation_progress, [3.0 * 0.20])
+    np.testing.assert_allclose(terms.rotation_progress, [expected_progress])
+    np.testing.assert_allclose(terms.rotation_overspeed, [expected_overspeed])
 
 
 @pytest.mark.parametrize("phase", list(StateCyclePhase))
@@ -196,8 +218,47 @@ def test_reverse_rotation_reward_applies_in_every_phase(phase: StateCyclePhase) 
     del phase
     terms = _reward_terms(axis_delta=np.asarray([-0.01]))
 
+    np.testing.assert_allclose(terms.rotation_progress, [0.0])
+    np.testing.assert_allclose(terms.rotation_overspeed, [0.0])
     np.testing.assert_allclose(terms.reverse_rotation, [-5.0 * 0.01])
     assert terms.total[0] < 0.0
+
+
+def test_rotation_stability_gates_have_expected_boundaries() -> None:
+    gates = compute_rotation_stability_gates(
+        reward_cfg=StateCycleRewardConfig(),
+        workspace_error=np.asarray([0.010, 0.015, 0.025, 0.035, 0.045]),
+        ball_speed=np.asarray([0.04, 0.05, 0.075, 0.10, 0.15]),
+        contact_count=np.asarray([2, 2, 1, 2, 2]),
+        minimum_contacts=np.asarray([2, 2, 2, 2, 2]),
+        palm_contact=np.asarray([False, False, False, True, False]),
+        max_ball_speed=np.full(5, 0.10),
+    )
+
+    np.testing.assert_allclose(gates.workspace, [1.0, 1.0, 0.5, 0.0, 0.0])
+    np.testing.assert_allclose(gates.linvel, [1.0, 1.0, 0.5, 0.0, 0.0])
+    np.testing.assert_allclose(gates.contact, [1.0, 1.0, 0.0, 1.0, 1.0])
+    np.testing.assert_allclose(gates.no_palm, [1.0, 1.0, 1.0, 0.0, 1.0])
+    np.testing.assert_allclose(gates.stability, [1.0, 1.0, 0.0, 0.0, 0.0])
+
+
+@pytest.mark.parametrize("stability_gate", [0.0, 0.5])
+def test_rotation_gate_only_scales_positive_progress(stability_gate: float) -> None:
+    positive = _reward_terms(
+        axis_delta=np.asarray([0.08]),
+        rotation_stability_gate=np.asarray([stability_gate]),
+    )
+    reverse = _reward_terms(
+        axis_delta=np.asarray([-0.01]),
+        rotation_stability_gate=np.asarray([stability_gate]),
+    )
+
+    np.testing.assert_allclose(
+        positive.rotation_progress,
+        [3.0 * 0.025 * stability_gate],
+    )
+    np.testing.assert_allclose(positive.rotation_overspeed, [-0.055])
+    np.testing.assert_allclose(reverse.reverse_rotation, [-0.05])
 
 
 def test_workspace_failure_suppresses_timeout_penalty() -> None:
@@ -208,8 +269,8 @@ def test_workspace_failure_suppresses_timeout_penalty() -> None:
     timeout_only = _reward_terms(timeout=np.asarray([True]))
 
     np.testing.assert_allclose(both.timeout, [0.0])
-    np.testing.assert_allclose(both.failure, [-1.0])
-    np.testing.assert_allclose(both.total, [-1.0])
+    np.testing.assert_allclose(both.failure, [-3.0])
+    np.testing.assert_allclose(both.total, [-3.0])
     np.testing.assert_allclose(timeout_only.timeout, [-0.25])
 
 
@@ -226,22 +287,109 @@ def test_timeout_claws_back_net_phase_pose_progress() -> None:
     np.testing.assert_allclose(terms.total, [-0.25])
 
 
-def test_timeout_claws_back_all_phase_positive_rotation_reward() -> None:
+def test_timeout_claws_back_actual_rotation_reward_including_terminal_step() -> None:
     terms = _reward_terms(
-        phase_positive_angle=np.asarray([0.10]),
+        phase_rotation_reward_earned_before=np.asarray([0.40]),
+        axis_delta=np.asarray([0.05 / 3.0]),
         timeout=np.asarray([True]),
     )
 
-    np.testing.assert_allclose(terms.timeout, [-(0.25 + 3.0 * 0.10)])
-    np.testing.assert_allclose(terms.total, [-(0.25 + 3.0 * 0.10)])
+    np.testing.assert_allclose(terms.rotation_progress, [0.05])
+    np.testing.assert_allclose(terms.phase_rotation_reward_earned_current, [0.45])
+    np.testing.assert_allclose(terms.timeout_rotation_clawback, [-0.45])
+    np.testing.assert_allclose(terms.timeout, [-(0.25 + 0.45)])
+    np.testing.assert_allclose(terms.total, [-0.65])
 
     transitioned = _reward_terms(
-        phase_positive_angle=np.asarray([0.10]),
+        phase_rotation_reward_earned_before=np.asarray([0.40]),
         transition_event=np.asarray([True]),
         timeout=np.asarray([False]),
     )
     np.testing.assert_allclose(transitioned.timeout, [0.0])
-    np.testing.assert_allclose(transitioned.transition_event, [0.05])
+    np.testing.assert_allclose(transitioned.transition_event, [0.10])
+
+
+def test_workspace_failure_claws_back_episode_rotation_reward() -> None:
+    terms = _reward_terms(
+        reward_cfg=StateCycleRewardConfig(rotation_target_axis_speed_rad_s=1.0),
+        episode_rotation_reward_earned_before=np.asarray([2.0]),
+        axis_delta=np.asarray([0.10 / 3.0]),
+        workspace_failure=np.asarray([True]),
+    )
+
+    np.testing.assert_allclose(terms.rotation_progress, [0.10])
+    np.testing.assert_allclose(terms.episode_rotation_reward_earned_current, [2.10])
+    np.testing.assert_allclose(terms.failure_rotation_clawback, [-2.10])
+    np.testing.assert_allclose(terms.failure, [-5.10])
+    np.testing.assert_allclose(terms.total, [-5.0])
+
+
+def test_workspace_failure_rotation_clawback_is_capped() -> None:
+    terms = _reward_terms(
+        episode_rotation_reward_earned_before=np.asarray([8.0]),
+        workspace_failure=np.asarray([True]),
+    )
+
+    np.testing.assert_allclose(terms.failure_rotation_clawback, [-5.0])
+    np.testing.assert_allclose(terms.failure, [-8.0])
+    np.testing.assert_allclose(terms.total, [-8.0])
+
+
+def test_rotation_reward_buffers_clear_after_transition_or_termination() -> None:
+    transition_terms = _reward_terms(
+        phase_rotation_reward_earned_before=np.asarray([0.4]),
+        episode_rotation_reward_earned_before=np.asarray([1.4]),
+        axis_delta=np.asarray([0.01]),
+        transition_event=np.asarray([True]),
+    )
+    transitioned = finalize_rotation_reward_buffers(
+        phase_rotation_reward_earned_current=(
+            transition_terms.phase_rotation_reward_earned_current
+        ),
+        episode_rotation_reward_earned_current=(
+            transition_terms.episode_rotation_reward_earned_current
+        ),
+        transition_event=np.asarray([True]),
+        timeout=np.asarray([False]),
+        workspace_failure=np.asarray([False]),
+    )
+    np.testing.assert_allclose(transitioned.phase, [0.0])
+    np.testing.assert_allclose(transitioned.episode, [1.43])
+
+    for terminal_name in ("timeout", "workspace_failure"):
+        terminal = finalize_rotation_reward_buffers(
+            phase_rotation_reward_earned_current=np.asarray([0.5]),
+            episode_rotation_reward_earned_current=np.asarray([1.5]),
+            transition_event=np.asarray([False]),
+            timeout=np.asarray([terminal_name == "timeout"]),
+            workspace_failure=np.asarray([terminal_name == "workspace_failure"]),
+        )
+        np.testing.assert_allclose(terminal.phase, [0.0])
+        np.testing.assert_allclose(terminal.episode, [0.0])
+
+
+def test_reward_terms_keep_environment_shape_dtype_and_finite_values() -> None:
+    terms = _reward_terms(
+        pose_progress=np.asarray([0.01, -0.02], dtype=np.float32),
+        pose_distance=np.asarray([0.02, 0.03], dtype=np.float32),
+        phase_start_pose_distance=np.asarray([0.03, 0.04], dtype=np.float32),
+        phase_rotation_reward_earned_before=np.asarray([0.1, 0.2], dtype=np.float32),
+        episode_rotation_reward_earned_before=np.asarray([0.3, 0.4], dtype=np.float32),
+        axis_delta=np.asarray([0.08, -0.02], dtype=np.float32),
+        rotation_stability_gate=np.asarray([0.5, 0.0], dtype=np.float32),
+        position_error=np.asarray([0.01, 0.02], dtype=np.float32),
+        ball_linvel=np.asarray([[0.01, 0.0, 0.0], [0.0, 0.02, 0.0]], dtype=np.float32),
+        transition_event=np.asarray([True, False]),
+        rotation_cycle_success_event=np.asarray([False, False]),
+        invalid_rotation_cycle_event=np.asarray([False, False]),
+        timeout=np.asarray([False, True]),
+        workspace_failure=np.asarray([False, False]),
+    )
+
+    for values in vars(terms).values():
+        assert values.shape == (2,)
+        assert values.dtype == np.float32
+        assert np.isfinite(values).all()
 
 
 def _rotation_update(**overrides: np.ndarray | float):
@@ -321,9 +469,9 @@ def test_invalid_rotation_cycle_has_penalty_and_no_cycle_bonus() -> None:
         rotation_cycle_success_event=update.rotation_cycle_success_event,
         invalid_rotation_cycle_event=update.invalid_rotation_cycle_event,
     )
-    np.testing.assert_allclose(terms.transition_event, [0.05])
+    np.testing.assert_allclose(terms.transition_event, [0.10])
     np.testing.assert_allclose(terms.cycle_event, [0.0])
-    np.testing.assert_allclose(terms.invalid_cycle, [-0.10])
+    np.testing.assert_allclose(terms.invalid_cycle, [-0.15])
 
 
 def test_only_valid_completed_rotation_cycle_receives_cycle_bonus() -> None:
@@ -333,9 +481,9 @@ def test_only_valid_completed_rotation_cycle_receives_cycle_bonus() -> None:
         rotation_cycle_success_event=np.asarray([True]),
     )
 
-    np.testing.assert_allclose(ordinary_transition.transition_event, [0.05])
+    np.testing.assert_allclose(ordinary_transition.transition_event, [0.10])
     np.testing.assert_allclose(ordinary_transition.cycle_event, [0.0])
-    np.testing.assert_allclose(valid_cycle.cycle_event, [0.20])
+    np.testing.assert_allclose(valid_cycle.cycle_event, [0.30])
 
 
 def test_last_legal_step_can_succeed_before_timeout() -> None:
@@ -513,6 +661,8 @@ def test_state_cycle_environment_reset_and_step() -> None:
             "state_cycle_completed_cycle_angle_sum",
             "state_cycle_completed_cycle_count",
             "state_cycle_valid_rotation_cycles_completed",
+            "state_cycle_phase_rotation_reward_earned",
+            "state_cycle_episode_rotation_reward_earned",
         ):
             np.testing.assert_array_equal(info[key], np.zeros(3))
 
@@ -540,6 +690,17 @@ def test_state_cycle_environment_reset_and_step() -> None:
             "rotation/reverse_fraction_READY_TO_A",
             "rotation/reverse_fraction_A_TO_B",
             "rotation/reverse_fraction_B_TO_READY",
+            "rotation/axis_speed_rad_s_mean",
+            "rotation/axis_speed_rad_s_p50",
+            "rotation/axis_speed_rad_s_p90",
+            "rotation/target_axis_speed_rad_s",
+            "rotation/overspeed_fraction",
+            "rotation/workspace_gate_mean",
+            "rotation/linvel_gate_mean",
+            "rotation/contact_gate_mean",
+            "rotation/stability_gate_mean",
+            "rotation/phase_reward_earned_mean",
+            "rotation/episode_reward_earned_mean",
             "state_cycle/pose_ok_rate",
             "state_cycle/position_ok_rate",
             "state_cycle/speed_ok_rate",
@@ -551,6 +712,9 @@ def test_state_cycle_environment_reset_and_step() -> None:
             "state_cycle/timeout_A_TO_B_rate",
             "state_cycle/timeout_B_TO_READY_rate",
             "reward/invalid_cycle",
+            "reward/rotation_overspeed",
+            "reward/timeout_rotation_clawback",
+            "reward/failure_rotation_clawback",
         ):
             assert key in next_state.info["log"]
     finally:

@@ -36,17 +36,22 @@ algo:
 
 reward:
   pose_progress_scale: 4.0
-  pose_tracking_scale: 0.25
+  pose_tracking_scale: 0.50
   pose_sigma: 0.08
   rotation_progress_scale: 3.0
   reverse_rotation_scale: 5.0
+  rotation_target_axis_speed_rad_s: 0.50
+  rotation_overspeed_scale: 1.00
+  rotation_workspace_full_radius_m: 0.015
+  rotation_workspace_zero_radius_m: 0.035
   position_error_scale: 6.0
   object_linvel_scale: 0.3
-  transition_success_bonus: 0.05
-  cycle_success_bonus: 0.20
-  invalid_cycle_penalty: 0.10
+  transition_success_bonus: 0.10
+  cycle_success_bonus: 0.30
+  invalid_cycle_penalty: 0.15
   timeout_penalty: 0.25
-  failure_penalty: 1.0
+  failure_penalty: 3.0
+  failure_rotation_clawback_cap: 5.0
 
 env:
   sim_dt: 0.005
