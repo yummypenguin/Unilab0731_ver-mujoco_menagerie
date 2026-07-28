@@ -90,11 +90,12 @@ def _transition_defaults(
 
 @dataclass
 class StateCycleConfig:
+    cycle_target_net_angle_rad: float = 0.10
     ready_to_a: dict[str, float | int | str] = field(
         default_factory=lambda: _transition_defaults("A", 1.5, 0.0)
     )
     a_to_b: dict[str, float | int | str] = field(
-        default_factory=lambda: _transition_defaults("B", 2.0, 0.03)
+        default_factory=lambda: _transition_defaults("B", 2.0, 0.08)
     )
     b_to_ready: dict[str, float | int | str] = field(
         default_factory=lambda: _transition_defaults("ready", 1.3, 0.0)
@@ -115,11 +116,12 @@ class StateCycleRewardConfig:
     pose_tracking_scale: float = 0.25
     pose_sigma: float = 0.08
     rotation_progress_scale: float = 3.0
-    reverse_rotation_scale: float = 4.0
+    reverse_rotation_scale: float = 5.0
     position_error_scale: float = 6.0
     object_linvel_scale: float = 0.3
-    transition_success_bonus: float = 0.25
-    cycle_success_bonus: float = 0.75
+    transition_success_bonus: float = 0.05
+    cycle_success_bonus: float = 0.20
+    invalid_cycle_penalty: float = 0.10
     timeout_penalty: float = 0.25
     failure_penalty: float = 1.0
 
@@ -142,9 +144,25 @@ class StateCycleRewardTerms:
     obj_linvel: np.ndarray
     transition_event: np.ndarray
     cycle_event: np.ndarray
+    invalid_cycle: np.ndarray
     timeout: np.ndarray
     failure: np.ndarray
     total: np.ndarray
+
+
+@dataclass(frozen=True)
+class StateCycleRotationUpdate:
+    cycle_net_angle: np.ndarray
+    episode_net_angle: np.ndarray
+    phase_positive_angle: np.ndarray
+    phase_positive_angle_for_reward: np.ndarray
+    completed_cycle_net_angle: np.ndarray
+    rotation_cycle_success_event: np.ndarray
+    invalid_rotation_cycle_event: np.ndarray
+    last_completed_cycle_net_angle: np.ndarray
+    completed_cycle_angle_sum: np.ndarray
+    completed_cycle_count: np.ndarray
+    valid_rotation_cycles_completed: np.ndarray
 
 
 def compute_pose_distance(
@@ -180,21 +198,80 @@ def rotation_condition(
     return (required <= 0.0) | (np.asarray(edge_net_angle) >= required)
 
 
+def update_state_cycle_rotation(
+    *,
+    axis_delta: np.ndarray,
+    cycle_net_angle: np.ndarray,
+    episode_net_angle: np.ndarray,
+    phase_positive_angle: np.ndarray,
+    last_completed_cycle_net_angle: np.ndarray,
+    completed_cycle_angle_sum: np.ndarray,
+    completed_cycle_count: np.ndarray,
+    valid_rotation_cycles_completed: np.ndarray,
+    transition_event: np.ndarray,
+    cycle_event: np.ndarray,
+    cycle_target_net_angle_rad: float,
+) -> StateCycleRotationUpdate:
+    """Accumulate signed rotation and finalize only completed FSM cycles."""
+    delta = np.asarray(axis_delta)
+    cycle_angle = np.asarray(cycle_net_angle, dtype=delta.dtype).copy()
+    episode_angle = np.asarray(episode_net_angle, dtype=delta.dtype).copy()
+    positive_angle = np.asarray(phase_positive_angle, dtype=delta.dtype).copy()
+    cycle_angle += delta
+    episode_angle += delta
+    positive_angle += np.maximum(delta, 0.0)
+    positive_angle_for_reward = positive_angle.copy()
+
+    cycle_event_array = np.asarray(cycle_event, dtype=bool)
+    transition_event_array = np.asarray(transition_event, dtype=bool)
+    completed_angle = cycle_angle.copy()
+    rotation_cycle_success = cycle_event_array & (
+        completed_angle >= cycle_target_net_angle_rad
+    )
+    invalid_rotation_cycle = cycle_event_array & ~rotation_cycle_success
+
+    last_completed = np.asarray(
+        last_completed_cycle_net_angle, dtype=delta.dtype
+    ).copy()
+    completed_sum = np.asarray(completed_cycle_angle_sum, dtype=delta.dtype).copy()
+    completed_count = np.asarray(completed_cycle_count, dtype=np.uint32).copy()
+    valid_count = np.asarray(valid_rotation_cycles_completed, dtype=np.uint32).copy()
+    last_completed[cycle_event_array] = completed_angle[cycle_event_array]
+    completed_sum[cycle_event_array] += completed_angle[cycle_event_array]
+    completed_count += cycle_event_array.astype(np.uint32)
+    valid_count += rotation_cycle_success.astype(np.uint32)
+
+    cycle_angle[cycle_event_array] = 0.0
+    positive_angle[transition_event_array] = 0.0
+    return StateCycleRotationUpdate(
+        cycle_net_angle=cycle_angle,
+        episode_net_angle=episode_angle,
+        phase_positive_angle=positive_angle,
+        phase_positive_angle_for_reward=positive_angle_for_reward,
+        completed_cycle_net_angle=completed_angle,
+        rotation_cycle_success_event=rotation_cycle_success,
+        invalid_rotation_cycle_event=invalid_rotation_cycle,
+        last_completed_cycle_net_angle=last_completed,
+        completed_cycle_angle_sum=completed_sum,
+        completed_cycle_count=completed_count,
+        valid_rotation_cycles_completed=valid_count,
+    )
+
+
 def compute_state_cycle_reward(
     *,
     reward_cfg: StateCycleRewardConfig,
     ctrl_dt: float,
-    phases: np.ndarray,
     pose_progress: np.ndarray,
     pose_distance: np.ndarray,
     phase_start_pose_distance: np.ndarray,
+    phase_positive_angle: np.ndarray,
     axis_delta: np.ndarray,
-    edge_net_angle_before: np.ndarray,
-    required_angle: np.ndarray,
     position_error: np.ndarray,
     ball_linvel: np.ndarray,
     transition_event: np.ndarray,
-    cycle_event: np.ndarray,
+    rotation_cycle_success_event: np.ndarray,
+    invalid_rotation_cycle_event: np.ndarray,
     timeout: np.ndarray,
     workspace_failure: np.ndarray,
 ) -> StateCycleRewardTerms:
@@ -211,22 +288,8 @@ def compute_state_cycle_reward(
 
     positive_axis_delta = np.maximum(np.asarray(axis_delta), 0.0)
     reverse_axis_delta = np.maximum(-np.asarray(axis_delta), 0.0)
-    remaining_before = np.where(
-        np.asarray(required_angle) > 0.0,
-        np.maximum(
-            np.asarray(required_angle) - np.asarray(edge_net_angle_before),
-            0.0,
-        ),
-        0.0,
-    )
-    useful_positive_delta = np.minimum(positive_axis_delta, remaining_before)
-    rotation_edge = np.asarray(phases) == int(StateCyclePhase.A_TO_B)
-    rotation_progress_reward = (
-        reward_cfg.rotation_progress_scale * useful_positive_delta * rotation_edge
-    )
-    reverse_rotation_reward = (
-        -reward_cfg.reverse_rotation_scale * reverse_axis_delta * rotation_edge
-    )
+    rotation_progress_reward = reward_cfg.rotation_progress_scale * positive_axis_delta
+    reverse_rotation_reward = -reward_cfg.reverse_rotation_scale * reverse_axis_delta
     position_error_rate = -reward_cfg.position_error_scale * np.asarray(position_error)
     object_linvel_rate = -reward_cfg.object_linvel_scale * np.sum(
         np.abs(ball_linvel), axis=1
@@ -238,7 +301,12 @@ def compute_state_cycle_reward(
     transition_event_reward = (
         reward_cfg.transition_success_bonus * np.asarray(transition_event)
     )
-    cycle_event_reward = reward_cfg.cycle_success_bonus * np.asarray(cycle_event)
+    cycle_event_reward = reward_cfg.cycle_success_bonus * np.asarray(
+        rotation_cycle_success_event
+    )
+    invalid_cycle_reward = -reward_cfg.invalid_cycle_penalty * np.asarray(
+        invalid_rotation_cycle_event
+    )
     timeout_event = np.asarray(timeout) & ~np.asarray(workspace_failure)
     phase_pose_progress = np.maximum(
         np.asarray(phase_start_pose_distance) - np.asarray(pose_distance),
@@ -247,6 +315,7 @@ def compute_state_cycle_reward(
     timeout_reward = -(
         reward_cfg.timeout_penalty
         + reward_cfg.pose_progress_scale * phase_pose_progress
+        + reward_cfg.rotation_progress_scale * np.asarray(phase_positive_angle)
     ) * timeout_event
     failure_reward = -reward_cfg.failure_penalty * np.asarray(workspace_failure)
     total = (
@@ -258,6 +327,7 @@ def compute_state_cycle_reward(
         + object_linvel_reward
         + transition_event_reward
         + cycle_event_reward
+        + invalid_cycle_reward
         + timeout_reward
         + failure_reward
     )
@@ -270,6 +340,7 @@ def compute_state_cycle_reward(
         obj_linvel=object_linvel_reward,
         transition_event=transition_event_reward,
         cycle_event=cycle_event_reward,
+        invalid_cycle=invalid_cycle_reward,
         timeout=timeout_reward,
         failure=failure_reward,
         total=total,
@@ -357,7 +428,13 @@ def _validate_transition_spec(phase: StateCyclePhase, spec: TransitionSpec) -> N
 class LeapInhandBallStateCycleRotationCfg(AllegroRotationPPOCfg):
     scene: SceneCfg = field(
         default_factory=lambda: SceneCfg(
-            model_file=str(ASSETS_ROOT_PATH / "robots" / "leap_hand" / "scene_ball.xml")
+            model_file=str(ASSETS_ROOT_PATH / "robots" / "leap_hand" / "scene_ball.xml"),
+            visual_model_file=str(
+                ASSETS_ROOT_PATH
+                / "robots"
+                / "leap_hand"
+                / "scene_ball_state_cycle_visual.xml"
+            ),
         )
     )
     sim_dt: float = 0.005
@@ -379,6 +456,10 @@ class LeapInhandBallStateCycleRotationCfg(AllegroRotationPPOCfg):
         specs = self.state_cycle.transition_specs()
         for phase, spec in zip(StateCyclePhase, specs):
             _validate_transition_spec(phase, spec)
+        if not np.isfinite(self.state_cycle.cycle_target_net_angle_rad) or (
+            self.state_cycle.cycle_target_net_angle_rad <= 0.0
+        ):
+            raise ValueError("cycle_target_net_angle_rad must be positive and finite")
         weights = np.asarray(self.state_cycle.reset_pose_weights, dtype=np.float64)
         if weights.shape != (len(RESET_POSE_NAMES),):
             raise ValueError("reset_pose_weights must contain Ready, A, and B weights")
@@ -424,6 +505,17 @@ class LeapStateCycleResetProvider(DomainRandomizationProvider):
             "state_cycle_success_hold_steps": np.zeros(num_reset, dtype=np.uint32),
             "state_cycle_edge_start_quat": np.asarray(qpos[:, 19:23], dtype=dtype).copy(),
             "state_cycle_edge_net_angle": np.zeros(num_reset, dtype=dtype),
+            "state_cycle_cycle_net_angle": np.zeros(num_reset, dtype=dtype),
+            "state_cycle_episode_net_angle": np.zeros(num_reset, dtype=dtype),
+            "state_cycle_phase_positive_angle": np.zeros(num_reset, dtype=dtype),
+            "state_cycle_last_completed_cycle_net_angle": np.zeros(
+                num_reset, dtype=dtype
+            ),
+            "state_cycle_completed_cycle_angle_sum": np.zeros(num_reset, dtype=dtype),
+            "state_cycle_completed_cycle_count": np.zeros(num_reset, dtype=np.uint32),
+            "state_cycle_valid_rotation_cycles_completed": np.zeros(
+                num_reset, dtype=np.uint32
+            ),
             "state_cycle_prev_pose_distance": previous_distance.astype(dtype),
             "state_cycle_phase_start_pose_distance": previous_distance.astype(dtype).copy(),
             "state_cycle_cycles_completed": np.zeros(num_reset, dtype=np.uint32),
@@ -461,7 +553,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
 
     _cfg: LeapInhandBallStateCycleRotationCfg
     _reward_cfg: StateCycleRewardConfig
-    _NUM_STATE_CYCLE_OBS = 140
+    _NUM_STATE_CYCLE_OBS = 142
     _CONTACT_SENSOR_NAMES = (
         "leap_index_contact",
         "leap_middle_contact",
@@ -496,6 +588,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             dtype=self._np_dtype,
         )
         self._max_required_angle = max(float(np.max(self._minimum_angles)), 1e-6)
+        self._cycle_target_angle = float(cfg.state_cycle.cycle_target_net_angle_rad)
 
     def _make_domain_randomization_provider(self) -> DomainRandomizationProvider:
         return LeapStateCycleResetProvider()
@@ -591,6 +684,20 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         remaining_angle = (remaining_angle_raw / self._max_required_angle)[:, None]
         target_ball_error = self._target_ball_pos(phases, dtype=dtype) - ball_pos
         rotation_required = (required_angle / self._max_required_angle)[:, None]
+        cycle_net_angle = self._info_rows(
+            info, "state_cycle_cycle_net_angle", env_ids
+        ).astype(dtype)
+        cycle_rotation_progress = np.clip(
+            cycle_net_angle / self._cycle_target_angle,
+            -2.0,
+            2.0,
+        )[:, None]
+        cycle_rotation_remaining = np.clip(
+            np.maximum(self._cycle_target_angle - cycle_net_angle, 0.0)
+            / self._cycle_target_angle,
+            0.0,
+            1.0,
+        )[:, None]
 
         obs = np.concatenate(
             [
@@ -613,6 +720,8 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
                 phase_progress,
                 remaining_angle,
                 target_ball_error,
+                cycle_rotation_progress,
+                cycle_rotation_remaining,
             ],
             axis=1,
             dtype=dtype,
@@ -650,7 +759,6 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         axis_speed = ball_angvel @ self._rotation_axis_w
         axis_delta = axis_speed * self._cfg.ctrl_dt
         edge_net_angle = np.asarray(info["state_cycle_edge_net_angle"], dtype=dtype)
-        edge_net_angle_before = edge_net_angle.copy()
         edge_net_angle += axis_delta
         required_angle = self._minimum_angles[phases_before.astype(np.intp)]
 
@@ -702,21 +810,43 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         phase_start_pose_distance = np.asarray(
             info["state_cycle_phase_start_pose_distance"], dtype=dtype
         )
+        rotation_update = update_state_cycle_rotation(
+            axis_delta=axis_delta,
+            cycle_net_angle=info["state_cycle_cycle_net_angle"],
+            episode_net_angle=info["state_cycle_episode_net_angle"],
+            phase_positive_angle=info["state_cycle_phase_positive_angle"],
+            last_completed_cycle_net_angle=info[
+                "state_cycle_last_completed_cycle_net_angle"
+            ],
+            completed_cycle_angle_sum=info[
+                "state_cycle_completed_cycle_angle_sum"
+            ],
+            completed_cycle_count=info["state_cycle_completed_cycle_count"],
+            valid_rotation_cycles_completed=info[
+                "state_cycle_valid_rotation_cycles_completed"
+            ],
+            transition_event=advance.transition_event,
+            cycle_event=advance.cycle_event,
+            cycle_target_net_angle_rad=self._cycle_target_angle,
+        )
 
         reward_terms = compute_state_cycle_reward(
             reward_cfg=self._reward_cfg,
             ctrl_dt=self._cfg.ctrl_dt,
-            phases=phases_before,
             pose_progress=pose_progress,
             pose_distance=pose_distance,
             phase_start_pose_distance=phase_start_pose_distance,
+            phase_positive_angle=rotation_update.phase_positive_angle_for_reward,
             axis_delta=axis_delta,
-            edge_net_angle_before=edge_net_angle_before,
-            required_angle=required_angle,
             position_error=position_error,
             ball_linvel=ball_linvel,
             transition_event=advance.transition_event,
-            cycle_event=advance.cycle_event,
+            rotation_cycle_success_event=(
+                rotation_update.rotation_cycle_success_event
+            ),
+            invalid_rotation_cycle_event=(
+                rotation_update.invalid_rotation_cycle_event
+            ),
             timeout=timeout,
             workspace_failure=workspace_failure,
         )
@@ -750,6 +880,23 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         info["state_cycle_success_hold_steps"] = advance.hold_steps
         info["state_cycle_edge_start_quat"] = edge_start_quat
         info["state_cycle_edge_net_angle"] = edge_net_angle
+        info["state_cycle_cycle_net_angle"] = rotation_update.cycle_net_angle
+        info["state_cycle_episode_net_angle"] = rotation_update.episode_net_angle
+        info["state_cycle_phase_positive_angle"] = (
+            rotation_update.phase_positive_angle
+        )
+        info["state_cycle_last_completed_cycle_net_angle"] = (
+            rotation_update.last_completed_cycle_net_angle
+        )
+        info["state_cycle_completed_cycle_angle_sum"] = (
+            rotation_update.completed_cycle_angle_sum
+        )
+        info["state_cycle_completed_cycle_count"] = (
+            rotation_update.completed_cycle_count
+        )
+        info["state_cycle_valid_rotation_cycles_completed"] = (
+            rotation_update.valid_rotation_cycles_completed
+        )
         info["state_cycle_prev_pose_distance"] = previous_pose_distance
         info["state_cycle_phase_start_pose_distance"] = phase_start_pose_distance
         info["state_cycle_cycles_completed"] = cycles_completed
@@ -775,9 +922,19 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
                 0.0,
             ),
             edge_net_angle=edge_net_angle_for_log,
+            axis_delta=axis_delta,
             transition_event=advance.transition_event,
+            rotation_cycle_success_event=(
+                rotation_update.rotation_cycle_success_event
+            ),
             timeout=timeout,
             workspace_failure=workspace_failure,
+            pose_ok=pose_distance <= pose_tolerance,
+            position_ok=position_error <= position_tolerance,
+            speed_ok=ball_speed <= max_ball_speed,
+            contact_ok=contact_count >= minimum_contacts,
+            rotation_ok=rotation_ok,
+            no_palm_contact=~palm_contact,
             reward_terms={
                 "pose_progress": reward_terms.pose_progress,
                 "pose_tracking": reward_terms.pose_tracking,
@@ -787,6 +944,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
                 "obj_linvel": reward_terms.obj_linvel,
                 "transition_event": reward_terms.transition_event,
                 "cycle_event": reward_terms.cycle_event,
+                "invalid_cycle": reward_terms.invalid_cycle,
                 "timeout": reward_terms.timeout,
                 "failure": reward_terms.failure,
             },
@@ -804,9 +962,17 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         position_error: np.ndarray,
         remaining_angle: np.ndarray,
         edge_net_angle: np.ndarray,
+        axis_delta: np.ndarray,
         transition_event: np.ndarray,
+        rotation_cycle_success_event: np.ndarray,
         timeout: np.ndarray,
         workspace_failure: np.ndarray,
+        pose_ok: np.ndarray,
+        position_ok: np.ndarray,
+        speed_ok: np.ndarray,
+        contact_ok: np.ndarray,
+        rotation_ok: np.ndarray,
+        no_palm_contact: np.ndarray,
         reward_terms: dict[str, np.ndarray],
     ) -> None:
         step_count = info.get("steps", np.zeros(self._num_envs, dtype=np.uint32))
@@ -821,6 +987,9 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         log["state_cycle/pose_distance_mean"] = float(np.mean(pose_distance))
         log["state_cycle/pose_distance_p50"] = float(np.median(pose_distance))
         log["state_cycle/transition_success_rate"] = float(np.mean(transition_event))
+        log["state_cycle/rotation_cycle_success_rate"] = float(
+            np.mean(rotation_cycle_success_event)
+        )
         log["state_cycle/cycles_completed_mean"] = float(
             np.mean(info["state_cycle_cycles_completed"])
         )
@@ -831,6 +1000,62 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             np.mean(edge_net_angle[a_to_b]) if np.any(a_to_b) else 0.0
         )
         log["state_cycle/remaining_angle_mean"] = float(np.mean(remaining_angle))
+        log["state_cycle/pose_ok_rate"] = float(np.mean(pose_ok))
+        log["state_cycle/position_ok_rate"] = float(np.mean(position_ok))
+        log["state_cycle/speed_ok_rate"] = float(np.mean(speed_ok))
+        log["state_cycle/contact_ok_rate"] = float(np.mean(contact_ok))
+        log["state_cycle/rotation_ok_rate"] = float(np.mean(rotation_ok))
+        log["state_cycle/no_palm_contact_rate"] = float(np.mean(no_palm_contact))
+        log["state_cycle/hold_steps_mean"] = float(
+            np.mean(info["state_cycle_success_hold_steps"])
+        )
+
+        two_pi = 2.0 * np.pi
+        episode_net_angle = np.asarray(info["state_cycle_episode_net_angle"])
+        cycle_net_angle = np.asarray(info["state_cycle_cycle_net_angle"])
+        last_completed_angle = np.asarray(
+            info["state_cycle_last_completed_cycle_net_angle"]
+        )
+        completed_angle_sum = np.asarray(
+            info["state_cycle_completed_cycle_angle_sum"]
+        )
+        completed_count = np.asarray(info["state_cycle_completed_cycle_count"])
+        valid_count = np.asarray(
+            info["state_cycle_valid_rotation_cycles_completed"]
+        )
+        total_completed = int(np.sum(completed_count))
+        log["rotation/episode_net_angle_mean"] = float(np.mean(episode_net_angle))
+        log["rotation/episode_net_turns_mean"] = float(
+            np.mean(episode_net_angle / two_pi)
+        )
+        log["rotation/cycle_net_angle_mean"] = float(np.mean(cycle_net_angle))
+        log["rotation/cycle_net_turns_mean"] = float(
+            np.mean(cycle_net_angle / two_pi)
+        )
+        log["rotation/last_completed_cycle_net_angle_mean"] = float(
+            np.mean(last_completed_angle)
+        )
+        log["rotation/completed_cycle_net_angle_mean"] = float(
+            np.sum(completed_angle_sum) / max(total_completed, 1)
+        )
+        log["rotation/valid_rotation_cycle_rate"] = float(
+            np.sum(valid_count) / max(total_completed, 1)
+        )
+        log["rotation/valid_rotation_cycles_completed_mean"] = float(
+            np.mean(valid_count)
+        )
+        for phase in StateCyclePhase:
+            phase_mask = phases == int(phase)
+            phase_axis_delta = axis_delta[phase_mask]
+            log[f"rotation/axis_delta_{phase.name}_mean"] = float(
+                np.mean(phase_axis_delta) if np.any(phase_mask) else 0.0
+            )
+            log[f"rotation/reverse_fraction_{phase.name}"] = float(
+                np.mean(phase_axis_delta < 0.0) if np.any(phase_mask) else 0.0
+            )
+            log[f"state_cycle/timeout_{phase.name}_rate"] = float(
+                np.mean(timeout[phase_mask]) if np.any(phase_mask) else 0.0
+            )
         for name, values in reward_terms.items():
             log[f"reward/{name}"] = float(np.mean(values))
         log["reward/total"] = float(np.mean(reward))

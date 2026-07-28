@@ -303,7 +303,15 @@ def test_ppo_leap_state_cycle_composes_as_independent_owner(backend: str):
 
     assert cfg.training.task_name == "LeapInhandBallStateCycleRotation"
     assert cfg.training.sim_backend == backend
-    assert cfg.env.state_cycle.a_to_b.minimum_net_angle_rad == pytest.approx(0.03)
+    assert cfg.reward.rotation_progress_scale == pytest.approx(3.0)
+    assert cfg.reward.reverse_rotation_scale == pytest.approx(5.0)
+    assert cfg.reward.transition_success_bonus == pytest.approx(0.05)
+    assert cfg.reward.cycle_success_bonus == pytest.approx(0.20)
+    assert cfg.reward.invalid_cycle_penalty == pytest.approx(0.10)
+    assert cfg.env.state_cycle.cycle_target_net_angle_rad == pytest.approx(0.10)
+    assert cfg.env.state_cycle.a_to_b.minimum_net_angle_rad == pytest.approx(0.08)
+    assert cfg.env.state_cycle.ready_to_a.minimum_net_angle_rad == pytest.approx(0.0)
+    assert cfg.env.state_cycle.b_to_ready.minimum_net_angle_rad == pytest.approx(0.0)
     assert cfg.env.state_cycle.ready_to_a.hold_steps == 4
     assert cfg.env.state_cycle.b_to_ready.target_pose == "ready"
     assert OmegaConf.select(cfg, "state_cycle") is None

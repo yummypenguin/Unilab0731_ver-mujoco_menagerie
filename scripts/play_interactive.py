@@ -148,6 +148,10 @@ class PlayInteractiveArgs:
     show_reward_values: bool = False
     reward_value_keys: str = ""
     reward_value_max_terms: int = 12
+    show_phase: bool = False
+    phase_info_key: str = ""
+    phase_step_info_key: str = ""
+    phase_names: tuple[str, ...] = ()
 
 
 @dataclass
@@ -229,6 +233,47 @@ def _checkpoint_overlay_text(
         int(mujoco.mjtGridPos.mjGRID_BOTTOMLEFT),
         "Run\nCheckpoint",
         f"{run_name}\n{checkpoint_name}",
+    )
+
+
+def _phase_overlay_text(
+    info: dict[str, Any],
+    *,
+    phase_info_key: str,
+    phase_step_info_key: str,
+    phase_names: Sequence[str],
+) -> tuple[int, int, str, str] | None:
+    if not phase_info_key or phase_info_key not in info:
+        return None
+
+    try:
+        phase_value = np.asarray(info[phase_info_key]).reshape(-1)[0]
+        phase_index = int(phase_value)
+    except (IndexError, TypeError, ValueError):
+        return None
+
+    phase_name = (
+        str(phase_names[phase_index])
+        if 0 <= phase_index < len(phase_names)
+        else str(phase_index)
+    )
+    labels = ["Phase"]
+    values = [phase_name]
+
+    if phase_step_info_key and phase_step_info_key in info:
+        try:
+            phase_step = int(np.asarray(info[phase_step_info_key]).reshape(-1)[0])
+        except (IndexError, TypeError, ValueError):
+            pass
+        else:
+            labels.append("Phase step")
+            values.append(str(phase_step))
+
+    return (
+        int(mujoco.mjtFontScale.mjFONTSCALE_100),
+        int(mujoco.mjtGridPos.mjGRID_BOTTOMRIGHT),
+        "\n".join(labels),
+        "\n".join(values),
     )
 
 
@@ -1412,6 +1457,18 @@ def play_interactive(args, cfg: DictConfig | None = None, *, algo: str | None = 
                         )
                     )
 
+                if bool(getattr(args, "show_phase", False)):
+                    phase_overlay = _phase_overlay_text(
+                        playback_session.info,
+                        phase_info_key=str(getattr(args, "phase_info_key", "")),
+                        phase_step_info_key=str(
+                            getattr(args, "phase_step_info_key", "")
+                        ),
+                        phase_names=tuple(getattr(args, "phase_names", ())),
+                    )
+                    if phase_overlay is not None:
+                        text_overlays.append(phase_overlay)
+
                 text_overlays.append(_checkpoint_overlay_text(checkpoint_path))
                 if text_overlays:
                     viewer.set_texts(text_overlays)
@@ -1553,6 +1610,14 @@ def _build_play_args(cfg: DictConfig, *, algo: str = "ppo") -> PlayInteractiveAr
         reward_value_max_terms=int(
             OmegaConf.select(cfg, "interactive.reward_value_max_terms", default=12)
         ),
+        show_phase=bool(OmegaConf.select(cfg, "interactive.show_phase", default=False)),
+        phase_info_key=str(
+            OmegaConf.select(cfg, "interactive.phase_info_key", default="")
+        ),
+        phase_step_info_key=str(
+            OmegaConf.select(cfg, "interactive.phase_step_info_key", default="")
+        ),
+        phase_names=tuple(OmegaConf.select(cfg, "interactive.phase_names", default=[])),
     )
 
 

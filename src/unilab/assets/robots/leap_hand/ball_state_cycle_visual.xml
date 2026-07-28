@@ -1,0 +1,20 @@
+<mujoco model="leap_hand_state_cycle_beach_ball">
+  <asset>
+    <texture name="leap_state_cycle_beach_ball_tex" type="2d"
+             file="beach_ball_state_cycle.png"/>
+    <material name="leap_state_cycle_beach_ball_material"
+              texture="leap_state_cycle_beach_ball_tex"
+              specular="0.25" shininess="0.35"/>
+  </asset>
+
+  <worldbody>
+    <body name="leap_object" pos="-0.03 0.04 0.57">
+      <freejoint name="leap_object_joint"/>
+      <inertial pos="0 0 0" mass="0.05" diaginertia="0.0001 0.0001 0.0001"/>
+      <geom name="leap_object_col" type="sphere" size="0.04"
+            quat="0.692406177520752 0.6846243739128113 0.2277115434408188 -0.0032545626163482666"
+            mass="0.05" material="leap_state_cycle_beach_ball_material" condim="6"
+            friction="2.0 0.05 0.01" solimp="0.9 0.95 0.001" solref="0.02 1"/>
+    </body>
+  </worldbody>
+</mujoco>

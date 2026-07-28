@@ -39,11 +39,12 @@ reward:
   pose_tracking_scale: 0.25
   pose_sigma: 0.08
   rotation_progress_scale: 3.0
-  reverse_rotation_scale: 4.0
+  reverse_rotation_scale: 5.0
   position_error_scale: 6.0
   object_linvel_scale: 0.3
-  transition_success_bonus: 0.25
-  cycle_success_bonus: 0.75
+  transition_success_bonus: 0.05
+  cycle_success_bonus: 0.20
+  invalid_cycle_penalty: 0.10
   timeout_penalty: 0.25
   failure_penalty: 1.0
 
@@ -70,6 +71,7 @@ env:
     ball_vel_noise: 0.0
     ball_z_offset: 0.0
   state_cycle:
+    cycle_target_net_angle_rad: 0.10
     reset_pose_weights: [1.0, 1.0, 1.0]
     ready_to_a:
       target_pose: A
@@ -87,7 +89,7 @@ env:
       position_tolerance_m: 0.020
       max_ball_speed_m_s: 0.10
       minimum_contacts: 2
-      minimum_net_angle_rad: 0.03
+      minimum_net_angle_rad: 0.08
       hold_steps: 4
     b_to_ready:
       target_pose: ready
@@ -107,4 +109,7 @@ play_profile:
 interactive:
   show_object_rotation: true
   rotation_body_name: leap_object
-
+  show_phase: true
+  phase_info_key: state_cycle_phase
+  phase_step_info_key: state_cycle_phase_steps
+  phase_names: [READY_TO_A, A_TO_B, B_TO_READY]

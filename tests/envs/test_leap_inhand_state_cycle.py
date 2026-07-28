@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -14,6 +15,7 @@ from unilab.envs.manipulation.leap_inhand.state_cycle_rotation import (
     NEXT_PHASE,
     RESET_POSE_NAMES,
     SOURCE_PHASE,
+    LeapInhandBallStateCycleRotationCfg,
     LeapInhandBallStateCycleRotationEnv,
     StateCycleConfig,
     StateCyclePhase,
@@ -26,6 +28,7 @@ from unilab.envs.manipulation.leap_inhand.state_cycle_rotation import (
     compute_timeout_event,
     reset_phase_for_pose,
     rotation_condition,
+    update_state_cycle_rotation,
 )
 
 
@@ -109,10 +112,10 @@ def test_pose_distance_and_progress_sign() -> None:
 
 def test_a_to_b_requires_positive_net_rotation_threshold() -> None:
     phases = np.asarray([StateCyclePhase.A_TO_B] * 3, dtype=np.int8)
-    minimum_angles = np.asarray([0.0, 0.03, 0.0])
+    minimum_angles = np.asarray([0.0, 0.08, 0.0])
     result = rotation_condition(
         phases,
-        np.asarray([0.029, 0.030, -0.10]),
+        np.asarray([0.079, 0.080, -0.10]),
         minimum_angles,
     )
 
@@ -124,7 +127,7 @@ def test_zero_rotation_requirement_accepts_negative_drift() -> None:
         [StateCyclePhase.READY_TO_A, StateCyclePhase.B_TO_READY],
         dtype=np.int8,
     )
-    minimum_angles = np.asarray([0.0, 0.03, 0.0])
+    minimum_angles = np.asarray([0.0, 0.08, 0.0])
 
     result = rotation_condition(
         phases,
@@ -137,17 +140,16 @@ def test_zero_rotation_requirement_accepts_negative_drift() -> None:
 
 def _reward_terms(**overrides: np.ndarray):
     values = {
-        "phases": np.asarray([StateCyclePhase.A_TO_B], dtype=np.int8),
         "pose_progress": np.zeros(1),
         "pose_distance": np.zeros(1),
         "phase_start_pose_distance": np.zeros(1),
+        "phase_positive_angle": np.zeros(1),
         "axis_delta": np.zeros(1),
-        "edge_net_angle_before": np.zeros(1),
-        "required_angle": np.asarray([0.03]),
         "position_error": np.zeros(1),
         "ball_linvel": np.zeros((1, 3)),
         "transition_event": np.zeros(1, dtype=bool),
-        "cycle_event": np.zeros(1, dtype=bool),
+        "rotation_cycle_success_event": np.zeros(1, dtype=bool),
+        "invalid_rotation_cycle_event": np.zeros(1, dtype=bool),
         "timeout": np.zeros(1, dtype=bool),
         "workspace_failure": np.zeros(1, dtype=bool),
     }
@@ -175,20 +177,26 @@ def test_pose_tracking_reward_has_zero_upper_bound_at_target() -> None:
     assert far.pose_tracking[0] >= -0.25 * 0.05
 
 
-def test_positive_rotation_reward_is_capped_at_remaining_angle() -> None:
-    terms = _reward_terms(
-        axis_delta=np.asarray([0.20]),
-        edge_net_angle_before=np.asarray([0.0]),
-        required_angle=np.asarray([0.03]),
-    )
+@pytest.mark.parametrize("phase", list(StateCyclePhase))
+def test_positive_rotation_reward_applies_in_every_phase(phase: StateCyclePhase) -> None:
+    del phase
+    terms = _reward_terms(axis_delta=np.asarray([0.01]))
 
-    np.testing.assert_allclose(terms.rotation_progress, [3.0 * 0.03])
+    np.testing.assert_allclose(terms.rotation_progress, [3.0 * 0.01])
 
 
-def test_reverse_rotation_reward_is_negative() -> None:
+def test_positive_rotation_reward_is_not_capped_at_transition_angle() -> None:
+    terms = _reward_terms(axis_delta=np.asarray([0.20]))
+
+    np.testing.assert_allclose(terms.rotation_progress, [3.0 * 0.20])
+
+
+@pytest.mark.parametrize("phase", list(StateCyclePhase))
+def test_reverse_rotation_reward_applies_in_every_phase(phase: StateCyclePhase) -> None:
+    del phase
     terms = _reward_terms(axis_delta=np.asarray([-0.01]))
 
-    np.testing.assert_allclose(terms.reverse_rotation, [-4.0 * 0.01])
+    np.testing.assert_allclose(terms.reverse_rotation, [-5.0 * 0.01])
     assert terms.total[0] < 0.0
 
 
@@ -216,6 +224,118 @@ def test_timeout_claws_back_net_phase_pose_progress() -> None:
     np.testing.assert_allclose(terms.pose_progress, [0.40])
     np.testing.assert_allclose(terms.timeout, [-0.65])
     np.testing.assert_allclose(terms.total, [-0.25])
+
+
+def test_timeout_claws_back_all_phase_positive_rotation_reward() -> None:
+    terms = _reward_terms(
+        phase_positive_angle=np.asarray([0.10]),
+        timeout=np.asarray([True]),
+    )
+
+    np.testing.assert_allclose(terms.timeout, [-(0.25 + 3.0 * 0.10)])
+    np.testing.assert_allclose(terms.total, [-(0.25 + 3.0 * 0.10)])
+
+    transitioned = _reward_terms(
+        phase_positive_angle=np.asarray([0.10]),
+        transition_event=np.asarray([True]),
+        timeout=np.asarray([False]),
+    )
+    np.testing.assert_allclose(transitioned.timeout, [0.0])
+    np.testing.assert_allclose(transitioned.transition_event, [0.05])
+
+
+def _rotation_update(**overrides: np.ndarray | float):
+    values = {
+        "axis_delta": np.zeros(1),
+        "cycle_net_angle": np.zeros(1),
+        "episode_net_angle": np.zeros(1),
+        "phase_positive_angle": np.zeros(1),
+        "last_completed_cycle_net_angle": np.zeros(1),
+        "completed_cycle_angle_sum": np.zeros(1),
+        "completed_cycle_count": np.zeros(1, dtype=np.uint32),
+        "valid_rotation_cycles_completed": np.zeros(1, dtype=np.uint32),
+        "transition_event": np.zeros(1, dtype=bool),
+        "cycle_event": np.zeros(1, dtype=bool),
+        "cycle_target_net_angle_rad": 0.10,
+    }
+    values.update(overrides)
+    return update_state_cycle_rotation(**values)
+
+
+def test_cycle_rotation_accumulates_across_phases_and_resets_only_on_cycle() -> None:
+    ready_to_a = _rotation_update(
+        axis_delta=np.asarray([0.02]),
+        transition_event=np.asarray([True]),
+    )
+    np.testing.assert_allclose(ready_to_a.cycle_net_angle, [0.02])
+    np.testing.assert_allclose(ready_to_a.episode_net_angle, [0.02])
+
+    a_to_b = _rotation_update(
+        axis_delta=np.asarray([0.07]),
+        cycle_net_angle=ready_to_a.cycle_net_angle,
+        episode_net_angle=ready_to_a.episode_net_angle,
+        phase_positive_angle=ready_to_a.phase_positive_angle,
+        last_completed_cycle_net_angle=ready_to_a.last_completed_cycle_net_angle,
+        completed_cycle_angle_sum=ready_to_a.completed_cycle_angle_sum,
+        completed_cycle_count=ready_to_a.completed_cycle_count,
+        valid_rotation_cycles_completed=ready_to_a.valid_rotation_cycles_completed,
+        transition_event=np.asarray([True]),
+    )
+    np.testing.assert_allclose(a_to_b.cycle_net_angle, [0.09])
+    np.testing.assert_allclose(a_to_b.episode_net_angle, [0.09])
+
+    b_to_ready = _rotation_update(
+        axis_delta=np.asarray([0.03]),
+        cycle_net_angle=a_to_b.cycle_net_angle,
+        episode_net_angle=a_to_b.episode_net_angle,
+        phase_positive_angle=a_to_b.phase_positive_angle,
+        last_completed_cycle_net_angle=a_to_b.last_completed_cycle_net_angle,
+        completed_cycle_angle_sum=a_to_b.completed_cycle_angle_sum,
+        completed_cycle_count=a_to_b.completed_cycle_count,
+        valid_rotation_cycles_completed=a_to_b.valid_rotation_cycles_completed,
+        transition_event=np.asarray([True]),
+        cycle_event=np.asarray([True]),
+    )
+    np.testing.assert_allclose(b_to_ready.completed_cycle_net_angle, [0.12])
+    np.testing.assert_allclose(b_to_ready.last_completed_cycle_net_angle, [0.12])
+    np.testing.assert_allclose(b_to_ready.completed_cycle_angle_sum, [0.12])
+    np.testing.assert_array_equal(b_to_ready.completed_cycle_count, [1])
+    np.testing.assert_array_equal(b_to_ready.rotation_cycle_success_event, [True])
+    np.testing.assert_array_equal(b_to_ready.invalid_rotation_cycle_event, [False])
+    np.testing.assert_array_equal(b_to_ready.valid_rotation_cycles_completed, [1])
+    np.testing.assert_allclose(b_to_ready.cycle_net_angle, [0.0])
+    np.testing.assert_allclose(b_to_ready.episode_net_angle, [0.12])
+
+
+def test_invalid_rotation_cycle_has_penalty_and_no_cycle_bonus() -> None:
+    update = _rotation_update(
+        axis_delta=np.asarray([0.04]),
+        transition_event=np.asarray([True]),
+        cycle_event=np.asarray([True]),
+    )
+    np.testing.assert_array_equal(update.rotation_cycle_success_event, [False])
+    np.testing.assert_array_equal(update.invalid_rotation_cycle_event, [True])
+
+    terms = _reward_terms(
+        transition_event=np.asarray([True]),
+        rotation_cycle_success_event=update.rotation_cycle_success_event,
+        invalid_rotation_cycle_event=update.invalid_rotation_cycle_event,
+    )
+    np.testing.assert_allclose(terms.transition_event, [0.05])
+    np.testing.assert_allclose(terms.cycle_event, [0.0])
+    np.testing.assert_allclose(terms.invalid_cycle, [-0.10])
+
+
+def test_only_valid_completed_rotation_cycle_receives_cycle_bonus() -> None:
+    ordinary_transition = _reward_terms(transition_event=np.asarray([True]))
+    valid_cycle = _reward_terms(
+        transition_event=np.asarray([True]),
+        rotation_cycle_success_event=np.asarray([True]),
+    )
+
+    np.testing.assert_allclose(ordinary_transition.transition_event, [0.05])
+    np.testing.assert_allclose(ordinary_transition.cycle_event, [0.0])
+    np.testing.assert_allclose(valid_cycle.cycle_event, [0.20])
 
 
 def test_last_legal_step_can_succeed_before_timeout() -> None:
@@ -281,6 +401,67 @@ def test_registry_exposes_independent_state_cycle_task() -> None:
     ]
 
 
+def test_state_cycle_uses_render_only_beach_ball_scene() -> None:
+    mujoco = pytest.importorskip("mujoco")
+    cfg = LeapInhandBallStateCycleRotationCfg()
+
+    assert Path(cfg.scene.model_file).name == "scene_ball.xml"
+    assert cfg.scene.visual_model_file is not None
+    assert Path(cfg.scene.visual_model_file).name == "scene_ball_state_cycle_visual.xml"
+
+    physics_model = mujoco.MjModel.from_xml_path(cfg.scene.model_file)
+    visual_model = mujoco.MjModel.from_xml_path(cfg.scene.visual_model_file)
+    assert (visual_model.nq, visual_model.nv, visual_model.nu) == (
+        physics_model.nq,
+        physics_model.nv,
+        physics_model.nu,
+    )
+
+    object_body = mujoco.mj_name2id(
+        physics_model,
+        mujoco.mjtObj.mjOBJ_BODY,
+        "leap_object",
+    )
+    visual_object_body = mujoco.mj_name2id(
+        visual_model,
+        mujoco.mjtObj.mjOBJ_BODY,
+        "leap_object",
+    )
+    np.testing.assert_allclose(
+        visual_model.body_mass[visual_object_body],
+        physics_model.body_mass[object_body],
+    )
+    np.testing.assert_allclose(
+        visual_model.body_inertia[visual_object_body],
+        physics_model.body_inertia[object_body],
+    )
+
+    object_geom = mujoco.mj_name2id(
+        physics_model,
+        mujoco.mjtObj.mjOBJ_GEOM,
+        "leap_object_col",
+    )
+    visual_object_geom = mujoco.mj_name2id(
+        visual_model,
+        mujoco.mjtObj.mjOBJ_GEOM,
+        "leap_object_col",
+    )
+    np.testing.assert_allclose(
+        visual_model.geom_size[visual_object_geom],
+        physics_model.geom_size[object_geom],
+    )
+    np.testing.assert_allclose(
+        visual_model.geom_friction[visual_object_geom],
+        physics_model.geom_friction[object_geom],
+    )
+
+    visual_data = mujoco.MjData(visual_model)
+    mujoco.mj_resetDataKeyframe(visual_model, visual_data, 0)
+    mujoco.mj_forward(visual_model, visual_data)
+    texture_pole_world_axis = visual_data.geom_xmat[visual_object_geom].reshape(3, 3)[:, 2]
+    np.testing.assert_allclose(texture_pole_world_axis, [0.0, 0.0, 1.0], atol=1e-6)
+
+
 def test_state_cycle_environment_reset_and_step() -> None:
     pytest.importorskip("mujoco")
     try:
@@ -304,7 +485,7 @@ def test_state_cycle_environment_reset_and_step() -> None:
     try:
         env._sample_reset_pose_names = lambda num_reset: list(RESET_POSE_NAMES[:num_reset])
         obs, info = env.reset(np.arange(3, dtype=np.int32))
-        assert obs["obs"].shape == (3, 140)
+        assert obs["obs"].shape == (3, 142)
         assert np.isfinite(obs["obs"]).all()
         np.testing.assert_allclose(info["prev_ctrl"], np.stack([
             POSE_LIBRARY[name].ctrl for name in RESET_POSE_NAMES
@@ -322,14 +503,56 @@ def test_state_cycle_environment_reset_and_step() -> None:
             np.eye(3),
         )
         np.testing.assert_allclose(obs["obs"][:, 136], [0.0, 1.0, 0.0])
+        np.testing.assert_allclose(obs["obs"][:, -2], 0.0)
+        np.testing.assert_allclose(obs["obs"][:, -1], 1.0)
+        for key in (
+            "state_cycle_cycle_net_angle",
+            "state_cycle_episode_net_angle",
+            "state_cycle_phase_positive_angle",
+            "state_cycle_last_completed_cycle_net_angle",
+            "state_cycle_completed_cycle_angle_sum",
+            "state_cycle_completed_cycle_count",
+            "state_cycle_valid_rotation_cycles_completed",
+        ):
+            np.testing.assert_array_equal(info[key], np.zeros(3))
 
         next_state = env.step(np.zeros((3, 16), dtype=np.float32))
-        assert next_state.obs["obs"].shape == (3, 140)
+        assert next_state.obs["obs"].shape == (3, 142)
         assert np.isfinite(next_state.obs["obs"]).all()
+        assert np.all((next_state.obs["obs"][:, -1] >= 0.0))
+        assert np.all((next_state.obs["obs"][:, -1] <= 1.0))
         assert np.isfinite(next_state.reward).all()
         assert "termination/workspace_rate" in next_state.info["log"]
         assert "termination/timeout_rate" in next_state.info["log"]
         assert "reward/timeout" in next_state.info["log"]
+        for key in (
+            "rotation/episode_net_angle_mean",
+            "rotation/episode_net_turns_mean",
+            "rotation/cycle_net_angle_mean",
+            "rotation/cycle_net_turns_mean",
+            "rotation/last_completed_cycle_net_angle_mean",
+            "rotation/completed_cycle_net_angle_mean",
+            "rotation/valid_rotation_cycle_rate",
+            "rotation/valid_rotation_cycles_completed_mean",
+            "rotation/axis_delta_READY_TO_A_mean",
+            "rotation/axis_delta_A_TO_B_mean",
+            "rotation/axis_delta_B_TO_READY_mean",
+            "rotation/reverse_fraction_READY_TO_A",
+            "rotation/reverse_fraction_A_TO_B",
+            "rotation/reverse_fraction_B_TO_READY",
+            "state_cycle/pose_ok_rate",
+            "state_cycle/position_ok_rate",
+            "state_cycle/speed_ok_rate",
+            "state_cycle/contact_ok_rate",
+            "state_cycle/rotation_ok_rate",
+            "state_cycle/no_palm_contact_rate",
+            "state_cycle/hold_steps_mean",
+            "state_cycle/timeout_READY_TO_A_rate",
+            "state_cycle/timeout_A_TO_B_rate",
+            "state_cycle/timeout_B_TO_READY_rate",
+            "reward/invalid_cycle",
+        ):
+            assert key in next_state.info["log"]
     finally:
         env.close()
 

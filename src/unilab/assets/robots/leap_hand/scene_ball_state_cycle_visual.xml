@@ -1,0 +1,31 @@
+<mujoco model="leap_hand_state_cycle_beach_ball_scene">
+  <include file="leap_hand.xml"/>
+  <include file="ball_state_cycle_visual.xml"/>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" pos="0 0 0.3" size="0 0 0.05" type="plane" rgba="0.15 0.18 0.2 1"/>
+  </worldbody>
+
+  <sensor>
+    <contact name="leap_index_contact" geom1="index_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_middle_contact" geom1="middle_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_ring_contact" geom1="ring_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_thumb_contact" geom1="thumb_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact" geom1="palm_lower_collision" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+  </sensor>
+
+  <keyframe>
+    <key name="home"
+      qpos="1.228796124458313 0.00006612321885768324 0.14423121511936188 0.5514995455741882
+            0.8568289279937744 0.003151034004986286 0.6013797521591187 0.4033793807029724
+            1.0706121921539307 -0.20075294375419617 0.689818799495697 -0.09877684712409973
+            1.5078380107879639 0.7395835518836975 0.3468613624572754 0.1949923038482666
+            -0.009521099738776684 0.028475459665060043 0.67497318983078
+            0.692406177520752 -0.6846243739128113 -0.2277115434408188 0.0032545626163482666"
+      ctrl="1.228796124458313 0.00006612321885768324 0.14423121511936188 0.5514995455741882
+            0.8568289279937744 0.003151034004986286 0.6013797521591187 0.4033793807029724
+            1.0706121921539307 -0.20075294375419617 0.689818799495697 -0.09877684712409973
+            1.5078380107879639 0.7395835518836975 0.3468613624572754 0.1949923038482666"/>
+  </keyframe>
+</mujoco>

@@ -332,6 +332,38 @@ def test_leap_ball_owner_enables_object_rotation_telemetry():
     assert args.rotation_body_name == "leap_object"
 
 
+def test_state_cycle_owner_enables_named_phase_overlay():
+    mod = _load_script("play_interactive")
+
+    cfg = mod._compose_interactive_config(
+        "ppo",
+        ["task=leap_inhand_ball_state_cycle/mujoco"],
+    )
+    args = mod._build_play_args(cfg)
+
+    assert args.show_phase is True
+    assert args.phase_info_key == "state_cycle_phase"
+    assert args.phase_step_info_key == "state_cycle_phase_steps"
+    assert args.phase_names == ("READY_TO_A", "A_TO_B", "B_TO_READY")
+
+    overlay = mod._phase_overlay_text(
+        {
+            "state_cycle_phase": np.asarray([1], dtype=np.int8),
+            "state_cycle_phase_steps": np.asarray([7], dtype=np.uint32),
+        },
+        phase_info_key=args.phase_info_key,
+        phase_step_info_key=args.phase_step_info_key,
+        phase_names=args.phase_names,
+    )
+
+    assert overlay is not None
+    font, grid, labels, values = overlay
+    assert font == int(mod.mujoco.mjtFontScale.mjFONTSCALE_100)
+    assert grid == int(mod.mujoco.mjtGridPos.mjGRID_BOTTOMRIGHT)
+    assert labels == "Phase\nPhase step"
+    assert values == "A_TO_B\n7"
+
+
 def test_world_body_angular_velocity_reads_mujoco_scene_state():
     mod = _load_script("play_interactive")
     model = mod.mujoco.MjModel.from_xml_path(

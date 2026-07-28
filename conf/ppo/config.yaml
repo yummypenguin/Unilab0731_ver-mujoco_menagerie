@@ -119,6 +119,10 @@ interactive:
   show_reward_values: false
   reward_value_keys: ""
   reward_value_max_terms: 12
+  show_phase: false
+  phase_info_key: ""
+  phase_step_info_key: ""
+  phase_names: []
   speed: 1.0
   start_paused: false
   keyboard: false
