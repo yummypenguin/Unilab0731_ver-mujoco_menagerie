@@ -179,12 +179,39 @@ def test_pose_progress_reward_is_not_scaled_by_ctrl_dt() -> None:
 
 
 def test_pose_tracking_reward_has_zero_upper_bound_at_target() -> None:
-    at_target = _reward_terms(pose_distance=np.asarray([0.0]))
-    far = _reward_terms(pose_distance=np.asarray([1.0]))
+    reward_cfg = StateCycleRewardConfig(pose_tracking_scale=0.65)
+    ctrl_dt = 0.05
+    at_target = _reward_terms(
+        reward_cfg=reward_cfg,
+        ctrl_dt=ctrl_dt,
+        pose_distance=np.asarray([0.0]),
+    )
+    at_sigma = _reward_terms(
+        reward_cfg=reward_cfg,
+        ctrl_dt=ctrl_dt,
+        pose_distance=np.asarray([reward_cfg.pose_sigma]),
+    )
+    far = _reward_terms(
+        reward_cfg=reward_cfg,
+        ctrl_dt=ctrl_dt,
+        pose_distance=np.asarray([1.0]),
+    )
 
     np.testing.assert_allclose(at_target.pose_tracking, [0.0])
-    assert far.pose_tracking[0] < 0.0
-    assert far.pose_tracking[0] >= -0.50 * 0.05
+    np.testing.assert_allclose(
+        at_sigma.pose_tracking,
+        [0.65 * (np.exp(-1.0) - 1.0) * ctrl_dt],
+    )
+    np.testing.assert_allclose(
+        far.pose_tracking,
+        [-0.65 * ctrl_dt],
+        atol=1e-12,
+    )
+    assert at_target.pose_tracking.shape == (1,)
+    assert at_target.pose_tracking.dtype == np.float64
+    assert np.isfinite(at_target.pose_tracking).all()
+    assert np.isfinite(at_sigma.pose_tracking).all()
+    assert np.isfinite(far.pose_tracking).all()
 
 
 @pytest.mark.parametrize("phase", list(StateCyclePhase))

@@ -36,7 +36,7 @@ algo:
 
 reward:
   pose_progress_scale: 4.0
-  pose_tracking_scale: 0.50
+  pose_tracking_scale: 0.65
   pose_sigma: 0.08
   rotation_progress_scale: 3.0
   reverse_rotation_scale: 5.0
