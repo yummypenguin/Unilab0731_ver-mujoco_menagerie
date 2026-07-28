@@ -496,6 +496,124 @@ def compute_timeout_event(
     )
 
 
+def compute_state_cycle_diagnostic_metrics(
+    *,
+    phases_before: np.ndarray,
+    timeout: np.ndarray,
+    pose_distance: np.ndarray,
+    position_error: np.ndarray,
+    ball_speed: np.ndarray,
+    contact_count: np.ndarray,
+    edge_net_angle: np.ndarray,
+    remaining_angle: np.ndarray,
+    hold_steps: np.ndarray,
+    pose_ok: np.ndarray,
+    position_ok: np.ndarray,
+    speed_ok: np.ndarray,
+    contact_ok: np.ndarray,
+    rotation_ok: np.ndarray,
+    no_palm_contact: np.ndarray,
+    transition_event: np.ndarray,
+    workspace_failure: np.ndarray,
+) -> dict[str, float]:
+    """Compute phase and terminal diagnostics using the pre-transition phase."""
+    phases = np.asarray(phases_before)
+    timeout_mask = np.asarray(timeout, dtype=bool)
+    hold_steps_array = np.asarray(hold_steps)
+    arrays = {
+        "pose_distance": np.asarray(pose_distance),
+        "position_error_m": np.asarray(position_error),
+        "ball_speed_m_s": np.asarray(ball_speed),
+        "contact_count": np.asarray(contact_count),
+        "edge_net_angle": np.asarray(edge_net_angle),
+        "remaining_angle": np.asarray(remaining_angle),
+        "hold_steps": hold_steps_array,
+    }
+    gates = {
+        "pose_ok": np.asarray(pose_ok, dtype=bool),
+        "position_ok": np.asarray(position_ok, dtype=bool),
+        "speed_ok": np.asarray(speed_ok, dtype=bool),
+        "contact_ok": np.asarray(contact_ok, dtype=bool),
+        "rotation_ok": np.asarray(rotation_ok, dtype=bool),
+        "no_palm_contact": np.asarray(no_palm_contact, dtype=bool),
+    }
+
+    def masked_mean(values: np.ndarray, mask: np.ndarray) -> float:
+        return float(np.mean(values[mask])) if np.any(mask) else 0.0
+
+    log: dict[str, float] = {
+        "timeout/final_phase_mean": masked_mean(phases, timeout_mask),
+    }
+    for name, values in arrays.items():
+        log[f"timeout/final_{name}_mean"] = masked_mean(values, timeout_mask)
+    for name, values in gates.items():
+        log[f"timeout/final_{name}_rate"] = masked_mean(values, timeout_mask)
+
+    all_gates_except_hold = (
+        gates["pose_ok"]
+        & gates["position_ok"]
+        & gates["speed_ok"]
+        & gates["contact_ok"]
+        & gates["rotation_ok"]
+        & gates["no_palm_contact"]
+        & ~np.asarray(workspace_failure, dtype=bool)
+    )
+    near_transition = all_gates_except_hold & ~np.asarray(
+        transition_event, dtype=bool
+    )
+
+    active_arrays = {
+        "pose_distance": arrays["pose_distance"],
+        "remaining_angle": arrays["remaining_angle"],
+        "hold_steps": arrays["hold_steps"],
+    }
+    for phase in StateCyclePhase:
+        phase_name = phase.name
+        phase_mask = phases == int(phase)
+        phase_timeout_mask = timeout_mask & phase_mask
+        for name, values in active_arrays.items():
+            log[f"state_cycle/{name}_{phase_name}_mean"] = masked_mean(
+                values, phase_mask
+            )
+        for name, values in gates.items():
+            log[f"state_cycle/{name}_{phase_name}_rate"] = masked_mean(
+                values, phase_mask
+            )
+        log[f"state_cycle/near_transition_{phase_name}_rate"] = masked_mean(
+            near_transition, phase_mask
+        )
+        log[f"state_cycle/timeout_{phase_name}_rate"] = float(
+            np.mean(phase_timeout_mask)
+        )
+        log[f"state_cycle/timeout_{phase_name}_conditional_rate"] = masked_mean(
+            timeout_mask, phase_mask
+        )
+
+        count = int(np.sum(phase_timeout_mask))
+        log[f"timeout/{phase_name}_count"] = float(count)
+        for name, values in arrays.items():
+            log[f"timeout/{phase_name}_{name}_mean"] = masked_mean(
+                values, phase_timeout_mask
+            )
+        for name, values in gates.items():
+            log[f"timeout/{phase_name}_{name}_rate"] = masked_mean(
+                values, phase_timeout_mask
+            )
+        blockers = {
+            "pose_blocked": ~gates["pose_ok"],
+            "position_blocked": ~gates["position_ok"],
+            "speed_blocked": ~gates["speed_ok"],
+            "contact_blocked": ~gates["contact_ok"],
+            "rotation_blocked": ~gates["rotation_ok"],
+            "palm_blocked": ~gates["no_palm_contact"],
+        }
+        for name, values in blockers.items():
+            log[f"timeout/{phase_name}_{name}_rate"] = masked_mean(
+                values, phase_timeout_mask
+            )
+    return log
+
+
 def advance_state_cycle(
     phases: np.ndarray,
     hold_steps: np.ndarray,
@@ -1106,6 +1224,8 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
                 0.0,
             ),
             edge_net_angle=edge_net_angle_for_log,
+            ball_speed=ball_speed,
+            contact_count=contact_count,
             axis_delta=axis_delta,
             rotation_gates=rotation_gates,
             phase_rotation_reward_earned_current=(
@@ -1160,6 +1280,8 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         position_error: np.ndarray,
         remaining_angle: np.ndarray,
         edge_net_angle: np.ndarray,
+        ball_speed: np.ndarray,
+        contact_count: np.ndarray,
         axis_delta: np.ndarray,
         rotation_gates: StateCycleRotationStabilityGates,
         phase_rotation_reward_earned_current: np.ndarray,
@@ -1209,6 +1331,27 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         log["state_cycle/no_palm_contact_rate"] = float(np.mean(no_palm_contact))
         log["state_cycle/hold_steps_mean"] = float(
             np.mean(info["state_cycle_success_hold_steps"])
+        )
+        log.update(
+            compute_state_cycle_diagnostic_metrics(
+                phases_before=phases,
+                timeout=timeout,
+                pose_distance=pose_distance,
+                position_error=position_error,
+                ball_speed=ball_speed,
+                contact_count=contact_count,
+                edge_net_angle=edge_net_angle,
+                remaining_angle=remaining_angle,
+                hold_steps=info["state_cycle_success_hold_steps"],
+                pose_ok=pose_ok,
+                position_ok=position_ok,
+                speed_ok=speed_ok,
+                contact_ok=contact_ok,
+                rotation_ok=rotation_ok,
+                no_palm_contact=no_palm_contact,
+                transition_event=transition_event,
+                workspace_failure=workspace_failure,
+            )
         )
 
         two_pi = 2.0 * np.pi
@@ -1282,9 +1425,6 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
             )
             log[f"rotation/reverse_fraction_{phase.name}"] = float(
                 np.mean(phase_axis_delta < 0.0) if np.any(phase_mask) else 0.0
-            )
-            log[f"state_cycle/timeout_{phase.name}_rate"] = float(
-                np.mean(timeout[phase_mask]) if np.any(phase_mask) else 0.0
             )
         for name, values in reward_terms.items():
             log[f"reward/{name}"] = float(np.mean(values))

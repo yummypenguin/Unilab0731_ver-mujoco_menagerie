@@ -320,6 +320,13 @@ def test_ppo_leap_state_cycle_composes_as_independent_owner(backend: str):
     assert cfg.env.state_cycle.ready_to_a.minimum_net_angle_rad == pytest.approx(0.0)
     assert cfg.env.state_cycle.b_to_ready.minimum_net_angle_rad == pytest.approx(0.0)
     assert cfg.env.state_cycle.ready_to_a.hold_steps == 4
+    assert cfg.env.state_cycle.ready_to_a.timeout_seconds == pytest.approx(2.0)
+    assert cfg.env.state_cycle.a_to_b.timeout_seconds == pytest.approx(2.0)
+    assert cfg.env.state_cycle.b_to_ready.timeout_seconds == pytest.approx(1.3)
+    ready_to_a_timeout_steps = int(
+        round(cfg.env.state_cycle.ready_to_a.timeout_seconds / cfg.env.ctrl_dt)
+    )
+    assert ready_to_a_timeout_steps == 40
     assert cfg.env.state_cycle.b_to_ready.target_pose == "ready"
     assert OmegaConf.select(cfg, "state_cycle") is None
 

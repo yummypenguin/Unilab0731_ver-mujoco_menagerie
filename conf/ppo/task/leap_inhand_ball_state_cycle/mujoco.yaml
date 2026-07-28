@@ -80,7 +80,7 @@ env:
     reset_pose_weights: [1.0, 1.0, 1.0]
     ready_to_a:
       target_pose: A
-      timeout_seconds: 1.5
+      timeout_seconds: 2.0
       pose_tolerance: 0.08
       position_tolerance_m: 0.020
       max_ball_speed_m_s: 0.10

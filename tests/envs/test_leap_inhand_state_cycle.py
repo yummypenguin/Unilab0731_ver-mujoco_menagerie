@@ -25,6 +25,7 @@ from unilab.envs.manipulation.leap_inhand.state_cycle_rotation import (
     compute_pose_distance,
     compute_pose_progress,
     compute_rotation_stability_gates,
+    compute_state_cycle_diagnostic_metrics,
     compute_state_cycle_reward,
     compute_timeout_event,
     finalize_rotation_reward_buffers,
@@ -499,6 +500,173 @@ def test_last_legal_step_can_succeed_before_timeout() -> None:
     np.testing.assert_array_equal(timeout, [False, True])
 
 
+def _diagnostic_metrics(**overrides: np.ndarray) -> dict[str, float]:
+    values = {
+        "phases_before": np.asarray(
+            [
+                StateCyclePhase.READY_TO_A,
+                StateCyclePhase.READY_TO_A,
+                StateCyclePhase.A_TO_B,
+                StateCyclePhase.B_TO_READY,
+            ],
+            dtype=np.int8,
+        ),
+        "timeout": np.asarray([True, False, True, False]),
+        "pose_distance": np.asarray([0.09, 0.07, 0.10, 0.04]),
+        "position_error": np.asarray([0.01, 0.02, 0.03, 0.04]),
+        "ball_speed": np.asarray([0.04, 0.05, 0.06, 0.07]),
+        "contact_count": np.asarray([2, 3, 1, 4]),
+        "edge_net_angle": np.asarray([0.01, 0.02, 0.07, 0.03]),
+        "remaining_angle": np.asarray([0.0, 0.0, 0.01, 0.0]),
+        "hold_steps": np.asarray([0, 2, 1, 3], dtype=np.uint32),
+        "pose_ok": np.asarray([False, True, False, True]),
+        "position_ok": np.asarray([True, True, False, True]),
+        "speed_ok": np.asarray([True, True, True, True]),
+        "contact_ok": np.asarray([True, True, False, True]),
+        "rotation_ok": np.asarray([True, True, False, True]),
+        "no_palm_contact": np.asarray([True, True, True, False]),
+        "transition_event": np.asarray([False, False, False, False]),
+        "workspace_failure": np.asarray([False, False, False, False]),
+    }
+    values.update(overrides)
+    return compute_state_cycle_diagnostic_metrics(**values)
+
+
+def test_phase_specific_active_and_timeout_metrics_use_phase_subsets() -> None:
+    metrics = _diagnostic_metrics()
+
+    assert metrics["state_cycle/pose_distance_READY_TO_A_mean"] == pytest.approx(0.08)
+    assert metrics["state_cycle/pose_distance_A_TO_B_mean"] == pytest.approx(0.10)
+    assert metrics["state_cycle/pose_distance_B_TO_READY_mean"] == pytest.approx(0.04)
+    assert metrics["state_cycle/pose_ok_READY_TO_A_rate"] == pytest.approx(0.5)
+    assert metrics["state_cycle/position_ok_A_TO_B_rate"] == pytest.approx(0.0)
+    assert metrics["state_cycle/speed_ok_B_TO_READY_rate"] == pytest.approx(1.0)
+    assert metrics["state_cycle/contact_ok_A_TO_B_rate"] == pytest.approx(0.0)
+    assert metrics["state_cycle/rotation_ok_READY_TO_A_rate"] == pytest.approx(1.0)
+    assert metrics["state_cycle/hold_steps_READY_TO_A_mean"] == pytest.approx(1.0)
+    assert metrics["state_cycle/near_transition_READY_TO_A_rate"] == pytest.approx(0.5)
+
+    assert metrics["state_cycle/timeout_READY_TO_A_rate"] == pytest.approx(0.25)
+    assert metrics["state_cycle/timeout_A_TO_B_rate"] == pytest.approx(0.25)
+    assert metrics["state_cycle/timeout_B_TO_READY_rate"] == pytest.approx(0.0)
+    assert metrics["state_cycle/timeout_READY_TO_A_conditional_rate"] == pytest.approx(
+        0.5
+    )
+    assert metrics["state_cycle/timeout_A_TO_B_conditional_rate"] == pytest.approx(1.0)
+    assert metrics["state_cycle/timeout_B_TO_READY_conditional_rate"] == pytest.approx(
+        0.0
+    )
+
+
+def test_timeout_terminal_metrics_exclude_non_timeout_rows_and_report_blockers() -> None:
+    metrics = _diagnostic_metrics()
+
+    assert metrics["timeout/final_pose_distance_mean"] == pytest.approx(0.095)
+    assert metrics["timeout/final_position_error_m_mean"] == pytest.approx(0.02)
+    assert metrics["timeout/final_ball_speed_m_s_mean"] == pytest.approx(0.05)
+    assert metrics["timeout/final_contact_count_mean"] == pytest.approx(1.5)
+    assert metrics["timeout/final_edge_net_angle_mean"] == pytest.approx(0.04)
+    assert metrics["timeout/final_remaining_angle_mean"] == pytest.approx(0.005)
+    assert metrics["timeout/final_hold_steps_mean"] == pytest.approx(0.5)
+    assert metrics["timeout/READY_TO_A_count"] == pytest.approx(1.0)
+    assert metrics["timeout/A_TO_B_count"] == pytest.approx(1.0)
+    assert metrics["timeout/READY_TO_A_pose_blocked_rate"] == pytest.approx(1.0)
+    assert metrics["timeout/A_TO_B_pose_blocked_rate"] == pytest.approx(1.0)
+    assert metrics["timeout/A_TO_B_rotation_blocked_rate"] == pytest.approx(1.0)
+    assert metrics["timeout/A_TO_B_contact_blocked_rate"] == pytest.approx(1.0)
+    assert metrics["timeout/READY_TO_A_contact_blocked_rate"] == pytest.approx(0.0)
+
+
+def test_timeout_blocker_rates_are_independent() -> None:
+    metrics = _diagnostic_metrics(
+        phases_before=np.full(3, StateCyclePhase.READY_TO_A, dtype=np.int8),
+        timeout=np.ones(3, dtype=bool),
+        pose_distance=np.asarray([0.09, 0.10, 0.07]),
+        position_error=np.full(3, 0.01),
+        ball_speed=np.full(3, 0.04),
+        contact_count=np.asarray([2, 2, 1]),
+        edge_net_angle=np.zeros(3),
+        remaining_angle=np.zeros(3),
+        hold_steps=np.zeros(3, dtype=np.uint32),
+        pose_ok=np.asarray([False, False, True]),
+        position_ok=np.ones(3, dtype=bool),
+        speed_ok=np.ones(3, dtype=bool),
+        contact_ok=np.asarray([True, True, False]),
+        rotation_ok=np.asarray([True, False, True]),
+        no_palm_contact=np.ones(3, dtype=bool),
+        transition_event=np.zeros(3, dtype=bool),
+        workspace_failure=np.zeros(3, dtype=bool),
+    )
+
+    assert metrics["timeout/READY_TO_A_pose_blocked_rate"] == pytest.approx(2 / 3)
+    assert metrics["timeout/READY_TO_A_rotation_blocked_rate"] == pytest.approx(
+        1 / 3
+    )
+    assert metrics["timeout/READY_TO_A_contact_blocked_rate"] == pytest.approx(
+        1 / 3
+    )
+    assert (
+        metrics["timeout/READY_TO_A_pose_blocked_rate"]
+        + metrics["timeout/READY_TO_A_rotation_blocked_rate"]
+        + metrics["timeout/READY_TO_A_contact_blocked_rate"]
+    ) > 1.0
+
+
+def test_empty_phase_and_no_timeout_diagnostics_are_zero_and_finite() -> None:
+    metrics = _diagnostic_metrics(
+        phases_before=np.asarray(
+            [StateCyclePhase.READY_TO_A] * 4,
+            dtype=np.int8,
+        ),
+        timeout=np.zeros(4, dtype=bool),
+    )
+
+    for key, value in metrics.items():
+        if "B_TO_READY" in key:
+            assert value == 0.0, key
+        if key.startswith("timeout/"):
+            assert value == 0.0, key
+    assert all(np.isfinite(value) for value in metrics.values())
+
+
+def test_timeout_diagnostics_attribute_terminal_row_to_phase_before() -> None:
+    phases_before = np.asarray([StateCyclePhase.READY_TO_A], dtype=np.int8)
+    metrics = _diagnostic_metrics(
+        phases_before=phases_before,
+        timeout=np.asarray([True]),
+        pose_distance=np.asarray([0.09]),
+        position_error=np.asarray([0.01]),
+        ball_speed=np.asarray([0.04]),
+        contact_count=np.asarray([2]),
+        edge_net_angle=np.asarray([0.01]),
+        remaining_angle=np.asarray([0.0]),
+        hold_steps=np.asarray([0], dtype=np.uint32),
+        pose_ok=np.asarray([False]),
+        position_ok=np.asarray([True]),
+        speed_ok=np.asarray([True]),
+        contact_ok=np.asarray([True]),
+        rotation_ok=np.asarray([True]),
+        no_palm_contact=np.asarray([True]),
+        transition_event=np.asarray([False]),
+        workspace_failure=np.asarray([False]),
+    )
+
+    assert metrics["timeout/READY_TO_A_count"] == 1.0
+    assert metrics["timeout/A_TO_B_count"] == 0.0
+
+
+def test_ready_to_a_timeout_boundary_is_40_steps_and_transition_wins() -> None:
+    timeout_steps = np.asarray([40, 40, 40], dtype=np.uint32)
+    timeout = compute_timeout_event(
+        np.asarray([39, 40, 40], dtype=np.uint32),
+        timeout_steps,
+        transition_event=np.asarray([False, False, True]),
+        workspace_failure=np.zeros(3, dtype=bool),
+    )
+
+    np.testing.assert_array_equal(timeout, [False, True, False])
+
+
 def test_hold_requires_four_consecutive_valid_steps() -> None:
     phase = np.asarray([StateCyclePhase.READY_TO_A], dtype=np.int8)
     hold = np.zeros(1, dtype=np.uint32)
@@ -717,6 +885,77 @@ def test_state_cycle_environment_reset_and_step() -> None:
             "reward/failure_rotation_clawback",
         ):
             assert key in next_state.info["log"]
+        diagnostic_log = next_state.info["log"]
+        for phase in StateCyclePhase:
+            phase_name = phase.name
+            for name in (
+                "pose_distance",
+                "remaining_angle",
+                "hold_steps",
+            ):
+                assert f"state_cycle/{name}_{phase_name}_mean" in diagnostic_log
+            for name in (
+                "pose_ok",
+                "position_ok",
+                "speed_ok",
+                "contact_ok",
+                "rotation_ok",
+                "no_palm_contact",
+            ):
+                assert f"state_cycle/{name}_{phase_name}_rate" in diagnostic_log
+            assert f"state_cycle/near_transition_{phase_name}_rate" in diagnostic_log
+            assert f"state_cycle/timeout_{phase_name}_rate" in diagnostic_log
+            assert (
+                f"state_cycle/timeout_{phase_name}_conditional_rate"
+                in diagnostic_log
+            )
+            assert f"timeout/{phase_name}_count" in diagnostic_log
+            for name in (
+                "pose_distance",
+                "position_error_m",
+                "ball_speed_m_s",
+                "contact_count",
+                "edge_net_angle",
+                "remaining_angle",
+                "hold_steps",
+            ):
+                assert f"timeout/{phase_name}_{name}_mean" in diagnostic_log
+            for name in (
+                "pose_ok",
+                "position_ok",
+                "speed_ok",
+                "contact_ok",
+                "rotation_ok",
+                "no_palm_contact",
+                "pose_blocked",
+                "position_blocked",
+                "speed_blocked",
+                "contact_blocked",
+                "rotation_blocked",
+                "palm_blocked",
+            ):
+                assert f"timeout/{phase_name}_{name}_rate" in diagnostic_log
+        for name in (
+            "phase",
+            "pose_distance",
+            "position_error_m",
+            "ball_speed_m_s",
+            "contact_count",
+            "edge_net_angle",
+            "remaining_angle",
+            "hold_steps",
+        ):
+            assert f"timeout/final_{name}_mean" in diagnostic_log
+        for name in (
+            "pose_ok",
+            "position_ok",
+            "speed_ok",
+            "contact_ok",
+            "rotation_ok",
+            "no_palm_contact",
+        ):
+            assert f"timeout/final_{name}_rate" in diagnostic_log
+        assert all(np.isfinite(value) for value in diagnostic_log.values())
     finally:
         env.close()
 
