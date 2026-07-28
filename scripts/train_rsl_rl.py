@@ -341,7 +341,7 @@ def recover_evaluation_config(
     return recovered
 
 
-def _assert_v4_state_cycle_evaluation_contract(cfg: DictConfig, num_obs: int) -> None:
+def _assert_state_cycle_evaluation_contract(cfg: DictConfig, num_obs: int) -> None:
     if str(cfg.training.task_name) != "LeapInhandBallStateCycleRotation":
         return
     assert float(cfg.env.state_cycle.ready_to_a.timeout_seconds) == 1.5
@@ -349,7 +349,12 @@ def _assert_v4_state_cycle_evaluation_contract(cfg: DictConfig, num_obs: int) ->
     assert float(cfg.env.state_cycle.b_to_ready.timeout_seconds) == 1.3
     assert float(cfg.env.ctrl_dt) == 0.05
     assert float(cfg.env.termination_workspace_radius) == 0.05
-    assert float(cfg.reward.pose_tracking_scale) == 0.50
+    pose_tracking_scale = float(cfg.reward.pose_tracking_scale)
+    if not np.isfinite(pose_tracking_scale) or pose_tracking_scale <= 0.0:
+        raise AssertionError(
+            "Expected a finite positive state-cycle pose tracking scale, "
+            f"got {pose_tracking_scale}"
+        )
     assert float(cfg.reward.rotation_progress_scale) == 3.0
     assert float(cfg.reward.rotation_target_axis_speed_rad_s) == 0.50
     assert float(cfg.reward.rotation_overspeed_scale) == 1.0
@@ -602,7 +607,7 @@ def evaluate_rsl_rl(cfg: DictConfig, device: str) -> Path:
         env.set_diagnostic_log_interval(1)
     wrapped_env = wrapper_cls(env, device=device)
     try:
-        _assert_v4_state_cycle_evaluation_contract(cfg, int(wrapped_env.num_obs))
+        _assert_state_cycle_evaluation_contract(cfg, int(wrapped_env.num_obs))
         train_cfg = normalize_ppo_train_cfg(rl_cfg)
         apply_ppo_runtime_flags(train_cfg, cfg, training_enabled=False)
         train_cfg.setdefault("runner", {})
@@ -630,8 +635,10 @@ def evaluate_rsl_rl(cfg: DictConfig, device: str) -> Path:
         a_to_b_seconds = float(cfg.env.state_cycle.a_to_b.timeout_seconds)
         b_to_ready_seconds = float(cfg.env.state_cycle.b_to_ready.timeout_seconds)
         ctrl_dt = float(cfg.env.ctrl_dt)
+        pose_tracking_scale = float(cfg.reward.pose_tracking_scale)
         print(f"Resolved evaluation checkpoint:\n{load_path}\n")
-        print("Resolved V4 task config:")
+        print("Resolved state-cycle task config:")
+        print(f"Pose tracking scale: {pose_tracking_scale:.2f}")
         print(
             f"Ready->A timeout: {ready_seconds:.1f} s / "
             f"{round(ready_seconds / ctrl_dt)} steps"
@@ -724,6 +731,7 @@ def evaluate_rsl_rl(cfg: DictConfig, device: str) -> Path:
             "deterministic": deterministic,
             "observation_dim": int(wrapped_env.num_obs),
             "ctrl_dt": ctrl_dt,
+            "pose_tracking_scale": pose_tracking_scale,
             "ready_to_a_timeout_seconds": ready_seconds,
             "a_to_b_timeout_seconds": a_to_b_seconds,
             "b_to_ready_timeout_seconds": b_to_ready_seconds,

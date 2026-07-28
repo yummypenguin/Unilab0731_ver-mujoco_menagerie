@@ -270,4 +270,35 @@ def test_state_cycle_observation_guard_rejects_mismatch(
     )
 
     with pytest.raises(AssertionError, match="dimension 142"):
-        evaluation_module._assert_v4_state_cycle_evaluation_contract(cfg, 141)
+        evaluation_module._assert_state_cycle_evaluation_contract(cfg, 141)
+
+
+@pytest.mark.parametrize("pose_tracking_scale", [0.5, 0.65, 0.75])
+def test_state_cycle_contract_accepts_pose_scale_experiments(
+    evaluation_module: Any,
+    pose_tracking_scale: float,
+) -> None:
+    cfg = OmegaConf.create(
+        {
+            "training": {"task_name": "LeapInhandBallStateCycleRotation"},
+            "env": {
+                "ctrl_dt": 0.05,
+                "termination_workspace_radius": 0.05,
+                "state_cycle": {
+                    "ready_to_a": {"timeout_seconds": 1.5},
+                    "a_to_b": {"timeout_seconds": 2.0},
+                    "b_to_ready": {"timeout_seconds": 1.3},
+                },
+            },
+            "reward": {
+                "pose_tracking_scale": pose_tracking_scale,
+                "rotation_progress_scale": 3.0,
+                "rotation_target_axis_speed_rad_s": 0.5,
+                "rotation_overspeed_scale": 1.0,
+                "failure_penalty": 3.0,
+                "failure_rotation_clawback_cap": 5.0,
+            },
+        }
+    )
+
+    evaluation_module._assert_state_cycle_evaluation_contract(cfg, 142)
