@@ -2676,3 +2676,24 @@ validation output from the development session.
 - Both random-policy smoke runs stayed inside the one-second stall grace
   period, so their zero stall term is expected. They validate integration only
   and do not establish task learnability.
+
+## 2026-07-28: English Monthly Progress Presentation Revision
+
+- Rebuilt `LEAP_Hand_Monthly_Progress_Report_English.pptx` as a 16-slide
+  English report with a minimum editable text size of 14 pt.
+- Corrected the ball-cache generation slide from the current local
+  `leap_inhand_ball_grasp` implementation: seeded joint proposals, zero-action
+  PD settling, strict physical/contact gates, survivor serialization, and
+  reconstruction-time validation before atomic cache storage.
+- Replaced the task-evolution diagram with the user-provided reference image
+  and rewrote its adjacent explanation in English.
+- Reworked later evidence slides around retention, rotation duration, axis
+  speed, contact, and handoff diagnostics instead of iteration counts,
+  environment steps, or aggregate reward comparisons.
+- Rendered and visually inspected all slides. Artifact inspection found 16
+  slides, 16 source-note sections, no missing `[Sources]` blocks, and no
+  out-of-bounds objects.
+- Corrected the typography conversion between Artifact Tool CSS pixels and
+  PowerPoint points. The revised `_14pt` deck clamps editable text to 19 px,
+  which exports as a verified minimum of 14.25 pt, and uses a wider footer
+  frame for two-digit page numbers.

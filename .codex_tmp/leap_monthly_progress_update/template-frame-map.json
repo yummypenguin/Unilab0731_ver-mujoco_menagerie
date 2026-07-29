@@ -1,0 +1,21 @@
+{
+  "outputSlides": [
+    { "outputSlide": 1, "sourceSlide": 1, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 2, "sourceSlide": 2, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 3, "sourceSlide": 3, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 4, "sourceSlide": 4, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 5, "sourceSlide": 5, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 6, "sourceSlide": 6, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 7, "sourceSlide": 7, "narrativeRole": "S1–S6 reward and performance evidence", "reuseMode": "duplicate-slide", "editTargets": [{ "action": "rewrite", "reason": "replace reward-only inventory with effective runs and performance" }] },
+    { "outputSlide": 8, "sourceSlide": 8, "narrativeRole": "S7–S13 reward and performance evidence", "reuseMode": "duplicate-slide", "editTargets": [{ "action": "rewrite", "reason": "add outcome metrics and telemetry caveats" }] },
+    { "outputSlide": 9, "sourceSlide": 9, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 10, "sourceSlide": 10, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 11, "sourceSlide": 11, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 12, "sourceSlide": 12, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 13, "sourceSlide": 13, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 14, "sourceSlide": 14, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 15, "sourceSlide": 15, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] },
+    { "outputSlide": 16, "sourceSlide": 16, "narrativeRole": "preserve", "reuseMode": "duplicate-slide", "editTargets": [] }
+  ],
+  "omittedSourceSlides": []
+}

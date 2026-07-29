@@ -1,0 +1,880 @@
+{
+  "schema": "openai.presentation.layout/v4",
+  "unit": "px",
+  "slide": {
+    "aid": "sl/flpvh4",
+    "id": "flpvh4",
+    "slide": 17,
+    "layoutId": "9df7b9f4-1dae-468d-b384-a7bb17a54057",
+    "layoutName": "Title Slide",
+    "layoutType": "title",
+    "masterLayoutId": "a8d8efea-6b14-4a25-bfa5-83c1cd28be83",
+    "masterLayoutName": "Master",
+    "frame": {
+      "left": 0,
+      "top": 0,
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "theme": {
+    "colorSchemeName": "ChatGPT",
+    "colors": {
+      "accent1": "#156082",
+      "accent2": "#E97132",
+      "accent3": "#196B24",
+      "accent4": "#0F9ED5",
+      "accent5": "#A02B93",
+      "accent6": "#4EA72E",
+      "bg1": "#FFFFFF",
+      "bg2": "#000000",
+      "tx1": "#1F1F1F",
+      "tx2": "#FFFFFF",
+      "dk1": "#000000",
+      "lt1": "#FFFFFF",
+      "dk2": "#0E2841",
+      "lt2": "#E8E8E8",
+      "hlink": "#467886",
+      "folHlink": "#96607D"
+    },
+    "typefaces": [
+      "Microsoft JhengHei"
+    ]
+  },
+  "inheritedLayers": [
+    {
+      "scope": "layout",
+      "id": "9df7b9f4-1dae-468d-b384-a7bb17a54057",
+      "name": "Title Slide",
+      "type": "title",
+      "parentLayoutId": "a8d8efea-6b14-4a25-bfa5-83c1cd28be83",
+      "elements": []
+    },
+    {
+      "scope": "master",
+      "id": "a8d8efea-6b14-4a25-bfa5-83c1cd28be83",
+      "name": "Master",
+      "type": "master",
+      "elements": []
+    }
+  ],
+  "elements": [
+    {
+      "order": 1,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/edwr2t4r",
+      "id": "1",
+      "bbox": [
+        54,
+        24,
+        900,
+        30
+      ],
+      "geometry": "rect",
+      "text": "LEAP HAND MONTHLY PROGRESS",
+      "textPreview": "LEAP HAND MONTHLY PROGRESS",
+      "resolvedFontSize": 13,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 13,
+        "typeface": "Microsoft JhengHei",
+        "color": "#2563EB",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "LEAP HAND MONTHLY PROGRESS"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "LEAP HAND MONTHLY PROGRESS",
+          "resolvedTextStyle": {
+            "fontSize": 13,
+            "typeface": "Microsoft JhengHei",
+            "color": "#2563EB",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "LEAP HAND MONTHLY PROGRESS",
+              "fontSize": 13,
+              "typeface": "Microsoft JhengHei",
+              "color": "#2563EB",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 2,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/10nax83i",
+      "id": "2",
+      "bbox": [
+        54,
+        58,
+        1135,
+        62
+      ],
+      "geometry": "rect",
+      "text": "下一階段先證明能持續轉，再重新引入 handoff",
+      "textPreview": "下一階段先證明能持續轉，再重新引入 handoff",
+      "resolvedFontSize": 38,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 38,
+        "typeface": "Microsoft JhengHei",
+        "color": "#111827",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "下一階段先證明能持續轉，再重新引入 handoff"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "下一階段先證明能持續轉，再重新引入 handoff",
+          "resolvedTextStyle": {
+            "fontSize": 38,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "下一階段先證明能持續轉，再重新引入 handoff",
+              "fontSize": 38,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 3,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/0ze943mx",
+      "id": "3",
+      "bbox": [
+        1120,
+        664,
+        104,
+        30
+      ],
+      "geometry": "rect",
+      "text": "17",
+      "textPreview": "17",
+      "resolvedFontSize": 12,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 12,
+        "typeface": "Microsoft JhengHei",
+        "color": "#5B6472",
+        "alignment": "right",
+        "verticalAlignment": "top",
+        "autoFit": "none",
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "17"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "17",
+          "resolvedTextStyle": {
+            "fontSize": 12,
+            "typeface": "Microsoft JhengHei",
+            "color": "#5B6472",
+            "alignment": "right"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "17",
+              "fontSize": 12,
+              "typeface": "Microsoft JhengHei",
+              "color": "#5B6472",
+              "alignment": "right"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 4,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/ra5srylg",
+      "id": "4",
+      "bbox": [
+        54,
+        150,
+        440,
+        32
+      ],
+      "geometry": "rect",
+      "text": "本月得到的三個可靠結論",
+      "textPreview": "本月得到的三個可靠結論",
+      "resolvedFontSize": 24,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 24,
+        "typeface": "Microsoft JhengHei",
+        "color": "#111827",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "本月得到的三個可靠結論"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "本月得到的三個可靠結論",
+          "resolvedTextStyle": {
+            "fontSize": 24,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "本月得到的三個可靠結論",
+              "fontSize": 24,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 5,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/q9wryt4v",
+      "id": "5",
+      "bbox": [
+        54,
+        208,
+        560,
+        275
+      ],
+      "geometry": "rect",
+      "text": "1  Ball-specific cache 與真實碰撞是有效訓練的必要前提。\n\n2  Retention 改善不能代表持續旋轉；必須量測 signed axis speed 與 net angle。\n\n3  Handoff 是長期必要技能，但在 rotation acquisition 尚未成立時強制加入會增加探索稀疏性。",
+      "textPreview": "1  Ball-specific cache 與真實碰撞是有效訓練的必要前提。 |  | 2  Retention 改善不能代表持續旋轉；必須量測 signed axis speed 與 net angle。 |  | 3  Handoff 是長期必要技能，但在 rotat...",
+      "resolvedFontSize": 20,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 20,
+        "typeface": "Microsoft JhengHei",
+        "color": "#111827",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 7,
+        "lines": [
+          {
+            "index": 1,
+            "text": "1  Ball-specific cache 與真實碰撞是有效訓練的必要前提。"
+          },
+          {
+            "index": 2,
+            "text": ""
+          },
+          {
+            "index": 3,
+            "text": "2  Retention 改善不能代表持續旋轉；必須量測 signed axis"
+          },
+          {
+            "index": 4,
+            "text": "speed 與 net angle。"
+          },
+          {
+            "index": 5,
+            "text": ""
+          },
+          {
+            "index": 6,
+            "text": "3  Handoff 是長期必要技能，但在 rotation acquisition"
+          },
+          {
+            "index": 7,
+            "text": "尚未成立時強制加入會增加探索稀疏性。"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "1  Ball-specific cache 與真實碰撞是有效訓練的必要前提。",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "1  Ball-specific cache 與真實碰撞是有效訓練的必要前提。",
+              "fontSize": 20,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "2  Retention 改善不能代表持續旋轉；必須量測 signed axis speed 與 net angle。",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "2  Retention 改善不能代表持續旋轉；必須量測 signed axis speed 與 net angle。",
+              "fontSize": 20,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 5,
+          "text": "3  Handoff 是長期必要技能，但在 rotation acquisition 尚未成立時強制加入會增加探索稀疏性。",
+          "resolvedTextStyle": {
+            "fontSize": 20,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "3  Handoff 是長期必要技能，但在 rotation acquisition 尚未成立時強制加入會增加探索稀疏性。",
+              "fontSize": 20,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 6,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/dcnat836",
+      "id": "6",
+      "bbox": [
+        690,
+        145,
+        455,
+        380
+      ],
+      "geometry": "roundRect",
+      "fillColor": "#DBEAFE",
+      "lineWidth": 0
+    },
+    {
+      "order": 7,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/sbe903m1",
+      "id": "7",
+      "bbox": [
+        720,
+        176,
+        360,
+        34
+      ],
+      "geometry": "rect",
+      "text": "下一步驗證順序",
+      "textPreview": "下一步驗證順序",
+      "resolvedFontSize": 26,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 26,
+        "typeface": "Microsoft JhengHei",
+        "color": "#2563EB",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "下一步驗證順序"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "下一步驗證順序",
+          "resolvedTextStyle": {
+            "fontSize": 26,
+            "typeface": "Microsoft JhengHei",
+            "color": "#2563EB",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "下一步驗證順序",
+              "fontSize": 26,
+              "typeface": "Microsoft JhengHei",
+              "color": "#2563EB",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 8,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/36lsnel4",
+      "id": "8",
+      "bbox": [
+        720,
+        244,
+        370,
+        220
+      ],
+      "geometry": "rect",
+      "text": "01  固定 cache / seed 做 reward ablation\n02  報告 axis-speed duration 與 net turns\n03  用 viewer 排除 palm support / 穿模\n04  只有 acquisition 穩定後才加入 handoff\n05  至少三個 seeds 比較 success rate\n06  最後才增加 domain randomization",
+      "textPreview": "01  固定 cache / seed 做 reward ablation | 02  報告 axis-speed duration 與 net turns | 03  用 viewer 排除 palm support / 穿模 | 04  只有 acquisition 穩...",
+      "resolvedFontSize": 18,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 18,
+        "typeface": "Microsoft JhengHei",
+        "color": "#111827",
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 6,
+        "lines": [
+          {
+            "index": 1,
+            "text": "01  固定 cache / seed 做 reward ablation"
+          },
+          {
+            "index": 2,
+            "text": "02  報告 axis-speed duration 與 net turns"
+          },
+          {
+            "index": 3,
+            "text": "03  用 viewer 排除 palm support / 穿模"
+          },
+          {
+            "index": 4,
+            "text": "04  只有 acquisition 穩定後才加入 handoff"
+          },
+          {
+            "index": 5,
+            "text": "05  至少三個 seeds 比較 success rate"
+          },
+          {
+            "index": 6,
+            "text": "06  最後才增加 domain randomization"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "01  固定 cache / seed 做 reward ablation",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "01  固定 cache / seed 做 reward ablation",
+              "fontSize": 18,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 2,
+          "text": "02  報告 axis-speed duration 與 net turns",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "02  報告 axis-speed duration 與 net turns",
+              "fontSize": 18,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 3,
+          "text": "03  用 viewer 排除 palm support / 穿模",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "03  用 viewer 排除 palm support / 穿模",
+              "fontSize": 18,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 4,
+          "text": "04  只有 acquisition 穩定後才加入 handoff",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "04  只有 acquisition 穩定後才加入 handoff",
+              "fontSize": 18,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 5,
+          "text": "05  至少三個 seeds 比較 success rate",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "05  至少三個 seeds 比較 success rate",
+              "fontSize": 18,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        },
+        {
+          "index": 6,
+          "text": "06  最後才增加 domain randomization",
+          "resolvedTextStyle": {
+            "fontSize": 18,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "06  最後才增加 domain randomization",
+              "fontSize": 18,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 9,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/i5cru94j",
+      "id": "9",
+      "bbox": [
+        54,
+        520,
+        220,
+        28
+      ],
+      "geometry": "rect",
+      "text": "成功標準",
+      "textPreview": "成功標準",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 22,
+        "typeface": "Microsoft JhengHei",
+        "color": "#047857",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "成功標準"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "成功標準",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "typeface": "Microsoft JhengHei",
+            "color": "#047857",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "成功標準",
+              "fontSize": 22,
+              "typeface": "Microsoft JhengHei",
+              "color": "#047857",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    },
+    {
+      "order": 10,
+      "kind": "shape",
+      "scope": "slide",
+      "aid": "sh/8bu50n2d",
+      "id": "10",
+      "bbox": [
+        54,
+        566,
+        1090,
+        58
+      ],
+      "geometry": "rect",
+      "text": "持續正向旋轉時間 · 多圈 net angle · 低 orthogonal speed · 不掉球 · 合格 handoff · 跨 seed 穩定",
+      "textPreview": "持續正向旋轉時間 · 多圈 net angle · 低 orthogonal speed · 不掉球 · 合格 handoff · 跨 seed 穩定",
+      "resolvedFontSize": 22,
+      "resolvedTextStyle": {
+        "anchor": 1,
+        "fontSize": 22,
+        "typeface": "Microsoft JhengHei",
+        "color": "#111827",
+        "bold": true,
+        "alignment": "left",
+        "verticalAlignment": "top",
+        "autoFit": "shrinkText",
+        "autoFitScale": 1,
+        "insets": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "textLayout": {
+        "lineCount": 1,
+        "lines": [
+          {
+            "index": 1,
+            "text": "持續正向旋轉時間 · 多圈 net angle · 低 orthogonal speed · 不掉球 · 合格 handoff · 跨 seed 穩定"
+          }
+        ]
+      },
+      "paragraphs": [
+        {
+          "index": 1,
+          "text": "持續正向旋轉時間 · 多圈 net angle · 低 orthogonal speed · 不掉球 · 合格 handoff · 跨 seed 穩定",
+          "resolvedTextStyle": {
+            "fontSize": 22,
+            "typeface": "Microsoft JhengHei",
+            "color": "#111827",
+            "bold": true,
+            "alignment": "left"
+          },
+          "runs": [
+            {
+              "index": 1,
+              "text": "持續正向旋轉時間 · 多圈 net angle · 低 orthogonal speed · 不掉球 · 合格 handoff · 跨 seed 穩定",
+              "fontSize": 22,
+              "typeface": "Microsoft JhengHei",
+              "color": "#111827",
+              "bold": true,
+              "alignment": "left"
+            }
+          ],
+          "marginLeft": 0
+        }
+      ],
+      "lineWidth": 0
+    }
+  ],
+  "composeRuns": []
+}

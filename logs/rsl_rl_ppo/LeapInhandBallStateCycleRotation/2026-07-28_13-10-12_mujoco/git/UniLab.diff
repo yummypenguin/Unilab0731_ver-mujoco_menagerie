@@ -1,0 +1,93 @@
+--- git commit ---
+a0f3f51326d926de7228e10bddb5f6653f423c08
+
+
+--- git status ---
+On branch codex/leap-state-cycle-pose-065
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+	modified:   tests/config/test_config_system.py
+	modified:   tests/envs/test_leap_inhand_state_cycle.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+index fa9d4e54..1b132ed9 100644
+--- a/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+@@ -36,7 +36,7 @@ algo:
+ 
+ reward:
+   pose_progress_scale: 4.0
+-  pose_tracking_scale: 0.50
++  pose_tracking_scale: 0.65
+   pose_sigma: 0.08
+   rotation_progress_scale: 3.0
+   reverse_rotation_scale: 5.0
+diff --git a/tests/config/test_config_system.py b/tests/config/test_config_system.py
+index e678f600..46799140 100644
+--- a/tests/config/test_config_system.py
++++ b/tests/config/test_config_system.py
+@@ -315,7 +315,9 @@ def test_ppo_leap_state_cycle_composes_as_independent_owner(backend: str):
+     assert cfg.reward.rotation_overspeed_scale == pytest.approx(1.0)
+     assert cfg.reward.rotation_workspace_full_radius_m == pytest.approx(0.015)
+     assert cfg.reward.rotation_workspace_zero_radius_m == pytest.approx(0.035)
+-    assert cfg.reward.pose_tracking_scale == pytest.approx(0.50)
++    assert cfg.reward.pose_progress_scale == pytest.approx(4.0)
++    assert cfg.reward.pose_tracking_scale == pytest.approx(0.65)
++    assert cfg.reward.pose_sigma == pytest.approx(0.08)
+     assert cfg.reward.transition_success_bonus == pytest.approx(0.10)
+     assert cfg.reward.cycle_success_bonus == pytest.approx(0.30)
+     assert cfg.reward.invalid_cycle_penalty == pytest.approx(0.15)
+diff --git a/tests/envs/test_leap_inhand_state_cycle.py b/tests/envs/test_leap_inhand_state_cycle.py
+index a290fe4a..fbb0d416 100644
+--- a/tests/envs/test_leap_inhand_state_cycle.py
++++ b/tests/envs/test_leap_inhand_state_cycle.py
+@@ -179,12 +179,39 @@ def test_pose_progress_reward_is_not_scaled_by_ctrl_dt() -> None:
+ 
+ 
+ def test_pose_tracking_reward_has_zero_upper_bound_at_target() -> None:
+-    at_target = _reward_terms(pose_distance=np.asarray([0.0]))
+-    far = _reward_terms(pose_distance=np.asarray([1.0]))
++    reward_cfg = StateCycleRewardConfig(pose_tracking_scale=0.65)
++    ctrl_dt = 0.05
++    at_target = _reward_terms(
++        reward_cfg=reward_cfg,
++        ctrl_dt=ctrl_dt,
++        pose_distance=np.asarray([0.0]),
++    )
++    at_sigma = _reward_terms(
++        reward_cfg=reward_cfg,
++        ctrl_dt=ctrl_dt,
++        pose_distance=np.asarray([reward_cfg.pose_sigma]),
++    )
++    far = _reward_terms(
++        reward_cfg=reward_cfg,
++        ctrl_dt=ctrl_dt,
++        pose_distance=np.asarray([1.0]),
++    )
+ 
+     np.testing.assert_allclose(at_target.pose_tracking, [0.0])
+-    assert far.pose_tracking[0] < 0.0
+-    assert far.pose_tracking[0] >= -0.50 * 0.05
++    np.testing.assert_allclose(
++        at_sigma.pose_tracking,
++        [0.65 * (np.exp(-1.0) - 1.0) * ctrl_dt],
++    )
++    np.testing.assert_allclose(
++        far.pose_tracking,
++        [-0.65 * ctrl_dt],
++        atol=1e-12,
++    )
++    assert at_target.pose_tracking.shape == (1,)
++    assert at_target.pose_tracking.dtype == np.float64
++    assert np.isfinite(at_target.pose_tracking).all()
++    assert np.isfinite(at_sigma.pose_tracking).all()
++    assert np.isfinite(far.pose_tracking).all()
+ 
+ 
+ @pytest.mark.parametrize("phase", list(StateCyclePhase))

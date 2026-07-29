@@ -1,0 +1,2 @@
+Slide 7: reward-only stage rows replaced by a compact evidence table and three causal takeaways; corrected S1–S3 smoke RunIds to effective training runs and selected the later valid S6 replicate.
+Slide 8: reward-only stage rows and formula replaced by a compact evidence table and three causal takeaways; added explicit raw-speed and missing-duration caveats.

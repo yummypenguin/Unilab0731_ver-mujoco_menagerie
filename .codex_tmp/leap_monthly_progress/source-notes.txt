@@ -1,0 +1,10 @@
+LEAP Hand Monthly Progress Report
+Generated from local UniLab evidence.
+
+Primary sources:
+- D:/UniLab/AGENTS.md
+- D:/UniLab/DEVELOPMENT_LOG.md
+- D:/UniLab/conf/ppo/task/leap_inhand_ball_*/mujoco.yaml
+- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/*.py
+- D:/UniLab/logs/rsl_rl_ppo/*/run_config.json
+- D:/UniLab/logs/rsl_rl_ppo/*/run_summary.json

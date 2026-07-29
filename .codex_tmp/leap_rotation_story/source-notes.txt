@@ -1,0 +1,9 @@
+LEAP Ball Rotation Research Story
+Generated from local UniLab evidence.
+
+Primary sources:
+- D:/UniLab/DEVELOPMENT_LOG.md
+- D:/UniLab/AGENTS.md
+- D:/UniLab/conf/ppo/task/leap_inhand_ball_*/mujoco.yaml
+- D:/UniLab/logs/rsl_rl_ppo/*/run_config.json
+- D:/UniLab/logs/rsl_rl_ppo/*/run_summary.json

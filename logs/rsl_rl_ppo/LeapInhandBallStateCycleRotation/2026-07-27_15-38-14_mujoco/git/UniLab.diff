@@ -1,0 +1,242 @@
+--- git commit ---
+152d5269c261f557c9fe9d5ac87b898eb66e0e42
+
+
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   src/unilab/envs/manipulation/leap_inhand/state_cycle_rotation.py
+	modified:   tests/envs/test_leap_inhand_state_cycle.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/src/unilab/envs/manipulation/leap_inhand/state_cycle_rotation.py b/src/unilab/envs/manipulation/leap_inhand/state_cycle_rotation.py
+index 8be89f29..7baadd93 100644
+--- a/src/unilab/envs/manipulation/leap_inhand/state_cycle_rotation.py
++++ b/src/unilab/envs/manipulation/leap_inhand/state_cycle_rotation.py
+@@ -187,6 +187,7 @@ def compute_state_cycle_reward(
+     phases: np.ndarray,
+     pose_progress: np.ndarray,
+     pose_distance: np.ndarray,
++    phase_start_pose_distance: np.ndarray,
+     axis_delta: np.ndarray,
+     edge_net_angle_before: np.ndarray,
+     required_angle: np.ndarray,
+@@ -239,7 +240,14 @@ def compute_state_cycle_reward(
+     )
+     cycle_event_reward = reward_cfg.cycle_success_bonus * np.asarray(cycle_event)
+     timeout_event = np.asarray(timeout) & ~np.asarray(workspace_failure)
+-    timeout_reward = -reward_cfg.timeout_penalty * timeout_event
++    phase_pose_progress = np.maximum(
++        np.asarray(phase_start_pose_distance) - np.asarray(pose_distance),
++        0.0,
++    )
++    timeout_reward = -(
++        reward_cfg.timeout_penalty
++        + reward_cfg.pose_progress_scale * phase_pose_progress
++    ) * timeout_event
+     failure_reward = -reward_cfg.failure_penalty * np.asarray(workspace_failure)
+     total = (
+         pose_progress_reward
+@@ -268,6 +276,20 @@ def compute_state_cycle_reward(
+     )
+ 
+ 
++def compute_timeout_event(
++    phase_steps: np.ndarray,
++    timeout_steps: np.ndarray,
++    transition_event: np.ndarray,
++    workspace_failure: np.ndarray,
++) -> np.ndarray:
++    """Allow success on the final legal step and keep failures exclusive."""
++    return (
++        (np.asarray(phase_steps) >= np.asarray(timeout_steps))
++        & ~np.asarray(transition_event)
++        & ~np.asarray(workspace_failure)
++    )
++
++
+ def advance_state_cycle(
+     phases: np.ndarray,
+     hold_steps: np.ndarray,
+@@ -403,6 +425,7 @@ class LeapStateCycleResetProvider(DomainRandomizationProvider):
+             "state_cycle_edge_start_quat": np.asarray(qpos[:, 19:23], dtype=dtype).copy(),
+             "state_cycle_edge_net_angle": np.zeros(num_reset, dtype=dtype),
+             "state_cycle_prev_pose_distance": previous_distance.astype(dtype),
++            "state_cycle_phase_start_pose_distance": previous_distance.astype(dtype).copy(),
+             "state_cycle_cycles_completed": np.zeros(num_reset, dtype=np.uint32),
+             "state_cycle_transition_success": np.zeros(num_reset, dtype=bool),
+             "state_cycle_timeout": np.zeros(num_reset, dtype=bool),
+@@ -648,29 +671,37 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
+             ball_pos - np.asarray(info["rotation_anchor_pos"], dtype=dtype), axis=1
+         )
+         workspace_failure = workspace_error > self._cfg.termination_workspace_radius
+-        timeout = phase_steps >= self._timeout_steps[phases_before]
+-        terminated = workspace_failure | timeout
+         rotation_ok = rotation_condition(
+             phases_before,
+             edge_net_angle,
+             self._minimum_angles,
+         )
+         palm_contact = self._palm_contacts(self._all_env_ids) > 0.5
+-        transition_valid = (
++        raw_transition_valid = (
+             (pose_distance <= pose_tolerance)
+             & (position_error <= position_tolerance)
+             & (ball_speed <= max_ball_speed)
+             & (contact_count >= minimum_contacts)
+             & rotation_ok
+             & ~palm_contact
+-            & ~terminated
++            & ~workspace_failure
+         )
+         advance = advance_state_cycle(
+             phases_before,
+             np.asarray(info["state_cycle_success_hold_steps"], dtype=np.uint32),
+-            transition_valid,
++            raw_transition_valid,
+             self._hold_steps_required,
+         )
++        timeout = compute_timeout_event(
++            phase_steps,
++            self._timeout_steps[phases_before],
++            advance.transition_event,
++            workspace_failure,
++        )
++        terminated = workspace_failure | timeout
++        phase_start_pose_distance = np.asarray(
++            info["state_cycle_phase_start_pose_distance"], dtype=dtype
++        )
+ 
+         reward_terms = compute_state_cycle_reward(
+             reward_cfg=self._reward_cfg,
+@@ -678,6 +709,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
+             phases=phases_before,
+             pose_progress=pose_progress,
+             pose_distance=pose_distance,
++            phase_start_pose_distance=phase_start_pose_distance,
+             axis_delta=axis_delta,
+             edge_net_angle_before=edge_net_angle_before,
+             required_angle=required_angle,
+@@ -709,6 +741,9 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
+         previous_pose_distance[:] = np.where(
+             advance.transition_event, next_pose_distance, pose_distance
+         )
++        phase_start_pose_distance[advance.transition_event] = next_pose_distance[
++            advance.transition_event
++        ]
+ 
+         info["state_cycle_phase"] = phases
+         info["state_cycle_phase_steps"] = phase_steps
+@@ -716,6 +751,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
+         info["state_cycle_edge_start_quat"] = edge_start_quat
+         info["state_cycle_edge_net_angle"] = edge_net_angle
+         info["state_cycle_prev_pose_distance"] = previous_pose_distance
++        info["state_cycle_phase_start_pose_distance"] = phase_start_pose_distance
+         info["state_cycle_cycles_completed"] = cycles_completed
+         info["state_cycle_transition_success"] = advance.transition_event
+         info["state_cycle_timeout"] = timeout
+diff --git a/tests/envs/test_leap_inhand_state_cycle.py b/tests/envs/test_leap_inhand_state_cycle.py
+index be4a395a..993bc4c8 100644
+--- a/tests/envs/test_leap_inhand_state_cycle.py
++++ b/tests/envs/test_leap_inhand_state_cycle.py
+@@ -23,6 +23,7 @@ from unilab.envs.manipulation.leap_inhand.state_cycle_rotation import (
+     compute_pose_distance,
+     compute_pose_progress,
+     compute_state_cycle_reward,
++    compute_timeout_event,
+     reset_phase_for_pose,
+     rotation_condition,
+ )
+@@ -139,6 +140,7 @@ def _reward_terms(**overrides: np.ndarray):
+         "phases": np.asarray([StateCyclePhase.A_TO_B], dtype=np.int8),
+         "pose_progress": np.zeros(1),
+         "pose_distance": np.zeros(1),
++        "phase_start_pose_distance": np.zeros(1),
+         "axis_delta": np.zeros(1),
+         "edge_net_angle_before": np.zeros(1),
+         "required_angle": np.asarray([0.03]),
+@@ -203,6 +205,32 @@ def test_workspace_failure_suppresses_timeout_penalty() -> None:
+     np.testing.assert_allclose(timeout_only.timeout, [-0.25])
+ 
+ 
++def test_timeout_claws_back_net_phase_pose_progress() -> None:
++    terms = _reward_terms(
++        pose_progress=np.asarray([0.10]),
++        pose_distance=np.asarray([0.0]),
++        phase_start_pose_distance=np.asarray([0.10]),
++        timeout=np.asarray([True]),
++    )
++
++    np.testing.assert_allclose(terms.pose_progress, [0.40])
++    np.testing.assert_allclose(terms.timeout, [-0.65])
++    np.testing.assert_allclose(terms.total, [-0.25])
++
++
++def test_last_legal_step_can_succeed_before_timeout() -> None:
++    phase_steps = np.asarray([30, 30], dtype=np.uint32)
++    timeout_steps = np.asarray([30, 30], dtype=np.uint32)
++    timeout = compute_timeout_event(
++        phase_steps,
++        timeout_steps,
++        transition_event=np.asarray([True, False]),
++        workspace_failure=np.asarray([False, False]),
++    )
++
++    np.testing.assert_array_equal(timeout, [False, True])
++
++
+ def test_hold_requires_four_consecutive_valid_steps() -> None:
+     phase = np.asarray([StateCyclePhase.READY_TO_A], dtype=np.int8)
+     hold = np.zeros(1, dtype=np.uint32)
+@@ -304,3 +332,44 @@ def test_state_cycle_environment_reset_and_step() -> None:
+         assert "reward/timeout" in next_state.info["log"]
+     finally:
+         env.close()
++
++
++def test_recorded_waypoints_settle_without_palm_contact() -> None:
++    pytest.importorskip("mujoco")
++    try:
++        from mujoco.batch_env import BatchEnvPool as _  # noqa: F401
++    except Exception:
++        pytest.skip("mujoco.batch_env is unavailable")
++
++    ensure_registries()
++    env = registry.make(
++        "LeapInhandBallStateCycleRotation",
++        sim_backend="mujoco",
++        num_envs=1,
++        env_cfg_override={
++            "sim_dt": 0.005,
++            "ctrl_dt": 0.05,
++            "reward_config": asdict(StateCycleRewardConfig()),
++            "state_cycle": asdict(StateCycleConfig()),
++        },
++    )
++    try:
++        for pose_name in RESET_POSE_NAMES:
++            env._sample_reset_pose_names = (
++                lambda num_reset, name=pose_name: [name] * num_reset
++            )
++            env.reset(np.asarray([0], dtype=np.int32))
++            for _ in range(5):
++                env.step(np.zeros((1, 16), dtype=np.float32))
++            fingertip_contacts = env._contacts(np.asarray([0], dtype=np.int32))[0]
++            palm_contact = bool(
++                env._palm_contacts(np.asarray([0], dtype=np.int32))[0] > 0.5
++            )
++            print(
++                f"{pose_name}: fingertips={fingertip_contacts.astype(int).tolist()} "
++                f"palm={int(palm_contact)}"
++            )
++            assert np.sum(fingertip_contacts) >= 2, pose_name
++            assert not palm_contact, pose_name
++    finally:
++        env.close()

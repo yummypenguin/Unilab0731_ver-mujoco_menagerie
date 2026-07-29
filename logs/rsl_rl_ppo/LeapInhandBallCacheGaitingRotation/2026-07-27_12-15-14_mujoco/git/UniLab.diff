@@ -1,0 +1,134 @@
+--- git commit ---
+d85d19e8381dd340ba5970c120f616d691f45289
+
+
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml
+	modified:   tests/config/test_config_system.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml
+index a8d6d734..e6dd6c6b 100644
+--- a/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml
+@@ -49,51 +49,51 @@ reward:
+   failure_position_radius: 0.050
+   position_gate_outer_radius: 0.030
+ 
+-finger_gaiting:
+-  required_handoffs_by_stage:
+-    - 0
+-    - 1
+-    - 1
+-    - 2
+-    - 2
+-    - 3
+-    - 4
+-
+-  minimum_contacts_by_stage:
+-    - 3
+-    - 3
+-    - 3
+-    - 2
+-    - 2
+-    - 2
+-    - 2
+-
+-  minimum_other_contacts: 2
+-  minimum_release_steps: 2
+-  maximum_release_steps: 10
+-  handoff_cooldown_steps: 4
+-
+-  minimum_speed_ratio: 0.60
+-  recovery_speed_ratio: 0.80
+-
+-  stable_support_scale: 0.0
+-  release_progress_scale: 0.0
+-  qualified_handoff_bonus: 0.05
+-
+-  minimum_handoff_angle_rad: 0.03
+-
+-  release_allowed_fingers:
+-    - true   # index
+-    - true   # middle
+-    - true   # ring
+-    - false  # thumb
+-
+ env:
+   reset_source: cache
+   grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k.npy
+   termination_drop_distance: 0.05
+   max_episode_seconds: 30.0
+ 
++  finger_gaiting:
++    required_handoffs_by_stage:
++      - 0
++      - 1
++      - 1
++      - 2
++      - 2
++      - 3
++      - 4
++
++    minimum_contacts_by_stage:
++      - 3
++      - 3
++      - 3
++      - 2
++      - 2
++      - 2
++      - 2
++
++    minimum_other_contacts: 2
++    minimum_release_steps: 2
++    maximum_release_steps: 10
++    handoff_cooldown_steps: 4
++
++    minimum_speed_ratio: 0.60
++    recovery_speed_ratio: 0.80
++
++    stable_support_scale: 0.0
++    release_progress_scale: 0.0
++    qualified_handoff_bonus: 0.05
++
++    minimum_handoff_angle_rad: 0.03
++
++    release_allowed_fingers:
++      - true   # index
++      - true   # middle
++      - true   # ring
++      - false  # thumb
++
+   curriculum:
+     direct_target_mode: false
+ 
+diff --git a/tests/config/test_config_system.py b/tests/config/test_config_system.py
+index 2b3ec284..10702ee7 100644
+--- a/tests/config/test_config_system.py
++++ b/tests/config/test_config_system.py
+@@ -266,9 +266,13 @@ def test_ppo_leap_cache_gaiting_composes(backend: str):
+     assert cfg.reward.scales.obj_linvel == pytest.approx(-0.3)
+     assert cfg.reward.scales.position_error == pytest.approx(-6.0)
+     assert cfg.reward.spin_continuity_penalty_scale == pytest.approx(0.05)
+-    assert cfg.finger_gaiting.qualified_handoff_bonus == pytest.approx(0.05)
+-    assert cfg.finger_gaiting.minimum_handoff_angle_rad == pytest.approx(0.03)
+-    assert list(cfg.finger_gaiting.release_allowed_fingers) == [True, True, True, False]
++    assert cfg.env.finger_gaiting.qualified_handoff_bonus == pytest.approx(0.05)
++    assert cfg.env.finger_gaiting.minimum_handoff_angle_rad == pytest.approx(0.03)
++    assert list(cfg.env.finger_gaiting.release_allowed_fingers) == [True, True, True, False]
++    assert list(cfg.env.finger_gaiting.required_handoffs_by_stage) == [0, 1, 1, 2, 2, 3, 4]
++    assert len(cfg.env.finger_gaiting.required_handoffs_by_stage) == len(cfg.env.curriculum.target_speeds)
++    assert len(cfg.env.finger_gaiting.minimum_contacts_by_stage) == len(cfg.env.curriculum.target_speeds)
++    assert OmegaConf.select(cfg, "finger_gaiting") is None
+     assert cfg.env.curriculum.target_speeds == [0.00, 0.04, 0.07, 0.10, 0.15, 0.20, 0.30]
+     assert cfg.reward.final_success_bonus == pytest.approx(0.25)
+     assert cfg.reward.failure_penalty == pytest.approx(1.0)

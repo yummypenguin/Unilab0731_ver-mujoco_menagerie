@@ -1,0 +1,611 @@
+{"kind":"deck","id":"pr/wcppa1","name":"Deck"}
+{"kind":"layout","layoutId":"10d74dde-dd4f-42eb-b8e6-20ad5e6bc865","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"4219f007-0d39-4e0d-8784-7e0dac34fa58","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/xlzfk2","slide":1,"title":"UNILAB · DEXTEROUS MANIPULATION","textShapes":6}
+{"kind":"textbox","id":"sh/p8n2pw3m","slide":1,"text":"UNILAB · DEXTEROUS MANIPULATION","textPreview":"UNILAB · DEXTEROUS MANIPULATION","textChars":31,"textLines":1,"bbox":[54,44,720,26]}
+{"kind":"textbox","id":"sh/25c3uh4v","slide":1,"text":"LEAP Hand 靈巧操作\n一個月研究進度報告","textPreview":"LEAP Hand 靈巧操作 | 一個月研究進度報告","textChars":24,"textLines":2,"bbox":[54,170,890,174]}
+{"kind":"textbox","id":"sh/365knmlg","slide":1,"text":"從模型與物理整合、ball cache，到持續轉球與 finger gaiting 的實驗證據鏈","textPreview":"從模型與物理整合、ball cache，到持續轉球與 finger gaiting 的實驗證據鏈","textChars":48,"textLines":1,"bbox":[58,382,880,70]}
+{"kind":"shape","id":"sh/cbel0r2x","slide":1,"bbox":[1010,170,180,280]}
+{"kind":"textbox","id":"sh/dcn2tw3i","slide":1,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[1027,202,145,94]}
+{"kind":"textbox","id":"sh/q9w3yh47","slide":1,"text":"個 cache 任務\n13 次 reward 演變","textPreview":"個 cache 任務 | 13 次 reward 演變","textChars":25,"textLines":2,"bbox":[1028,316,145,82]}
+{"kind":"textbox","id":"sh/ba5krmlc","slide":1,"text":"報告期間：2026-07-13 至 2026-07-28","textPreview":"報告期間：2026-07-13 至 2026-07-28","textChars":28,"textLines":1,"bbox":[58,630,620,28]}
+{"kind":"notes","id":"nt/xlzfk2","slide":1,"text":"本報告以保存的程式、設定、run config、summary 與 native viewer 診斷重建研究進度。\n\n[Sources]\n- D:/UniLab/DEVELOPMENT_LOG.md\n- D:/UniLab/logs/rsl_rl_ppo/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/*/run_summary.json"}
+{"kind":"slide","id":"sl/uh3laq","slide":2,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":17}
+{"kind":"textbox","id":"sh/6pcne5w3","slide":2,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/ts3m90ve","slide":2,"text":"本月完成了從『能訓練』到『能診斷』的完整研究鏈","textPreview":"本月完成了從『能訓練』到『能診斷』的完整研究鏈","textChars":23,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/8ru5gvet","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/vel4badk","slide":2,"bbox":[54,170,330,140]}
+{"kind":"textbox","id":"sh/utcni5wz","slide":2,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[74,190,290,52]}
+{"kind":"textbox","id":"sh/hgnmdkvq","slide":2,"text":"MuJoCo / Motrix backend","textPreview":"MuJoCo / Motrix backend","textChars":23,"textLines":1,"bbox":[74,252,290,40]}
+{"kind":"shape","id":"sh/gfe5kfe5","slide":2,"bbox":[420,170,330,140]}
+{"kind":"textbox","id":"sh/bi14z6xg","slide":2,"text":"50k","textPreview":"50k","textChars":3,"textLines":1,"bbox":[440,190,290,52]}
+{"kind":"textbox","id":"sh/axs361wv","slide":2,"text":"LEAP 專用 ball grasp cache","textPreview":"LEAP 專用 ball grasp cache","textChars":24,"textLines":1,"bbox":[440,252,290,40]}
+{"kind":"shape","id":"sh/oja9gfu1","slide":2,"bbox":[786,170,330,140]}
+{"kind":"textbox","id":"sh/9kjqpkvm","slide":2,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[806,190,290,52]}
+{"kind":"textbox","id":"sh/mxsrepcb","slide":2,"text":"可獨立比較的 cache 任務","textPreview":"可獨立比較的 cache 任務","textChars":15,"textLines":1,"bbox":[806,252,290,40]}
+{"kind":"shape","id":"sh/ny18nudg","slide":2,"bbox":[54,365,8,34]}
+{"kind":"textbox","id":"sh/wnu9kzud","slide":2,"text":"本月核心成果","textPreview":"本月核心成果","textChars":6,"textLines":1,"bbox":[78,367,1100,32]}
+{"kind":"textbox","id":"sh/xo3qt4vy","slide":2,"text":"模型與物理","textPreview":"模型與物理","textChars":5,"textLines":1,"bbox":[78,420,230,30]}
+{"kind":"textbox","id":"sh/alsripc7","slide":2,"text":"匯入 LEAP、獨立 ball/cube asset、self-collision、相鄰 link contact excludes。","textPreview":"匯入 LEAP、獨立 ball/cube asset、self-collision、相鄰 link contact excludes。","textChars":67,"textLines":1,"bbox":[78,462,300,100]}
+{"kind":"textbox","id":"sh/bml8ruds","slide":2,"text":"資料與 reset","textPreview":"資料與 reset","textChars":9,"textLines":1,"bbox":[430,420,230,30]}
+{"kind":"textbox","id":"sh/crqp8vut","slide":2,"text":"辨識 cube cache 問題，建立 50k ball-specific cache，並保存每次 reset anchor。","textPreview":"辨識 cube cache 問題，建立 50k ball-specific cache，並保存每次 reset anchor。","textChars":63,"textLines":1,"bbox":[430,462,300,100]}
+{"kind":"textbox","id":"sh/dszqh0ve","slide":2,"text":"研究方法","textPreview":"研究方法","textChars":4,"textLines":1,"bbox":[782,420,230,30]}
+{"kind":"textbox","id":"sh/tc7epcj6","slide":2,"text":"由 checkpoint、metrics、viewer 與 RunId 驅動 reward / curriculum 的單變量診斷。","textPreview":"由 checkpoint、metrics、viewer 與 RunId 驅動 reward / curriculum 的單變量診斷。","textChars":66,"textLines":1,"bbox":[782,462,330,100]}
+{"kind":"textbox","id":"sh/8byxw7il","slide":2,"text":"目前尚未宣稱『持續轉球成功』；已明確定位 acquisition、retention 與 handoff 的先後關係。","textPreview":"目前尚未宣稱『持續轉球成功』；已明確定位 acquisition、retention 與 handoff 的先後關係。","textChars":59,"textLines":1,"bbox":[54,612,1130,36]}
+{"kind":"notes","id":"nt/uh3laq","slide":2,"text":"進度重點是建立可靠實驗基礎與可追溯證據，而不是只報告最高 reward。\n\n[Sources]\n- D:/UniLab/AGENTS.md\n- D:/UniLab/DEVELOPMENT_LOG.md"}
+{"kind":"slide","id":"sl/nl586e","slide":3,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":19}
+{"kind":"textbox","id":"sh/4fm5k7qp","slide":3,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/jedob29k","slide":3,"text":"兩週內完成平台建立，第二階段集中在持續轉球瓶頸","textPreview":"兩週內完成平台建立，第二階段集中在持續轉球瓶頸","textChars":23,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/id4nih8z","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/hcv69cre","slide":3,"bbox":[82,292,1090,0]}
+{"kind":"shape","id":"sh/wrm5g7qt","slide":3,"bbox":[92,286,12,12]}
+{"kind":"textbox","id":"sh/vqto7298","slide":3,"text":"7/13–14","textPreview":"7/13–14","textChars":7,"textLines":1,"bbox":[84,242,128,24]}
+{"kind":"textbox","id":"sh/upknex8n","slide":3,"text":"環境與 backend","textPreview":"環境與 backend","textChars":11,"textLines":1,"bbox":[84,310,186,46]}
+{"kind":"textbox","id":"sh/18f6lwri","slide":3,"text":"Windows 11 安裝、MuJoCo smoke、Motrix training；定位 wgpu OOM render 問題。","textPreview":"Windows 11 安裝、MuJoCo smoke、Motrix training；定位 wgpu OOM render 問題。","textChars":65,"textLines":1,"bbox":[84,364,190,92]}
+{"kind":"shape","id":"sh/gn65srqx","slide":3,"bbox":[315,286,12,12]}
+{"kind":"textbox","id":"sh/qx0vq54n","slide":3,"text":"7/14–17","textPreview":"7/14–17","textChars":7,"textLines":1,"bbox":[307,242,128,24]}
+{"kind":"textbox","id":"sh/by9cjql8","slide":3,"text":"LEAP 整合","textPreview":"LEAP 整合","textChars":7,"textLines":1,"bbox":[307,310,186,46]}
+{"kind":"textbox","id":"sh/czidsvmt","slide":3,"text":"匯入手部模型與專用 ball/cube；建立 in-hand 與 toss 任務。","textPreview":"匯入手部模型與專用 ball/cube；建立 in-hand 與 toss 任務。","textChars":41,"textLines":1,"bbox":[307,364,190,92]}
+{"kind":"shape","id":"sh/d0bul03e","slide":3,"bbox":[538,286,12,12]}
+{"kind":"textbox","id":"sh/290bml4r","slide":3,"text":"7/17–21","textPreview":"7/17–21","textChars":7,"textLines":1,"bbox":[530,242,128,24]}
+{"kind":"textbox","id":"sh/3u9cfqlc","slide":3,"text":"物理與 cache","textPreview":"物理與 cache","textChars":9,"textLines":1,"bbox":[530,310,186,46]}
+{"kind":"textbox","id":"sh/ovidovmh","slide":3,"text":"修正穿模、自碰撞與相鄰 link 接觸；生成 ball-specific 50k cache。","textPreview":"修正穿模、自碰撞與相鄰 link 接觸；生成 ball-specific 50k cache。","textChars":47,"textLines":1,"bbox":[530,364,190,92]}
+{"kind":"shape","id":"sh/pwruh032","slide":3,"bbox":[761,286,12,12]}
+{"kind":"textbox","id":"sh/m5kvyp4v","slide":3,"text":"7/21–23","textPreview":"7/21–23","textChars":7,"textLines":1,"bbox":[753,242,128,24]}
+{"kind":"textbox","id":"sh/nqtcralg","slide":3,"text":"持續轉球","textPreview":"持續轉球","textChars":4,"textLines":1,"bbox":[753,310,186,46]}
+{"kind":"textbox","id":"sh/jyl03ixg","slide":3,"text":"Sustained、retention、gaiting 與 direct 分支。","textPreview":"Sustained、retention、gaiting 與 direct 分支。","textChars":40,"textLines":1,"bbox":[753,364,190,92]}
+{"kind":"shape","id":"sh/yxcjudgv","slide":3,"bbox":[984,286,12,12]}
+{"kind":"textbox","id":"sh/l03i5sfm","slide":3,"text":"7/25–28","textPreview":"7/25–28","textChars":7,"textLines":1,"bbox":[976,242,128,24]}
+{"kind":"textbox","id":"sh/kzu1wny1","slide":3,"text":"簡化與整合","textPreview":"簡化與整合","textChars":5,"textLines":1,"bbox":[976,310,186,46]}
+{"kind":"textbox","id":"sh/72l07ixs","slide":3,"text":"移除失效 shaping，形成 V3-A / V3-B 與 cache gaiting。","textPreview":"移除失效 shaping，形成 V3-A / V3-B 與 cache gaiting。","textChars":44,"textLines":1,"bbox":[976,364,190,92]}
+{"kind":"textbox","id":"sh/61cjyxg7","slide":3,"text":"研究策略：先以短程 smoke 驗證整合，再以小規模診斷確認方向，最後才投入長訓練。","textPreview":"研究策略：先以短程 smoke 驗證整合，再以小規模診斷確認方向，最後才投入長訓練。","textChars":42,"textLines":1,"bbox":[54,584,1130,42]}
+{"kind":"notes","id":"nt/nl586e","slide":3,"text":"[Sources]\n- D:/UniLab/DEVELOPMENT_LOG.md\n- D:/UniLab/AGENTS.md#Dexterous-Manipulation-Training-Guidance"}
+{"kind":"slide","id":"sl/ghluff","slide":4,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":8}
+{"kind":"textbox","id":"sh/idwzad4v","slide":4,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/5g7ils36","slide":4,"text":"雙 backend 已能訓練，但渲染可靠性不同","textPreview":"雙 backend 已能訓練，但渲染可靠性不同","textChars":23,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/kfy1cnml","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/7ip0n2lc","slide":4,"bbox":[54,160,520,380]}
+{"kind":"textbox","id":"sh/6hgjex4r","slide":4,"text":"MuJoCo","textPreview":"MuJoCo","textChars":6,"textLines":1,"bbox":[86,190,220,40]}
+{"kind":"textbox","id":"sh/tk7ips3i","slide":4,"text":"• PPO smoke 與正式訓練可執行\n• 官方 MuJoCo viewer 可逐 checkpoint 檢查\n• XML / contact / penetration 診斷較完整\n• 成為目前主要研究 backend","textPreview":"• PPO smoke 與正式訓練可執行 | • 官方 MuJoCo viewer 可逐 checkpoint 檢查 | • XML / contact / penetration 診斷較完整 | • 成為目前主要研究 backend","textChars":111,"textLines":4,"bbox":[86,260,430,220]}
+{"kind":"shape","id":"sh/sjy1g7mx","slide":4,"bbox":[626,160,520,380]}
+{"kind":"textbox","id":"sh/nm50byl8","slide":4,"text":"Motrix","textPreview":"Motrix","textChars":6,"textLines":1,"bbox":[658,190,220,40]}
+{"kind":"textbox","id":"sh/mlcz2t4n","slide":4,"text":"• 訓練與 interactive playback 可執行\n• Windows Intel Arc record 曾觸發 wgpu OOM\n• Vulkan / DX12 都出現 render channel 關閉\n• 保留作雙 backend 合約與效能驗證","textPreview":"• 訓練與 interactive playback 可執行 | • Windows Intel Arc record 曾觸發 wgpu OOM | • Vulkan / DX12 都出現 render channel 關閉 | • 保留作雙 backend 合約與效能驗證","textChars":131,"textLines":4,"bbox":[658,260,430,220]}
+{"kind":"textbox","id":"sh/ozmtsj6h","slide":4,"text":"決策：研究判斷以 MuJoCo viewer 為主；Motrix 不因影片輸出問題而被判定為物理或訓練失敗。","textPreview":"決策：研究判斷以 MuJoCo viewer 為主；Motrix 不因影片輸出問題而被判定為物理或訓練失敗。","textChars":54,"textLines":1,"bbox":[54,592,1120,48]}
+{"kind":"notes","id":"nt/ghluff","slide":4,"text":"[Sources]\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_*/mujoco.yaml\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_*/motrix.yaml\n- D:/UniLab/DEVELOPMENT_LOG.md"}
+{"kind":"slide","id":"sl/u7k4pq","slide":5,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":16}
+{"kind":"textbox","id":"sh/at47y9sr","slide":5,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/xwvqtob2","slide":5,"text":"Ball cache：從固定抓球 seed 生成 50k 個物理有效起點","textPreview":"Ball cache：從固定抓球 seed 生成 50k 個物理有效起點","textChars":36,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/wvmp0jah","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/nqtonut0","slide":5,"bbox":[246,280,34,0]}
+{"kind":"shape","id":"sh/mpk7u9sf","slide":5,"bbox":[472,280,34,0]}
+{"kind":"shape","id":"sh/9sv6p4b6","slide":5,"bbox":[698,280,34,0]}
+{"kind":"shape","id":"sh/ormpwzal","slide":5,"bbox":[924,280,34,0]}
+{"kind":"shape","id":"sh/7mx8zyt4","slide":5,"bbox":[54,175,192,250]}
+{"kind":"textbox","id":"sh/6lo76tsj","slide":5,"text":"1  固定 seed","textPreview":"1  固定 seed","textChars":10,"textLines":1,"bbox":[70,200,160,36]}
+{"kind":"textbox","id":"sh/gjix47yp","slide":5,"text":"以 grasp_seed_qpos 的 LEAP 抓球姿勢與球位置為中心；完全不讀 cube cache。","textPreview":"以 grasp_seed_qpos 的 LEAP 抓球姿勢與球位置為中心；完全不讀 cube cache。","textChars":53,"textLines":1,"bbox":[70,258,160,140]}
+{"kind":"shape","id":"sh/hkryxcfa","slide":5,"bbox":[280,175,192,250]}
+{"kind":"textbox","id":"sh/ux0f2xgz","slide":5,"text":"2  產生候選","textPreview":"2  產生候選","textChars":7,"textLines":1,"bbox":[296,200,160,36]}
+{"kind":"textbox","id":"sh/fy9gv2xk","slide":5,"text":"16 關節各自加入 ±0.10 rad 擾動，裁切到真實 joint limits；球位置不擾動。","textPreview":"16 關節各自加入 ±0.10 rad 擾動，裁切到真實 joint limits；球位置不擾動。","textChars":49,"textLines":1,"bbox":[296,258,160,140]}
+{"kind":"shape","id":"sh/svix0nyt","slide":5,"bbox":[506,175,192,250]}
+{"kind":"textbox","id":"sh/twrytsfe","slide":5,"text":"3  物理 settling","textPreview":"3  物理 settling","textChars":14,"textLines":1,"bbox":[522,200,160,36]}
+{"kind":"textbox","id":"sh/6t0fydgn","slide":5,"text":"候選進入 MuJoCo，以 PD 控制穩定 2.5 秒；前 0.5 秒為 warm-up。","textPreview":"候選進入 MuJoCo，以 PD 控制穩定 2.5 秒；前 0.5 秒為 warm-up。","textChars":45,"textLines":1,"bbox":[522,258,160,140]}
+{"kind":"shape","id":"sh/7u9grix8","slide":5,"bbox":[732,175,192,250]}
+{"kind":"textbox","id":"sh/kryxwnyx","slide":5,"text":"4  品質閘門","textPreview":"4  品質閘門","textChars":7,"textLines":1,"bbox":[748,200,160,36]}
+{"kind":"textbox","id":"sh/5s7ypsf2","slide":5,"text":"必須有拇指與至少兩指接觸，且滿足漂移、速度、work、表面間距與 1 mm 穿透門檻。","textPreview":"必須有拇指與至少兩指接觸，且滿足漂移、速度、work、表面間距與 1 mm 穿透門檻。","textChars":43,"textLines":1,"bbox":[748,258,160,140]}
+{"kind":"shape","id":"sh/lozet4r6","slide":5,"bbox":[958,175,192,250]}
+{"kind":"textbox","id":"sh/0nqd0zql","slide":5,"text":"5  發布 cache","textPreview":"5  發布 cache","textChars":11,"textLines":1,"bbox":[974,200,160,36]}
+{"kind":"textbox","id":"sh/zmhwru90","slide":5,"text":"以 float32 重建後再驗證，正規化 quaternion、量化去重，最後 atomic write 至 50k。","textPreview":"以 float32 重建後再驗證，正規化 quaternion、量化去重，最後 atomic write 至 50k。","textChars":59,"textLines":1,"bbox":[974,258,160,140]}
+{"kind":"textbox","id":"sh/yl8vy98f","slide":5,"text":"每列資料 = 16 joint qpos + 3 ball position + 4 ball quaternion = 23 values","textPreview":"每列資料 = 16 joint qpos + 3 ball position + 4 ball quaternion = 23 values","textChars":70,"textLines":1,"bbox":[54,485,1120,34]}
+{"kind":"textbox","id":"sh/dkzep4ru","slide":5,"text":"Cache 是 reset-state prior：提供多樣、穩定且無明顯穿透的起點；它不包含 expert action，也不直接教 policy 如何轉球。","textPreview":"Cache 是 reset-state prior：提供多樣、穩定且無明顯穿透的起點；它不包含 expert action，也不直接教 policy 如何轉球。","textChars":80,"textLines":1,"bbox":[54,545,1120,60]}
+{"kind":"textbox","id":"sh/cjqdwzq9","slide":5,"text":"輸出：robots/leap_hand/caches/ball_grasp_official_50k.npy","textPreview":"輸出：robots/leap_hand/caches/ball_grasp_official_50k.npy","textChars":54,"textLines":1,"bbox":[54,630,1120,28]}
+{"kind":"notes","id":"nt/u7k4pq","slide":5,"text":"[Sources]\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/ball_grasp_gen.py\n- D:/UniLab/src/unilab/assets/robots/leap_hand/caches/ball_grasp_official_50k.npy\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml"}
+{"kind":"slide","id":"sl/qcoo45","slide":6,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":20}
+{"kind":"textbox","id":"sh/14fut4f6","slide":6,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/ehobypgv","slide":6,"text":"五個 cache 任務是分支實驗，不是單一路線版本升級","textPreview":"五個 cache 任務是分支實驗，不是單一路線版本升級","textChars":27,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/fixcrux0","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/sfmtwfyp","slide":6,"bbox":[260,220,0,82]}
+{"kind":"shape","id":"sh/tgfupkfa","slide":6,"bbox":[110,302,150,78]}
+{"kind":"shape","id":"sh/6d4bu5gj","slide":6,"bbox":[260,302,180,78]}
+{"kind":"shape","id":"sh/redcnax4","slide":6,"bbox":[440,380,0,82]}
+{"kind":"shape","id":"sh/4bmtsfyd","slide":6,"bbox":[440,462,0,82]}
+{"kind":"shape","id":"sh/5cvulkfy","slide":6,"bbox":[650,380,0,82]}
+{"kind":"shape","id":"sh/dcz6503y","slide":6,"bbox":[650,462,0,82]}
+{"kind":"shape","id":"sh/cbqpwfmd","slide":6,"bbox":[120,150,280,70]}
+{"kind":"textbox","id":"sh/raho3als","slide":6,"text":"LeapInhandBallRotation","textPreview":"LeapInhandBallRotation","textChars":22,"textLines":1,"bbox":[142,171,236,32]}
+{"kind":"shape","id":"sh/qp8nu547","slide":6,"bbox":[40,380,250,78]}
+{"kind":"textbox","id":"sh/poz61032","slide":6,"text":"ball_cache","textPreview":"ball_cache","textChars":10,"textLines":1,"bbox":[62,397,206,28]}
+{"kind":"textbox","id":"sh/4nq5svmh","slide":6,"text":"V1 reward + cache reset","textPreview":"V1 reward + cache reset","textChars":23,"textLines":1,"bbox":[62,430,206,20]}
+{"kind":"shape","id":"sh/3mhozqlw","slide":6,"bbox":[340,300,300,80]}
+{"kind":"textbox","id":"sh/2lonql4b","slide":6,"text":"SustainedRotation","textPreview":"SustainedRotation","textChars":17,"textLines":1,"bbox":[362,320,256,28]}
+{"kind":"textbox","id":"sh/hkf6xgnq","slide":6,"text":"共同 curriculum 基礎","textPreview":"共同 curriculum 基礎","textChars":16,"textLines":1,"bbox":[362,351,256,20]}
+{"kind":"shape","id":"sh/gj65obm5","slide":6,"bbox":[315,462,250,78]}
+{"kind":"textbox","id":"sh/83ap4vu1","slide":6,"text":"sustained_cache","textPreview":"sustained_cache","textChars":15,"textLines":1,"bbox":[337,479,206,28]}
+{"kind":"textbox","id":"sh/t4j6d0vm","slide":6,"text":"retention / spin 主線","textPreview":"retention / spin 主線","textChars":19,"textLines":1,"bbox":[337,512,206,20]}
+{"kind":"shape","id":"sh/61s72lcv","slide":6,"bbox":[315,585,250,68]}
+{"kind":"textbox","id":"sh/721obqdg","slide":6,"text":"direct","textPreview":"direct","textChars":6,"textLines":1,"bbox":[337,599,206,26]}
+{"kind":"textbox","id":"sh/kzq50bu5","slide":6,"text":"隔離 rotation acquisition","textPreview":"隔離 rotation acquisition","textChars":23,"textLines":1,"bbox":[337,628,206,18]}
+{"kind":"shape","id":"sh/l0j69gvq","slide":6,"bbox":[625,462,250,78]}
+{"kind":"textbox","id":"sh/yx8ny1cz","slide":6,"text":"finger_gaiting","textPreview":"finger_gaiting","textChars":14,"textLines":1,"bbox":[647,479,206,28]}
+{"kind":"textbox","id":"sh/jyho76dk","slide":6,"text":"release / recontact","textPreview":"release / recontact","textChars":19,"textLines":1,"bbox":[647,512,206,20]}
+{"kind":"shape","id":"sh/4vupcfu9","slide":6,"bbox":[625,585,250,68]}
+{"kind":"textbox","id":"sh/5w36lkbu","slide":6,"text":"cache_gaiting","textPreview":"cache_gaiting","textChars":13,"textLines":1,"bbox":[647,599,206,26]}
+{"kind":"textbox","id":"sh/fqpsbedw","slide":6,"text":"V3 reward × handoff","textPreview":"V3 reward × handoff","textChars":19,"textLines":1,"bbox":[647,628,206,18]}
+{"kind":"textbox","id":"sh/epwr29wb","slide":6,"text":"程式繼承","textPreview":"程式繼承","textChars":4,"textLines":1,"bbox":[970,185,190,28]}
+{"kind":"textbox","id":"sh/1s7adov2","slide":6,"text":"Direct ← Sustained Cache\nCache Gaiting ← Finger Gaiting","textPreview":"Direct ← Sustained Cache | Cache Gaiting ← Finger Gaiting","textChars":55,"textLines":2,"bbox":[970,232,220,72]}
+{"kind":"textbox","id":"sh/0ry94jeh","slide":6,"text":"Reward 交叉","textPreview":"Reward 交叉","textChars":9,"textLines":1,"bbox":[970,356,190,28]}
+{"kind":"textbox","id":"sh/nupsfed8","slide":6,"text":"Cache Gaiting 的環境沿用 handoff state machine，但 reward config 採 Sustained Cache 的 Allegro-style 簡化版本。","textPreview":"Cache Gaiting 的環境沿用 handoff state machine，但 reward config 採 Sustained Cache 的 Allegro-style 簡化版本。","textChars":97,"textLines":1,"bbox":[970,402,230,142]}
+{"kind":"notes","id":"nt/qcoo45","slide":6,"text":"[Sources]\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/cache_rotation.py\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/sustained_cache_rotation.py\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/finger_gaiting_rotation.py\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/direct_rotation.py\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/sustained_cache_gaiting_rotation.py"}
+{"kind":"slide","id":"sl/grdk3y","slide":7,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":25}
+{"kind":"textbox","id":"sh/m90nu18v","slide":7,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/9crmpg7m","slide":7,"text":"Sustained Cache S1–S6：從多階段 curriculum 轉向固定速度","textPreview":"Sustained Cache S1–S6：從多階段 curriculum 轉向固定速度","textChars":44,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/8bi5wbq1","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/vet4rqpc","slide":7,"bbox":[54,132,105,54]}
+{"kind":"textbox","id":"sh/ad0nyl87","slide":7,"text":"S1","textPreview":"S1","textChars":2,"textLines":1,"bbox":[54,145,105,30]}
+{"kind":"textbox","id":"sh/xgb6tg7i","slide":7,"text":"spin +1.5；retention +0.5；support +0.25；action -0.001；torque -0.005；work -0.05；failure -5","textPreview":"spin +1.5；retention +0.5；support +0.25；action -0.001；torque -0.005；work -0.05；failure -5","textChars":88,"textLines":1,"bbox":[186,136,630,46]}
+{"kind":"textbox","id":"sh/wf250bqx","slide":7,"text":"2026-07-21_17-50-30","textPreview":"2026-07-21_17-50-30","textChars":19,"textLines":1,"bbox":[842,141,362,34]}
+{"kind":"shape","id":"sh/jitovqpo","slide":7,"bbox":[54,200,105,54]}
+{"kind":"textbox","id":"sh/ihkn2l83","slide":7,"text":"S2","textPreview":"S2","textChars":2,"textLines":1,"bbox":[54,213,105,30]}
+{"kind":"textbox","id":"sh/grmp0ra9","slide":7,"text":"+ anchor_proximity 0.1，將 15–30 mm 灰色區拉回 cache anchor","textPreview":"+ anchor_proximity 0.1，將 15–30 mm 灰色區拉回 cache anchor","textChars":52,"textLines":1,"bbox":[186,204,630,46]}
+{"kind":"textbox","id":"sh/hsv6twbu","slide":7,"text":"2026-07-21_22-47-15","textPreview":"2026-07-21_22-47-15","textChars":19,"textLines":1,"bbox":[842,209,362,34]}
+{"kind":"shape","id":"sh/up47yhs3","slide":7,"bbox":[54,268,105,54]}
+{"kind":"textbox","id":"sh/vqdormto","slide":7,"text":"S3","textPreview":"S3","textChars":2,"textLines":1,"bbox":[54,281,105,30]}
+{"kind":"textbox","id":"sh/4f6p4ral","slide":7,"text":"positive-spin retention floor 分 level：L0–2=0.5，L3–7=0.25","textPreview":"positive-spin retention floor 分 level：L0–2=0.5，L3–7=0.25","textChars":56,"textLines":1,"bbox":[186,272,630,46]}
+{"kind":"textbox","id":"sh/5gf6xwbq","slide":7,"text":"2026-07-22_02-36-35","textPreview":"2026-07-22_02-36-35","textChars":19,"textLines":1,"bbox":[842,277,362,34]}
+{"kind":"shape","id":"sh/it472hsf","slide":7,"bbox":[54,336,105,54]}
+{"kind":"textbox","id":"sh/3udovmt0","slide":7,"text":"S4","textPreview":"S4","textChars":2,"textLines":1,"bbox":[54,349,105,30]}
+{"kind":"textbox","id":"sh/sj6p8bah","slide":7,"text":"關閉 anchor；floor 全回 0.5；啟用 direct_spin_reward","textPreview":"關閉 anchor；floor 全回 0.5；啟用 direct_spin_reward","textChars":44,"textLines":1,"bbox":[186,340,630,46]}
+{"kind":"textbox","id":"sh/dkf61gb2","slide":7,"text":"2026-07-22_23-04-12","textPreview":"2026-07-22_23-04-12","textChars":19,"textLines":1,"bbox":[842,345,362,34]}
+{"kind":"shape","id":"sh/10b6lw36","slide":7,"bbox":[54,404,105,54]}
+{"kind":"textbox","id":"sh/0f2psr2l","slide":7,"text":"S5","textPreview":"S5","textChars":2,"textLines":1,"bbox":[54,417,105,30]}
+{"kind":"textbox","id":"sh/zetoj6l0","slide":7,"text":"移除八階段，固定 0.30 rad/s；spin 3.0；retention floor 1.0","textPreview":"移除八階段，固定 0.30 rad/s；spin 3.0；retention floor 1.0","textChars":48,"textLines":1,"bbox":[186,408,630,46]}
+{"kind":"textbox","id":"sh/edknq1kf","slide":7,"text":"2026-07-23_00-19-50","textPreview":"2026-07-23_00-19-50","textChars":19,"textLines":1,"bbox":[842,413,362,34]}
+{"kind":"shape","id":"sh/94v6pg32","slide":7,"bbox":[54,472,105,54]}
+{"kind":"textbox","id":"sh/o3mpwb2x","slide":7,"text":"S6","textPreview":"S6","textChars":2,"textLines":1,"bbox":[54,485,105,30]}
+{"kind":"textbox","id":"sh/n2don6lc","slide":7,"text":"+ spin_continuity -0.05，直接處理『轉幾秒後停止』","textPreview":"+ spin_continuity -0.05，直接處理『轉幾秒後停止』","textChars":36,"textLines":1,"bbox":[186,476,630,46]}
+{"kind":"textbox","id":"sh/m147u1kr","slide":7,"text":"2026-07-23_02-11-05","textPreview":"2026-07-23_02-11-05","textChars":19,"textLines":1,"bbox":[842,481,362,34]}
+{"kind":"shape","id":"sh/p8r6dc3y","slide":7,"bbox":[54,552,520,98]}
+{"kind":"textbox","id":"sh/47i5k72d","slide":7,"text":"第一代 · S1–S3","textPreview":"第一代 · S1–S3","textChars":11,"textLines":1,"bbox":[76,566,190,24]}
+{"kind":"textbox","id":"sh/udg3ed0b","slide":7,"text":"穩定抓球 → 慢速旋轉 → 提速；問題是 retention/support 可取代真正旋轉。","textPreview":"穩定抓球 → 慢速旋轉 → 提速；問題是 retention/support 可取代真正旋轉。","textChars":47,"textLines":1,"bbox":[76,600,470,42]}
+{"kind":"shape","id":"sh/fep4ni1w","slide":7,"bbox":[610,552,536,98]}
+{"kind":"textbox","id":"sh/gfylgnih","slide":7,"text":"第二代 · S4–S6","textPreview":"第二代 · S4–S6","textChars":11,"textLines":1,"bbox":[632,566,190,24]}
+{"kind":"textbox","id":"sh/hg7mpsj2","slide":7,"text":"直接固定速度並增加 continuity；開始隔離『正向旋轉 acquisition』。","textPreview":"直接固定速度並增加 continuity；開始隔離『正向旋轉 acquisition』。","textChars":44,"textLines":1,"bbox":[632,600,480,42]}
+{"kind":"notes","id":"nt/grdk3y","slide":7,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/*/run_config.json\n- D:/UniLab/DEVELOPMENT_LOG.md:2244\n- D:/UniLab/DEVELOPMENT_LOG.md:2297"}
+{"kind":"slide","id":"sl/frrdg3","slide":8,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":28}
+{"kind":"textbox","id":"sh/u9kjq54j","slide":8,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/hcbil03a","slide":8,"text":"Sustained Cache：S7 至 S13 收斂到 V3-A","textPreview":"Sustained Cache：S7 至 S13 收斂到 V3-A","textChars":33,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/gb21sfmp","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/3et0nal0","slide":8,"bbox":[54,126,105,54]}
+{"kind":"textbox","id":"sh/2dkju54f","slide":8,"text":"S7","textPreview":"S7","textChars":2,"textLines":1,"bbox":[54,139,105,30]}
+{"kind":"textbox","id":"sh/pgb2pk36","slide":8,"text":"關閉舊 shaping；只保留 Allegro rotate +1.25；failure=0；掉落容許 10 mm","textPreview":"關閉舊 shaping；只保留 Allegro rotate +1.25；failure=0；掉落容許 10 mm","textChars":57,"textLines":1,"bbox":[186,130,630,46]}
+{"kind":"textbox","id":"sh/4f21wfml","slide":8,"text":"2026-07-23_03-57-44","textPreview":"2026-07-23_03-57-44","textChars":19,"textLines":1,"bbox":[842,135,362,34]}
+{"kind":"shape","id":"sh/b2dkrulc","slide":8,"bbox":[54,188,105,54]}
+{"kind":"textbox","id":"sh/qh4jyp4r","slide":8,"text":"S8","textPreview":"S8","textChars":2,"textLines":1,"bbox":[54,201,105,30]}
+{"kind":"textbox","id":"sh/sji5czqx","slide":8,"text":"+ obj_linvel -0.3，抑制整顆球平移","textPreview":"+ obj_linvel -0.3，抑制整顆球平移","textChars":25,"textLines":1,"bbox":[186,192,630,46]}
+{"kind":"textbox","id":"sh/tkrm547i","slide":8,"text":"2026-07-23_15-34-09","textPreview":"2026-07-23_15-34-09","textChars":19,"textLines":1,"bbox":[842,197,362,34]}
+{"kind":"shape","id":"sh/6h0nap8r","slide":8,"bbox":[54,250,105,54]}
+{"kind":"textbox","id":"sh/ri943upc","slide":8,"text":"S9","textPreview":"S9","textChars":2,"textLines":1,"bbox":[54,263,105,30]}
+{"kind":"textbox","id":"sh/gn25gjqt","slide":8,"text":"+ position_error -5；workspace termination 放寬至 50 mm","textPreview":"+ position_error -5；workspace termination 放寬至 50 mm","textChars":51,"textLines":1,"bbox":[186,254,630,46]}
+{"kind":"textbox","id":"sh/1obm947e","slide":8,"text":"2026-07-23_20-18-51","textPreview":"2026-07-23_20-18-51","textChars":19,"textLines":1,"bbox":[842,259,362,34]}
+{"kind":"shape","id":"sh/el0ne98n","slide":8,"bbox":[54,312,105,54]}
+{"kind":"textbox","id":"sh/fm947ep8","slide":8,"text":"S10","textPreview":"S10","textChars":3,"textLines":1,"bbox":[54,325,105,30]}
+{"kind":"textbox","id":"sh/or25kjq5","slide":8,"text":"rotate 依 base / index / middle 接觸分配：0.25 / 0.375 / 0.375","textPreview":"rotate 依 base / index / middle 接觸分配：0.25 / 0.375 / 0.375","textChars":56,"textLines":1,"bbox":[186,316,630,46]}
+{"kind":"textbox","id":"sh/pcbmdo7a","slide":8,"text":"2026-07-23_21-54-51","textPreview":"2026-07-23_21-54-51","textChars":19,"textLines":1,"bbox":[842,321,362,34]}
+{"kind":"shape","id":"sh/x87mxozu","slide":8,"bbox":[54,374,105,54]}
+{"kind":"textbox","id":"sh/c7y54ji9","slide":8,"text":"S11","textPreview":"S11","textChars":3,"textLines":1,"bbox":[54,387,105,30]}
+{"kind":"textbox","id":"sh/b6p4veho","slide":8,"text":"+ support-pose 0.25、opposition-progress 0.20","textPreview":"+ support-pose 0.25、opposition-progress 0.20","textChars":44,"textLines":1,"bbox":[186,378,630,46]}
+{"kind":"textbox","id":"sh/a5g32903","slide":8,"text":"2026-07-25_03-50-30","textPreview":"2026-07-25_03-50-30","textChars":19,"textLines":1,"bbox":[842,383,362,34]}
+{"kind":"shape","id":"sh/lwrm1ozq","slide":8,"bbox":[54,436,105,54]}
+{"kind":"textbox","id":"sh/kbi58ji5","slide":8,"text":"S12","textPreview":"S12","textChars":3,"textLines":1,"bbox":[54,449,105,30]}
+{"kind":"textbox","id":"sh/za94zehk","slide":8,"text":"V3-A：移除手勢 shaping；position -5→-6；failure 0→-1；平方 gate","textPreview":"V3-A：移除手勢 shaping；position -5→-6；failure 0→-1；平方 gate","textChars":53,"textLines":1,"bbox":[186,440,630,46]}
+{"kind":"textbox","id":"sh/y9gn6t0z","slide":8,"text":"2026-07-26_23-27-56","textPreview":"2026-07-26_23-27-56","textChars":19,"textLines":1,"bbox":[842,445,362,34]}
+{"kind":"shape","id":"sh/10nmp4zm","slide":8,"bbox":[54,498,105,54]}
+{"kind":"textbox","id":"sh/0felwzi1","slide":8,"text":"S13","textPreview":"S13","textChars":3,"textLines":1,"bbox":[54,511,105,30]}
+{"kind":"textbox","id":"sh/qlcj65gz","slide":8,"text":"目前版：V3-A + position-gated spin_continuity -0.05","textPreview":"目前版：V3-A + position-gated spin_continuity -0.05","textChars":47,"textLines":1,"bbox":[186,502,630,46]}
+{"kind":"textbox","id":"sh/r6lkzax4","slide":8,"text":"2026-07-27_00-36-25","textPreview":"2026-07-27_00-36-25","textChars":19,"textLines":1,"bbox":[842,507,362,34]}
+{"kind":"textbox","id":"sh/s7u18vyp","slide":8,"text":"目前公式","textPreview":"目前公式","textChars":4,"textLines":1,"bbox":[54,570,118,24]}
+{"kind":"textbox","id":"sh/d83210fa","slide":8,"text":"e=‖ball-anchor‖；p=clip(axis_speed/0.30,-1,1)；purity=exp(-(orth_speed/0.10)²)；gate=position_gate(e)²","textPreview":"e=‖ball-anchor‖；p=clip(axis_speed/0.30,-1,1)；purity=exp(-(orth_speed/0.10)²)；gate=position_gate(e)²","textChars":99,"textLines":1,"bbox":[180,570,1020,26]}
+{"kind":"textbox","id":"sh/e9cja5gv","slide":8,"text":"rotate：正轉=1.25×0.30×clip(p,0,1)×purity×gate；反轉=1.25×0.30×clip(p,-1,0)","textPreview":"rotate：正轉=1.25×0.30×clip(p,0,1)×purity×gate；反轉=1.25×0.30×clip(p,-1,0)","textChars":69,"textLines":1,"bbox":[180,602,1020,26]}
+{"kind":"textbox","id":"sh/falk3axg","slide":8,"text":"reward=dt×(rotate-0.3‖v‖₁-6e-0.05×gate×(1-clip(p,0,1)))-1×failure；≤15 mm gate=1，>50 mm 終止","textPreview":"reward=dt×(rotate-0.3‖v‖₁-6e-0.05×gate×(1-clip(p,0,1)))-1×failure；≤15 mm gate=1，>50 mm 終止","textChars":89,"textLines":1,"bbox":[180,634,1020,26]}
+{"kind":"notes","id":"nt/frrdg3","slide":8,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/*/run_config.json\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_sustained_cache/mujoco.yaml"}
+{"kind":"slide","id":"sl/vy3bb3","slide":9,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":38}
+{"kind":"textbox","id":"sh/72x0zm1o","slide":9,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/836h8r29","slide":9,"text":"Anchor proximity 改善位置維持，但沒有學會持續旋轉","textPreview":"Anchor proximity 改善位置維持，但沒有學會持續旋轉","textChars":33,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/94fi1cju","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"textbox","id":"sh/ydoz2xk7","slide":9,"text":"RUN  Baseline  2026-07-21_18-22-39_mujoco","textPreview":"RUN  Baseline  2026-07-21_18-22-39_mujoco","textChars":41,"textLines":1,"bbox":[54,138,520,24]}
+{"kind":"textbox","id":"sh/zex0v2ls","slide":9,"text":"RUN  Grey-zone  2026-07-21_22-58-39_mujoco","textPreview":"RUN  Grey-zone  2026-07-21_22-58-39_mujoco","textChars":42,"textLines":1,"bbox":[650,138,520,24]}
+{"kind":"shape","id":"sh/kf6h472d","slide":9,"bbox":[54,190,296,50]}
+{"kind":"textbox","id":"sh/lgfixc3y","slide":9,"text":"Diagnosis","textPreview":"Diagnosis","textChars":9,"textLines":1,"bbox":[64,200,276,30]}
+{"kind":"shape","id":"sh/a94zyxkb","slide":9,"bbox":[350,190,200,50]}
+{"kind":"textbox","id":"sh/bad0r2lg","slide":9,"text":"Baseline","textPreview":"Baseline","textChars":8,"textLines":1,"bbox":[360,200,180,30]}
+{"kind":"shape","id":"sh/72tc7at8","slide":9,"bbox":[550,190,200,50]}
+{"kind":"textbox","id":"sh/61kve5c3","slide":9,"text":"+ anchor","textPreview":"+ anchor","textChars":8,"textLines":1,"bbox":[560,200,180,30]}
+{"kind":"shape","id":"sh/t4vu90be","slide":9,"bbox":[750,190,430,50]}
+{"kind":"textbox","id":"sh/83mdgvut","slide":9,"text":"解讀","textPreview":"解讀","textChars":2,"textLines":1,"bbox":[760,200,410,30]}
+{"kind":"shape","id":"sh/v6dwbatk","slide":9,"bbox":[54,240,296,50]}
+{"kind":"textbox","id":"sh/u54vi5cz","slide":9,"text":"anchor position error","textPreview":"anchor position error","textChars":21,"textLines":1,"bbox":[64,250,276,30]}
+{"kind":"shape","id":"sh/h8vedkbq","slide":9,"bbox":[350,240,200,50]}
+{"kind":"textbox","id":"sh/g7mdkfu5","slide":9,"text":"23.35 mm","textPreview":"23.35 mm","textChars":8,"textLines":1,"bbox":[360,250,180,30]}
+{"kind":"shape","id":"sh/ba9czqtg","slide":9,"bbox":[550,240,200,50]}
+{"kind":"textbox","id":"sh/a90v6lcv","slide":9,"text":"20.09 mm","textPreview":"20.09 mm","textChars":8,"textLines":1,"bbox":[560,250,180,30]}
+{"kind":"shape","id":"sh/y1s7ud0f","slide":9,"bbox":[750,240,430,50]}
+{"kind":"textbox","id":"sh/z21o3ih0","slide":9,"text":"下降約 14%，球更接近 reset anchor","textPreview":"下降約 14%，球更接近 reset anchor","textChars":25,"textLines":1,"bbox":[760,250,410,30]}
+{"kind":"shape","id":"sh/03apwnil","slide":9,"bbox":[54,290,296,50]}
+{"kind":"textbox","id":"sh/l4jq5sz6","slide":9,"text":"fingertip contacts","textPreview":"fingertip contacts","textChars":18,"textLines":1,"bbox":[64,300,276,30]}
+{"kind":"shape","id":"sh/qd87qd0j","slide":9,"bbox":[350,290,200,50]}
+{"kind":"textbox","id":"sh/behozih4","slide":9,"text":"2.15","textPreview":"2.15","textChars":4,"textLines":1,"bbox":[360,300,180,30]}
+{"kind":"shape","id":"sh/czqps3ip","slide":9,"bbox":[550,290,200,50]}
+{"kind":"textbox","id":"sh/d0j618zu","slide":9,"text":"3.00","textPreview":"3.00","textChars":4,"textLines":1,"bbox":[560,300,180,30]}
+{"kind":"shape","id":"sh/2987mt07","slide":9,"bbox":[750,290,430,50]}
+{"kind":"textbox","id":"sh/3ahovyhs","slide":9,"text":"接觸包覆增加，retention 更穩","textPreview":"接觸包覆增加，retention 更穩","textChars":19,"textLines":1,"bbox":[760,300,410,30]}
+{"kind":"shape","id":"sh/54na1wja","slide":9,"bbox":[54,340,296,50]}
+{"kind":"textbox","id":"sh/k3e9sr2p","slide":9,"text":"stage-valid fraction","textPreview":"stage-valid fraction","textChars":20,"textLines":1,"bbox":[64,350,276,30]}
+{"kind":"shape","id":"sh/j25szm1k","slide":9,"bbox":[350,340,200,50]}
+{"kind":"textbox","id":"sh/i1wrq1kz","slide":9,"text":"10.96%","textPreview":"10.96%","textChars":6,"textLines":1,"bbox":[360,350,180,30]}
+{"kind":"shape","id":"sh/x0naxwje","slide":9,"bbox":[550,340,200,50]}
+{"kind":"textbox","id":"sh/wze9or2t","slide":9,"text":"16.22%","textPreview":"16.22%","textChars":6,"textLines":1,"bbox":[560,350,180,30]}
+{"kind":"shape","id":"sh/vylsvm18","slide":9,"bbox":[750,340,430,50]}
+{"kind":"textbox","id":"sh/axcrmhkn","slide":9,"text":"有效狀態增加 5.26 個百分點","textPreview":"有效狀態增加 5.26 個百分點","textChars":16,"textLines":1,"bbox":[760,350,410,30]}
+{"kind":"shape","id":"sh/9w3atcj2","slide":9,"bbox":[54,390,296,50]}
+{"kind":"textbox","id":"sh/8vu9k72x","slide":9,"text":"axis-speed EMA","textPreview":"axis-speed EMA","textChars":14,"textLines":1,"bbox":[64,400,276,30]}
+{"kind":"shape","id":"sh/on294ryh","slide":9,"bbox":[350,390,200,50]}
+{"kind":"textbox","id":"sh/pobadwf2","slide":9,"text":"+0.010","textPreview":"+0.010","textChars":6,"textLines":1,"bbox":[360,400,180,30]}
+{"kind":"shape","id":"sh/21kr2hgb","slide":9,"bbox":[550,390,200,50]}
+{"kind":"textbox","id":"sh/nmtsbmxw","slide":9,"text":"+0.013 rad/s","textPreview":"+0.013 rad/s","textChars":12,"textLines":1,"bbox":[560,400,180,30]}
+{"kind":"shape","id":"sh/crm98ret","slide":9,"bbox":[750,390,430,50]}
+{"kind":"textbox","id":"sh/xsvahwfy","slide":9,"text":"只小幅增加，仍遠低於目標速度","textPreview":"只小幅增加，仍遠低於目標速度","textChars":14,"textLines":1,"bbox":[760,400,410,30]}
+{"kind":"shape","id":"sh/ap4r61gn","slide":9,"bbox":[54,440,296,50]}
+{"kind":"textbox","id":"sh/bqdsfmx8","slide":9,"text":"sustained ≥2 s","textPreview":"sustained ≥2 s","textChars":14,"textLines":1,"bbox":[64,450,276,30]}
+{"kind":"shape","id":"sh/svi9w7y9","slide":9,"bbox":[350,440,200,50]}
+{"kind":"textbox","id":"sh/dwrq5cfu","slide":9,"text":"0.45%","textPreview":"0.45%","textChars":5,"textLines":1,"bbox":[360,450,180,30]}
+{"kind":"shape","id":"sh/v214rulo","slide":9,"bbox":[550,440,200,50]}
+{"kind":"textbox","id":"sh/u1s3y943","slide":9,"text":"2.16%","textPreview":"2.16%","textChars":5,"textLines":1,"bbox":[560,450,180,30]}
+{"kind":"shape","id":"sh/hojmt43u","slide":9,"bbox":[750,440,430,50]}
+{"kind":"textbox","id":"sh/gnal0z29","slide":9,"text":"短暫成功增加，但仍非常稀少","textPreview":"短暫成功增加，但仍非常稀少","textChars":13,"textLines":1,"bbox":[760,450,410,30]}
+{"kind":"shape","id":"sh/7yhknulc","slide":9,"bbox":[54,490,296,50]}
+{"kind":"textbox","id":"sh/6x83up47","slide":9,"text":"sustained ≥5 / 10 s","textPreview":"sustained ≥5 / 10 s","textChars":19,"textLines":1,"bbox":[64,500,276,30]}
+{"kind":"shape","id":"sh/t0zmp43i","slide":9,"bbox":[350,490,200,50]}
+{"kind":"textbox","id":"sh/8zqlwzmx","slide":9,"text":"0% / 0%","textPreview":"0% / 0%","textChars":7,"textLines":1,"bbox":[360,500,180,30]}
+{"kind":"shape","id":"sh/juhkjalg","slide":9,"bbox":[550,490,200,50]}
+{"kind":"textbox","id":"sh/yto3qp4v","slide":9,"text":"0% / 0%","textPreview":"0% / 0%","textChars":7,"textLines":1,"bbox":[560,500,180,30]}
+{"kind":"shape","id":"sh/mpo325on","slide":9,"bbox":[750,490,430,50]}
+{"kind":"textbox","id":"sh/nqx4ba58","slide":9,"text":"沒有形成可持續旋轉","textPreview":"沒有形成可持續旋轉","textChars":9,"textLines":1,"bbox":[760,500,410,30]}
+{"kind":"shape","id":"sh/or654f6t","slide":9,"bbox":[54,540,296,50]}
+{"kind":"textbox","id":"sh/9sfmdkne","slide":9,"text":"survival seconds","textPreview":"survival seconds","textChars":16,"textLines":1,"bbox":[64,550,276,30]}
+{"kind":"shape","id":"sh/aton6poz","slide":9,"bbox":[350,540,200,50]}
+{"kind":"textbox","id":"sh/buh4fu5k","slide":9,"text":"13.11 s","textPreview":"13.11 s","textChars":7,"textLines":1,"bbox":[360,550,180,30]}
+{"kind":"shape","id":"sh/wvq58z65","slide":9,"bbox":[550,540,200,50]}
+{"kind":"textbox","id":"sh/xwzmh4na","slide":9,"text":"12.78 s","textPreview":"12.78 s","textChars":7,"textLines":1,"bbox":[560,550,180,30]}
+{"kind":"shape","id":"sh/yx8napov","slide":9,"bbox":[750,540,430,50]}
+{"kind":"textbox","id":"sh/jyh4ju5g","slide":9,"text":"存活時間沒有改善","textPreview":"存活時間沒有改善","textChars":8,"textLines":1,"bbox":[760,550,410,30]}
+{"kind":"textbox","id":"sh/tsj69o7i","slide":9,"text":"結論：anchor proximity 修補了 15–30 mm 灰色區，使球更靠近 anchor、接觸更多、短暫有效狀態增加；但沒有提供換指或長時間正向角速度，因此 rotation 仍未學會。","textPreview":"結論：anchor proximity 修補了 15–30 mm 灰色區，使球更靠近 anchor、接觸更多、短暫有效狀態增加；但沒有提供換指或長時間正向角速度，因此 rotation 仍未學會。","textChars":98,"textLines":1,"bbox":[54,610,1130,48]}
+{"kind":"notes","id":"nt/vy3bb3","slide":9,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/2026-07-21_18-22-39_mujoco/events.out.tfevents.1784683360.沅霆.15996.0\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/2026-07-21_22-58-39_mujoco/events.out.tfevents.1784699921.沅霆.13112.0\n- D:/UniLab/DEVELOPMENT_LOG.md:2297"}
+{"kind":"slide","id":"sl/4pbcih","slide":10,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":20}
+{"kind":"textbox","id":"sh/kfadsnqt","slide":10,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/ju1wzip8","slide":10,"text":"Finger Gaiting：用接觸換位避免旋轉提前停止","textPreview":"Finger Gaiting：用接觸換位避免旋轉提前停止","textChars":28,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/itsvqx8n","slide":10,"text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"textbox","id":"sh/xsjexsr2","slide":10,"text":"觀察到的失敗序列","textPreview":"觀察到的失敗序列","textChars":8,"textLines":1,"bbox":[54,150,320,30]}
+{"kind":"shape","id":"sh/wradonqx","slide":10,"bbox":[170,245,82,0]}
+{"kind":"shape","id":"sh/vqhwvi9c","slide":10,"bbox":[54,205,195,80]}
+{"kind":"textbox","id":"sh/ap8vmd8r","slide":10,"text":"初始推球","textPreview":"初始推球","textChars":4,"textLines":1,"bbox":[70,229,163,30]}
+{"kind":"shape","id":"sh/ho3etc7m","slide":10,"bbox":[445,245,82,0]}
+{"kind":"shape","id":"sh/gnux07q1","slide":10,"bbox":[329,205,195,80]}
+{"kind":"textbox","id":"sh/ep8rqtgb","slide":10,"text":"短暫 +Z 旋轉","textPreview":"短暫 +Z 旋轉","textChars":8,"textLines":1,"bbox":[345,229,163,30]}
+{"kind":"shape","id":"sh/fqhszyxw","slide":10,"bbox":[720,245,82,0]}
+{"kind":"shape","id":"sh/grq9s3yh","slide":10,"bbox":[604,205,195,80]}
+{"kind":"textbox","id":"sh/1sza1of2","slide":10,"text":"接觸不更新","textPreview":"接觸不更新","textChars":5,"textLines":1,"bbox":[620,229,163,30]}
+{"kind":"shape","id":"sh/6lorm9gf","slide":10,"bbox":[879,205,195,80]}
+{"kind":"textbox","id":"sh/rmx8vex0","slide":10,"text":"角速度歸零","textPreview":"角速度歸零","textChars":5,"textLines":1,"bbox":[895,229,163,30]}
+{"kind":"shape","id":"sh/snq9ojyl","slide":10,"bbox":[54,350,8,34]}
+{"kind":"textbox","id":"sh/tozaxof6","slide":10,"text":"新增 reward 與 gate","textPreview":"新增 reward 與 gate","textChars":16,"textLines":1,"bbox":[78,352,1100,32]}
+{"kind":"shape","id":"sh/qhsrydgj","slide":10,"bbox":[54,408,264.6,48]}
+{"kind":"shape","id":"sh/bi1s7ix4","slide":10,"bbox":[318.6,408,225.4,48]}
+{"kind":"textbox","id":"sh/nq9g369k","slide":10,"text":"Gaiting term","textPreview":"Gaiting term","textChars":12,"textLines":1,"bbox":[66,417,240.6,34]}
+{"kind":"textbox","id":"sh/mp0fa1sz","slide":10,"text":"Weight","textPreview":"Weight","textChars":6,"textLines":1,"bbox":[330.6,417,201.4,34]}
+{"kind":"shape","id":"sh/9sby5gra","slide":10,"bbox":[54,456,264.6,48]}
+{"kind":"shape","id":"sh/or2xcbap","slide":10,"bbox":[318.6,456,225.4,48]}
+{"kind":"textbox","id":"sh/betg7q9g","slide":10,"text":"stable_support","textPreview":"stable_support","textChars":14,"textLines":1,"bbox":[66,465,240.6,34]}
+{"kind":"textbox","id":"sh/adkfelsv","slide":10,"text":"+0.20","textPreview":"+0.20","textChars":5,"textLines":1,"bbox":[330.6,465,201.4,34]}
+{"kind":"shape","id":"sh/xgby9grm","slide":10,"bbox":[54,504,264.6,48]}
+{"kind":"shape","id":"sh/wf2xgva1","slide":10,"bbox":[318.6,504,225.4,48]}
+{"kind":"textbox","id":"sh/jidgbq9c","slide":10,"text":"release_progress","textPreview":"release_progress","textChars":16,"textLines":1,"bbox":[66,513,240.6,34]}
+{"kind":"textbox","id":"sh/yhkfils7","slide":10,"text":"+0.05","textPreview":"+0.05","textChars":5,"textLines":1,"bbox":[330.6,513,201.4,34]}
+{"kind":"shape","id":"sh/gnmx8vq5","slide":10,"bbox":[54,552,264.6,48]}
+{"kind":"shape","id":"sh/hove107q","slide":10,"bbox":[318.6,552,225.4,48]}
+{"kind":"textbox","id":"sh/ul4f658z","slide":10,"text":"qualified_handoff","textPreview":"qualified_handoff","textChars":17,"textLines":1,"bbox":[66,561,240.6,34]}
+{"kind":"textbox","id":"sh/vmdwzqpk","slide":10,"text":"+0.25","textPreview":"+0.25","textChars":5,"textLines":1,"bbox":[330.6,561,201.4,34]}
+{"kind":"textbox","id":"sh/8jmx4vq9","slide":10,"text":"Qualified handoff 必須同時滿足","textPreview":"Qualified handoff 必須同時滿足","textChars":24,"textLines":1,"bbox":[620,408,430,30]}
+{"kind":"textbox","id":"sh/tkvex07u","slide":10,"text":"• 單指 release 至少 2 control steps\n• 其他至少 2 指持續接觸\n• 球仍在 retention 範圍且無 palm contact\n• 在 timeout 前 recontact，且速度恢復達標","textPreview":"• 單指 release 至少 2 control steps | • 其他至少 2 指持續接觸 | • 球仍在 retention 範圍且無 palm contact | • 在 timeout 前 recontact，且速度恢復達標","textChars":112,"textLines":4,"bbox":[620,458,500,150]}
+{"kind":"textbox","id":"sh/6hkf2l83","slide":10,"text":"RUN  V1  12-19-14 / 12-36-43     V2  14-58-36 / 15-47-22","textPreview":"RUN  V1  12-19-14 / 12-36-43     V2  14-58-36 / 15-47-22","textChars":56,"textLines":1,"bbox":[54,626,900,24]}
+{"kind":"notes","id":"nt/4pbcih","slide":10,"text":"[Sources]\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/finger_gaiting_rotation.py\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_finger_gaiting/mujoco.yaml\n- D:/UniLab/DEVELOPMENT_LOG.md:2385"}
+{"kind":"slide","id":"sl/6txnhe","slide":11,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":20}
+{"kind":"textbox","id":"sh/nm1cjy10","slide":11,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/8nads325","slide":11,"text":"Finger Gaiting 證明抓球不是瓶頸，正向旋轉才是","textPreview":"Finger Gaiting 證明抓球不是瓶頸，正向旋轉才是","textChars":30,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/9ojul8jq","slide":11,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"textbox","id":"sh/apsvudkb","slide":11,"text":"RUN  2026-07-22_15-47-22_mujoco","textPreview":"RUN  2026-07-22_15-47-22_mujoco","textChars":31,"textLines":1,"bbox":[54,142,500,24]}
+{"kind":"shape","id":"sh/vqlcni1w","slide":11,"bbox":[54,192,250,140]}
+{"kind":"textbox","id":"sh/wrudwn2h","slide":11,"text":"22.33 s","textPreview":"22.33 s","textChars":7,"textLines":1,"bbox":[74,212,210,52]}
+{"kind":"textbox","id":"sh/xs3up8j2","slide":11,"text":"平均存活時間","textPreview":"平均存活時間","textChars":6,"textLines":1,"bbox":[74,274,210,40]}
+{"kind":"shape","id":"sh/qt8bi9k7","slide":11,"bbox":[330,192,250,140]}
+{"kind":"textbox","id":"sh/ruhcbels","slide":11,"text":"10.48 mm","textPreview":"10.48 mm","textChars":8,"textLines":1,"bbox":[350,212,210,52]}
+{"kind":"textbox","id":"sh/36t8vy5k","slide":11,"text":"平均 anchor error","textPreview":"平均 anchor error","textChars":15,"textLines":1,"bbox":[350,274,210,40]}
+{"kind":"shape","id":"sh/25k7mt4z","slide":11,"bbox":[606,192,250,140]}
+{"kind":"textbox","id":"sh/p8bqx8nq","slide":11,"text":"2.12","textPreview":"2.12","textChars":4,"textLines":1,"bbox":[626,212,210,52]}
+{"kind":"textbox","id":"sh/472po3m5","slide":11,"text":"平均 fingertip contacts","textPreview":"平均 fingertip contacts","textChars":21,"textLines":1,"bbox":[626,274,210,40]}
+{"kind":"shape","id":"sh/f29ory5o","slide":11,"bbox":[882,192,250,140]}
+{"kind":"textbox","id":"sh/u107ito3","slide":11,"text":"0.055%","textPreview":"0.055%","textChars":6,"textLines":1,"bbox":[902,212,210,52]}
+{"kind":"textbox","id":"sh/h4r6t8nu","slide":11,"text":"termination rate","textPreview":"termination rate","textChars":16,"textLines":1,"bbox":[902,274,210,40]}
+{"kind":"shape","id":"sh/g3ipk369","slide":11,"bbox":[54,380,8,34]}
+{"kind":"textbox","id":"sh/7e9one5c","slide":11,"text":"真正卡住的 gate","textPreview":"真正卡住的 gate","textChars":10,"textLines":1,"bbox":[78,382,1100,32]}
+{"kind":"textbox","id":"sh/6dg7e9or","slide":11,"text":"Positive speed gate","textPreview":"Positive speed gate","textChars":19,"textLines":1,"bbox":[78,432,300,34]}
+{"kind":"textbox","id":"sh/a9g7q98z","slide":11,"text":"1.97%","textPreview":"1.97%","textChars":5,"textLines":1,"bbox":[78,480,220,60]}
+{"kind":"textbox","id":"sh/bap8zepk","slide":11,"text":"Qualified handoff","textPreview":"Qualified handoff","textChars":17,"textLines":1,"bbox":[430,432,300,34]}
+{"kind":"textbox","id":"sh/wby9sjqp","slide":11,"text":"< 0.11%","textPreview":"< 0.11%","textChars":7,"textLines":1,"bbox":[430,480,220,60]}
+{"kind":"textbox","id":"sh/xc7q1o7a","slide":11,"text":"2s / 5s / 10s success","textPreview":"2s / 5s / 10s success","textChars":21,"textLines":1,"bbox":[782,432,320,34]}
+{"kind":"textbox","id":"sh/idgrut8v","slide":11,"text":"全部為 0","textPreview":"全部為 0","textChars":5,"textLines":1,"bbox":[782,480,220,60]}
+{"kind":"textbox","id":"sh/jy983ypg","slide":11,"text":"研究判斷：在 policy 尚未可靠取得正向旋轉前，強制 handoff 會讓探索問題更稀疏。","textPreview":"研究判斷：在 policy 尚未可靠取得正向旋轉前，強制 handoff 會讓探索問題更稀疏。","textChars":47,"textLines":1,"bbox":[54,610,1130,38]}
+{"kind":"notes","id":"nt/6txnhe","slide":11,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallFingerGaitingRotation/2026-07-22_15-47-22_mujoco/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallFingerGaitingRotation/2026-07-22_15-47-22_mujoco/run_summary.json\n- D:/UniLab/DEVELOPMENT_LOG.md:2624"}
+{"kind":"slide","id":"sl/b1cczc","slide":12,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":33}
+{"kind":"textbox","id":"sh/mtsvy1cr","slide":12,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/9gjetgvi","slide":12,"text":"Direct 任務移除 handoff，隔離固定 +Z 旋轉 acquisition","textPreview":"Direct 任務移除 handoff，隔離固定 +Z 旋轉 acquisition","textChars":42,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/8fad0bux","slide":12,"text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"textbox","id":"sh/vi1wv6d8","slide":12,"text":"固定目標：world +Z · 0.30 rad/s · cache reset · 25 秒 episode","textPreview":"固定目標：world +Z · 0.30 rad/s · cache reset · 25 秒 episode","textChars":55,"textLines":1,"bbox":[54,137,1120,28]}
+{"kind":"shape","id":"sh/uhsv2lcn","slide":12,"bbox":[54,190,270,48]}
+{"kind":"shape","id":"sh/hkjexgve","slide":12,"bbox":[324,190,230,48]}
+{"kind":"textbox","id":"sh/wjad4but","slide":12,"text":"Positive term","textPreview":"Positive term","textChars":13,"textLines":1,"bbox":[66,199,246,34]}
+{"kind":"textbox","id":"sh/jmlwzqdk","slide":12,"text":"Weight","textPreview":"Weight","textChars":6,"textLines":1,"bbox":[336,199,206,34]}
+{"kind":"shape","id":"sh/ilcv6lcz","slide":12,"bbox":[54,238,270,48]}
+{"kind":"shape","id":"sh/wr254jid","slide":12,"bbox":[324,238,230,48]}
+{"kind":"textbox","id":"sh/hsb6xozy","slide":12,"text":"stable_rotation","textPreview":"stable_rotation","textChars":15,"textLines":1,"bbox":[66,247,246,34]}
+{"kind":"textbox","id":"sh/up0n2907","slide":12,"text":"+6.0","textPreview":"+6.0","textChars":4,"textLines":1,"bbox":[336,247,206,34]}
+{"kind":"shape","id":"sh/vqtovehs","slide":12,"bbox":[54,286,270,48]}
+{"kind":"shape","id":"sh/4v2583ip","slide":12,"bbox":[324,286,230,48]}
+{"kind":"textbox","id":"sh/5wb618zu","slide":12,"text":"rotation_streak","textPreview":"rotation_streak","textChars":15,"textLines":1,"bbox":[66,295,246,34]}
+{"kind":"textbox","id":"sh/itkn6t0j","slide":12,"text":"+0.5","textPreview":"+0.5","textChars":4,"textLines":1,"bbox":[336,295,206,34]}
+{"kind":"shape","id":"sh/jutozyh4","slide":12,"bbox":[54,334,270,48]}
+{"kind":"shape","id":"sh/szm5c3il","slide":12,"bbox":[324,334,230,48]}
+{"kind":"textbox","id":"sh/dkv658z6","slide":12,"text":"thumb_contact","textPreview":"thumb_contact","textChars":13,"textLines":1,"bbox":[66,343,246,34]}
+{"kind":"textbox","id":"sh/147e94ny","slide":12,"text":"+0.1","textPreview":"+0.1","textChars":4,"textLines":1,"bbox":[336,343,206,34]}
+{"kind":"shape","id":"sh/03yx0z6d","slide":12,"bbox":[54,382,270,48]}
+{"kind":"shape","id":"sh/f2pw7e5s","slide":12,"bbox":[324,382,230,48]}
+{"kind":"textbox","id":"sh/e1gfy9on","slide":12,"text":"fingertip_support","textPreview":"fingertip_support","textChars":17,"textLines":1,"bbox":[66,391,246,34]}
+{"kind":"textbox","id":"sh/p8redona","slide":12,"text":"+0.15","textPreview":"+0.15","textChars":5,"textLines":1,"bbox":[336,391,206,34]}
+{"kind":"shape","id":"sh/o7ix4j6p","slide":12,"bbox":[54,430,270,48]}
+{"kind":"shape","id":"sh/n6pwbe54","slide":12,"bbox":[324,430,230,48]}
+{"kind":"textbox","id":"sh/25gf29oj","slide":12,"text":"center_recovery","textPreview":"center_recovery","textChars":15,"textLines":1,"bbox":[66,439,246,34]}
+{"kind":"textbox","id":"sh/5cne1knq","slide":12,"text":"+1.0","textPreview":"+1.0","textChars":4,"textLines":1,"bbox":[336,439,206,34]}
+{"kind":"shape","id":"sh/4bedsf65","slide":12,"bbox":[620,190,291.6,48]}
+{"kind":"shape","id":"sh/uhcb2l43","slide":12,"bbox":[911.6,190,248.4,48]}
+{"kind":"textbox","id":"sh/vilcbqlo","slide":12,"text":"Cost / penalty","textPreview":"Cost / penalty","textChars":14,"textLines":1,"bbox":[632,199,267.6,34]}
+{"kind":"textbox","id":"sh/w3ut4vm9","slide":12,"text":"Weight","textPreview":"Weight","textChars":6,"textLines":1,"bbox":[923.6,199,224.4,34]}
+{"kind":"shape","id":"sh/h43ud03u","slide":12,"bbox":[620,238,291.6,48]}
+{"kind":"shape","id":"sh/i5cb654f","slide":12,"bbox":[911.6,238,248.4,48]}
+{"kind":"textbox","id":"sh/j6lcfalk","slide":12,"text":"stall","textPreview":"stall","textChars":5,"textLines":1,"bbox":[632,247,267.6,34]}
+{"kind":"textbox","id":"sh/47ut8fm5","slide":12,"text":"-1.0","textPreview":"-1.0","textChars":4,"textLines":1,"bbox":[923.6,247,224.4,34]}
+{"kind":"shape","id":"sh/58nuh03q","slide":12,"bbox":[620,286,291.6,48]}
+{"kind":"shape","id":"sh/y9sbu14v","slide":12,"bbox":[911.6,286,248.4,48]}
+{"kind":"textbox","id":"sh/za1s36lg","slide":12,"text":"reverse","textPreview":"reverse","textChars":7,"textLines":1,"bbox":[632,295,267.6,34]}
+{"kind":"textbox","id":"sh/z6t872x4","slide":12,"text":"-4.0","textPreview":"-4.0","textChars":4,"textLines":1,"bbox":[923.6,295,224.4,34]}
+{"kind":"shape","id":"sh/e5kryxwz","slide":12,"bbox":[620,334,291.6,48]}
+{"kind":"shape","id":"sh/18ba9cfa","slide":12,"bbox":[911.6,334,248.4,48]}
+{"kind":"textbox","id":"sh/072907ep","slide":12,"text":"object_center","textPreview":"object_center","textChars":13,"textLines":1,"bbox":[632,343,267.6,34]}
+{"kind":"textbox","id":"sh/natsb2xg","slide":12,"text":"-2.5","textPreview":"-2.5","textChars":4,"textLines":1,"bbox":[923.6,343,224.4,34]}
+{"kind":"shape","id":"sh/m9kr2xwv","slide":12,"bbox":[620,382,291.6,48]}
+{"kind":"shape","id":"sh/9wvadcfm","slide":12,"bbox":[911.6,382,248.4,48]}
+{"kind":"textbox","id":"sh/ob2947e1","slide":12,"text":"object_linear_velocity","textPreview":"object_linear_velocity","textChars":22,"textLines":1,"bbox":[632,391,267.6,34]}
+{"kind":"textbox","id":"sh/bydsfmxc","slide":12,"text":"-0.4","textPreview":"-0.4","textChars":4,"textLines":1,"bbox":[923.6,391,224.4,34]}
+{"kind":"shape","id":"sh/ax4r6hw7","slide":12,"bbox":[620,430,291.6,48]}
+{"kind":"shape","id":"sh/8369wru5","slide":12,"bbox":[911.6,430,248.4,48]}
+{"kind":"textbox","id":"sh/t4fqpwbq","slide":12,"text":"palm_contact","textPreview":"palm_contact","textChars":12,"textLines":1,"bbox":[632,439,267.6,34]}
+{"kind":"textbox","id":"sh/614ruhcz","slide":12,"text":"-1.0","textPreview":"-1.0","textChars":4,"textLines":1,"bbox":[923.6,439,224.4,34]}
+{"kind":"shape","id":"sh/72d8nmtk","slide":12,"bbox":[620,478,291.6,48]}
+{"kind":"shape","id":"sh/kzmps7u9","slide":12,"bbox":[911.6,478,248.4,48]}
+{"kind":"textbox","id":"sh/l0vqlcbe","slide":12,"text":"orthogonal_speed","textPreview":"orthogonal_speed","textChars":16,"textLines":1,"bbox":[632,487,267.6,34]}
+{"kind":"textbox","id":"sh/yd47qhc3","slide":12,"text":"-0.25","textPreview":"-0.25","textChars":5,"textLines":1,"bbox":[923.6,487,224.4,34]}
+{"kind":"shape","id":"sh/jyd8j2to","slide":12,"bbox":[620,526,291.6,48]}
+{"kind":"shape","id":"sh/wb2po7ux","slide":12,"bbox":[911.6,526,248.4,48]}
+{"kind":"textbox","id":"sh/xcvqhcbi","slide":12,"text":"failure","textPreview":"failure","textChars":7,"textLines":1,"bbox":[632,535,267.6,34]}
+{"kind":"textbox","id":"sh/dg3e54za","slide":12,"text":"-5.0","textPreview":"-5.0","textChars":4,"textLines":1,"bbox":[923.6,535,224.4,34]}
+{"kind":"textbox","id":"sh/svuxwzip","slide":12,"text":"Direct 的 reward 尺度與其他任務不同；總 reward 只能在 Direct 自身的 checkpoints 間比較。","textPreview":"Direct 的 reward 尺度與其他任務不同；總 reward 只能在 Direct 自身的 checkpoints 間比較。","textChars":66,"textLines":1,"bbox":[54,620,1110,36]}
+{"kind":"notes","id":"nt/b1cczc","slide":12,"text":"[Sources]\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_direct/mujoco.yaml\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/direct_rotation.py\n- D:/UniLab/DEVELOPMENT_LOG.md:2620"}
+{"kind":"slide","id":"sl/64l005","slide":13,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":33}
+{"kind":"textbox","id":"sh/tory9kzm","slide":13,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/61gfyp0b","slide":13,"text":"Direct 學到正向旋轉，但尚未形成可持續動作","textPreview":"Direct 學到正向旋轉，但尚未形成可持續動作","textChars":24,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/7mpg7a1g","slide":13,"text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"textbox","id":"sh/grix4zid","slide":13,"text":"RUN  2026-07-22_21-27-39_mujoco","textPreview":"RUN  2026-07-22_21-27-39_mujoco","textChars":31,"textLines":1,"bbox":[54,142,500,24]}
+{"kind":"textbox","id":"sh/hsryd4zy","slide":13,"text":"旋轉 acquisition","textPreview":"旋轉 acquisition","textChars":14,"textLines":1,"bbox":[54,200,300,30]}
+{"kind":"shape","id":"sh/up0f2p07","slide":13,"bbox":[54,246,291.6,46]}
+{"kind":"shape","id":"sh/vq9gbuhs","slide":13,"bbox":[345.6,246,248.4,46]}
+{"kind":"textbox","id":"sh/wvyxsvit","slide":13,"text":"Task metric","textPreview":"Task metric","textChars":11,"textLines":1,"bbox":[66,255,267.6,32]}
+{"kind":"textbox","id":"sh/xw7e10je","slide":13,"text":"Final value","textPreview":"Final value","textChars":11,"textLines":1,"bbox":[357.6,255,224.4,32]}
+{"kind":"shape","id":"sh/x8j2xgv6","slide":13,"bbox":[54,292,291.6,46]}
+{"kind":"shape","id":"sh/w7alobul","slide":13,"bbox":[345.6,292,248.4,46]}
+{"kind":"textbox","id":"sh/b61kv6dg","slide":13,"text":"目標 +Z 角速度","textPreview":"目標 +Z 角速度","textChars":9,"textLines":1,"bbox":[66,301,267.6,32]}
+{"kind":"textbox","id":"sh/a5s3m1cv","slide":13,"text":"0.300 rad/s","textPreview":"0.300 rad/s","textChars":11,"textLines":1,"bbox":[357.6,301,224.4,32]}
+{"kind":"shape","id":"sh/lc3210vi","slide":13,"bbox":[54,338,291.6,46]}
+{"kind":"shape","id":"sh/kbalsvux","slide":13,"bbox":[345.6,338,248.4,46]}
+{"kind":"textbox","id":"sh/ja1kzqdc","slide":13,"text":"實際 axis-speed EMA","textPreview":"實際 axis-speed EMA","textChars":17,"textLines":1,"bbox":[66,347,267.6,32]}
+{"kind":"textbox","id":"sh/y9s3qlcr","slide":13,"text":"+0.246 rad/s","textPreview":"+0.246 rad/s","textChars":12,"textLines":1,"bbox":[357.6,347,224.4,32]}
+{"kind":"shape","id":"sh/tg3m50ve","slide":13,"bbox":[54,384,291.6,46]}
+{"kind":"shape","id":"sh/8fulwvut","slide":13,"bbox":[345.6,384,248.4,46]}
+{"kind":"textbox","id":"sh/sj25sz25","slide":13,"text":"axis purity","textPreview":"axis purity","textChars":11,"textLines":1,"bbox":[66,393,267.6,32]}
+{"kind":"textbox","id":"sh/tkb6143q","slide":13,"text":"84.3%","textPreview":"84.3%","textChars":5,"textLines":1,"bbox":[357.6,393,224.4,32]}
+{"kind":"shape","id":"sh/6hknq9kz","slide":13,"bbox":[54,430,291.6,46]}
+{"kind":"shape","id":"sh/rit4zelk","slide":13,"bbox":[345.6,430,248.4,46]}
+{"kind":"textbox","id":"sh/gn25wj21","slide":13,"text":"平均 anchor error","textPreview":"平均 anchor error","textChars":15,"textLines":1,"bbox":[66,439,267.6,32]}
+{"kind":"textbox","id":"sh/18v65ojm","slide":13,"text":"14.7 mm","textPreview":"14.7 mm","textChars":7,"textLines":1,"bbox":[357.6,439,224.4,32]}
+{"kind":"shape","id":"sh/elknu9kb","slide":13,"bbox":[54,476,291.6,46]}
+{"kind":"shape","id":"sh/fmto3e1w","slide":13,"bbox":[345.6,476,248.4,46]}
+{"kind":"textbox","id":"sh/wri5kf2x","slide":13,"text":"平均 fingertip contacts","textPreview":"平均 fingertip contacts","textChars":21,"textLines":1,"bbox":[66,485,267.6,32]}
+{"kind":"textbox","id":"sh/hcrmtk3i","slide":13,"text":"2.47","textPreview":"2.47","textChars":4,"textLines":1,"bbox":[357.6,485,224.4,32]}
+{"kind":"shape","id":"sh/z6x8zil0","slide":13,"bbox":[54,522,291.6,46]}
+{"kind":"shape","id":"sh/y5o7qx4f","slide":13,"bbox":[345.6,522,248.4,46]}
+{"kind":"textbox","id":"sh/l8zq1s36","slide":13,"text":"palm contact rate","textPreview":"palm contact rate","textChars":17,"textLines":1,"bbox":[66,531,267.6,32]}
+{"kind":"textbox","id":"sh/07q9snml","slide":13,"text":"0.0%","textPreview":"0.0%","textChars":4,"textLines":1,"bbox":[357.6,531,224.4,32]}
+{"kind":"textbox","id":"sh/b2x8vi54","slide":13,"text":"持續性驗證","textPreview":"持續性驗證","textChars":5,"textLines":1,"bbox":[650,200,300,30]}
+{"kind":"shape","id":"sh/qho7md4j","slide":13,"bbox":[650,246,270,46]}
+{"kind":"shape","id":"sh/d4fqxsnu","slide":13,"bbox":[920,246,230,46]}
+{"kind":"textbox","id":"sh/c36ponm9","slide":13,"text":"Success gate","textPreview":"Success gate","textChars":12,"textLines":1,"bbox":[662,255,246,32]}
+{"kind":"textbox","id":"sh/3ed8ry5s","slide":13,"text":"Observed fraction","textPreview":"Observed fraction","textChars":17,"textLines":1,"bbox":[932,255,206,32]}
+{"kind":"shape","id":"sh/2d47id47","slide":13,"bbox":[650,292,270,46]}
+{"kind":"shape","id":"sh/ilob210r","slide":13,"bbox":[920,292,230,46]}
+{"kind":"textbox","id":"sh/3mhcv61c","slide":13,"text":"連續旋轉 ≥ 2 s","textPreview":"連續旋轉 ≥ 2 s","textChars":10,"textLines":1,"bbox":[662,301,246,32]}
+{"kind":"textbox","id":"sh/4nqt4bix","slide":13,"text":"0.012%","textPreview":"0.012%","textChars":6,"textLines":1,"bbox":[932,301,206,32]}
+{"kind":"shape","id":"sh/5ozuxgji","slide":13,"bbox":[650,338,270,46]}
+{"kind":"shape","id":"sh/uhoby10v","slide":13,"bbox":[920,338,230,46]}
+{"kind":"textbox","id":"sh/vixcr61g","slide":13,"text":"連續旋轉 ≥ 5 s","textPreview":"連續旋轉 ≥ 5 s","textChars":10,"textLines":1,"bbox":[662,347,246,32]}
+{"kind":"textbox","id":"sh/gj6t0ri1","slide":13,"text":"0%","textPreview":"0%","textChars":2,"textLines":1,"bbox":[932,347,206,32]}
+{"kind":"shape","id":"sh/hkfutwjm","slide":13,"bbox":[650,384,270,46]}
+{"kind":"shape","id":"sh/6t4buh0z","slide":13,"bbox":[920,384,230,46]}
+{"kind":"textbox","id":"sh/7uxcnm14","slide":13,"text":"連續旋轉 ≥ 10 s","textPreview":"連續旋轉 ≥ 10 s","textChars":11,"textLines":1,"bbox":[662,393,246,32]}
+{"kind":"textbox","id":"sh/9kn6po7y","slide":13,"text":"0%","textPreview":"0%","textChars":2,"textLines":1,"bbox":[932,393,206,32]}
+{"kind":"shape","id":"sh/oje5gj6d","slide":13,"bbox":[650,430,270,46]}
+{"kind":"shape","id":"sh/ni5oneps","slide":13,"bbox":[920,430,230,46]}
+{"kind":"textbox","id":"sh/mhcne9on","slide":13,"text":"natural handoff rate","textPreview":"natural handoff rate","textChars":20,"textLines":1,"bbox":[662,439,246,32]}
+{"kind":"textbox","id":"sh/1g36l472","slide":13,"text":"0.061%","textPreview":"0.061%","textChars":6,"textLines":1,"bbox":[932,439,206,32]}
+{"kind":"shape","id":"sh/0vu5cz6h","slide":13,"bbox":[650,476,270,46]}
+{"kind":"shape","id":"sh/zulojupw","slide":13,"bbox":[920,476,230,46]}
+{"kind":"textbox","id":"sh/etcna9ob","slide":13,"text":"final success fraction","textPreview":"final success fraction","textChars":22,"textLines":1,"bbox":[662,485,246,32]}
+{"kind":"textbox","id":"sh/ds36h47q","slide":13,"text":"0.061%","textPreview":"0.061%","textChars":6,"textLines":1,"bbox":[932,485,206,32]}
+{"kind":"textbox","id":"sh/cru58z65","slide":13,"text":"結論：Direct 證明 policy 能取得正向 +Z 旋轉；但動作只能短暫維持，尚未學會換指銜接與多圈持續旋轉。","textPreview":"結論：Direct 證明 policy 能取得正向 +Z 旋轉；但動作只能短暫維持，尚未學會換指銜接與多圈持續旋轉。","textChars":58,"textLines":1,"bbox":[54,620,1100,42]}
+{"kind":"notes","id":"nt/64l005","slide":13,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallDirectRotation/2026-07-22_21-27-39_mujoco/events.out.tfevents.1784780863.沅霆.41532.0\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallDirectRotation/2026-07-22_21-27-39_mujoco/run_config.json"}
+{"kind":"slide","id":"sl/hhoif0","slide":14,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":25}
+{"kind":"textbox","id":"sh/4zedwfmp","slide":14,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/3y5wna54","slide":14,"text":"Cache Gaiting：位置維持成功，但旋轉與換指仍未學會","textPreview":"Cache Gaiting：位置維持成功，但旋轉與換指仍未學會","textChars":31,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/ixcvu5oj","slide":14,"text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/hw3el0ny","slide":14,"bbox":[54,150,500,280]}
+{"kind":"textbox","id":"sh/gvudsf6d","slide":14,"text":"V1","textPreview":"V1","textChars":2,"textLines":1,"bbox":[84,188,90,34]}
+{"kind":"textbox","id":"sh/vulcja5s","slide":14,"text":"簡化 rotation 主線，同時用 stable support、release progress 與 handoff bonus 主動引導換指。\n\n問題：在尚未取得穩定旋轉前，gaiting shaping 增加探索負擔。","textPreview":"簡化 rotation 主線，同時用 stable support、release progress 與 handoff bonus 主動引導換指。 |  | 問題：在尚未取得穩定旋轉前，gaiting shaping 增加探索負擔。","textChars":113,"textLines":3,"bbox":[84,244,410,150]}
+{"kind":"textbox","id":"sh/utcvq5on","slide":14,"text":"RUN  2026-07-27_12-09-05_mujoco","textPreview":"RUN  2026-07-27_12-09-05_mujoco","textChars":31,"textLines":1,"bbox":[84,392,390,24]}
+{"kind":"shape","id":"sh/1s7ex4ni","slide":14,"bbox":[626,150,520,280]}
+{"kind":"textbox","id":"sh/0rydozmx","slide":14,"text":"V2","textPreview":"V2","textChars":2,"textLines":1,"bbox":[656,188,90,34]}
+{"kind":"textbox","id":"sh/aho3yxsf","slide":14,"text":"保留主 rotation 目標，但移除 stable / release shaping、降低 handoff 影響，限制只有三根非拇指可 release。\n\n目的：先讓球轉起來，再要求換指。","textPreview":"保留主 rotation 目標，但移除 stable / release shaping、降低 handoff 影響，限制只有三根非拇指可 release。 |  | 目的：先讓球轉起來，再要求換指。","textChars":96,"textLines":3,"bbox":[656,244,430,150]}
+{"kind":"textbox","id":"sh/bixk7290","slide":14,"text":"RUN  2026-07-27_12-26-57_mujoco","textPreview":"RUN  2026-07-27_12-26-57_mujoco","textChars":31,"textLines":1,"bbox":[656,392,430,24]}
+{"kind":"shape","id":"sh/cj6l07al","slide":14,"bbox":[54,470,399.6,30]}
+{"kind":"shape","id":"sh/xkf29cr6","slide":14,"bbox":[453.6,470,340.4,30]}
+{"kind":"textbox","id":"sh/2t4juxsj","slide":14,"text":"Latest task metric","textPreview":"Latest task metric","textChars":18,"textLines":1,"bbox":[66,479,375.6,16]}
+{"kind":"textbox","id":"sh/nexk3294","slide":14,"text":"Observed value","textPreview":"Observed value","textChars":14,"textLines":1,"bbox":[465.6,479,316.4,16]}
+{"kind":"shape","id":"sh/of6lw7a9","slide":14,"bbox":[54,500,399.6,30]}
+{"kind":"shape","id":"sh/pgf25cru","slide":14,"bbox":[453.6,500,340.4,30]}
+{"kind":"textbox","id":"sh/mp83618n","slide":14,"text":"position gate","textPreview":"position gate","textChars":13,"textLines":1,"bbox":[66,509,375.6,16]}
+{"kind":"textbox","id":"sh/7ahkfm98","slide":14,"text":"98.8%","textPreview":"98.8%","textChars":5,"textLines":1,"bbox":[465.6,509,316.4,16]}
+{"kind":"shape","id":"sh/ju90repk","slide":14,"bbox":[54,530,399.6,30]}
+{"kind":"shape","id":"sh/it0zyt8z","slide":14,"bbox":[453.6,530,340.4,30]}
+{"kind":"textbox","id":"sh/5wbito7q","slide":14,"text":"axis purity","textPreview":"axis purity","textChars":11,"textLines":1,"bbox":[66,539,375.6,16]}
+{"kind":"textbox","id":"sh/4v2h0jq5","slide":14,"text":"95.1%","textPreview":"95.1%","textChars":5,"textLines":1,"bbox":[465.6,539,316.4,16]}
+{"kind":"shape","id":"sh/ryt0vypw","slide":14,"bbox":[54,560,399.6,30]}
+{"kind":"shape","id":"sh/6xkz2t8b","slide":14,"bbox":[453.6,560,340.4,30]}
+{"kind":"textbox","id":"sh/tkbix87m","slide":14,"text":"axis speed","textPreview":"axis speed","textChars":10,"textLines":1,"bbox":[66,569,375.6,16]}
+{"kind":"textbox","id":"sh/sz2h43q1","slide":14,"text":"+0.001 rad/s","textPreview":"+0.001 rad/s","textChars":12,"textLines":1,"bbox":[465.6,569,316.4,16]}
+{"kind":"shape","id":"sh/fmd0zyps","slide":14,"bbox":[54,590,399.6,30]}
+{"kind":"shape","id":"sh/elkz6d87","slide":14,"bbox":[453.6,590,340.4,30]}
+{"kind":"textbox","id":"sh/crmhw3ml","slide":14,"text":"net turns / episode","textPreview":"net turns / episode","textChars":19,"textLines":1,"bbox":[66,599,375.6,16]}
+{"kind":"textbox","id":"sh/xsvyp8n6","slide":14,"text":"0.0069","textPreview":"0.0069","textChars":6,"textLines":1,"bbox":[465.6,599,316.4,16]}
+{"kind":"shape","id":"sh/ap4zud4f","slide":14,"bbox":[54,620,399.6,30]}
+{"kind":"shape","id":"sh/bqdgni50","slide":14,"bbox":[453.6,620,340.4,30]}
+{"kind":"textbox","id":"sh/onmhs3m9","slide":14,"text":"speed > 0.10 rad/s","textPreview":"speed > 0.10 rad/s","textChars":18,"textLines":1,"bbox":[66,629,375.6,16]}
+{"kind":"textbox","id":"sh/povyl8nu","slide":14,"text":"0.73%","textPreview":"0.73%","textChars":5,"textLines":1,"bbox":[465.6,629,316.4,16]}
+{"kind":"shape","id":"sh/21kzqt4j","slide":14,"bbox":[54,650,399.6,30]}
+{"kind":"shape","id":"sh/3mdgjy5o","slide":14,"bbox":[453.6,650,340.4,30]}
+{"kind":"textbox","id":"sh/gz2xojmd","slide":14,"text":"qualified handoff rate","textPreview":"qualified handoff rate","textChars":22,"textLines":1,"bbox":[66,659,375.6,16]}
+{"kind":"textbox","id":"sh/10byhony","slide":14,"text":"0.006%","textPreview":"0.006%","textChars":6,"textLines":1,"bbox":[465.6,659,316.4,16]}
+{"kind":"textbox","id":"sh/54repk3q","slide":14,"text":"判斷","textPreview":"判斷","textChars":2,"textLines":1,"bbox":[860,474,160,30]}
+{"kind":"textbox","id":"sh/43idwz25","slide":14,"text":"球大多留在正確位置，旋轉軸也乾淨；但幾乎沒有轉速與 handoff。\n\n位置維持成功 ≠ 持續旋轉成功。","textPreview":"球大多留在正確位置，旋轉軸也乾淨；但幾乎沒有轉速與 handoff。 |  | 位置維持成功 ≠ 持續旋轉成功。","textChars":52,"textLines":3,"bbox":[860,524,290,112]}
+{"kind":"notes","id":"nt/hhoif0","slide":14,"text":"[Sources]\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheGaitingRotation/2026-07-27_12-26-57_mujoco/events.out.tfevents.1785180421.沅霆.36252.0\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheGaitingRotation/2026-07-27_12-26-57_mujoco/run_config.json"}
+{"kind":"slide","id":"sl/7hxdaq","slide":15,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":44}
+{"kind":"textbox","id":"sh/98jqlkr6","slide":15,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/m5sra5sf","slide":15,"text":"五個任務各自回答不同問題，不能只用 total reward 排名","textPreview":"五個任務各自回答不同問題，不能只用 total reward 排名","textChars":33,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/n618ja90","slide":15,"text":"15","textPreview":"15","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"shape","id":"sh/wbu9gfah","slide":15,"bbox":[54,150,230,48]}
+{"kind":"textbox","id":"sh/xw3qpkr2","slide":15,"text":"任務","textPreview":"任務","textChars":2,"textLines":1,"bbox":[64,163,210,24]}
+{"kind":"shape","id":"sh/a9srepsb","slide":15,"bbox":[284,150,261,48]}
+{"kind":"textbox","id":"sh/val8na9w","slide":15,"text":"代表 RunId","textPreview":"代表 RunId","textChars":8,"textLines":1,"bbox":[294,163,241,24]}
+{"kind":"shape","id":"sh/cfqp4vad","slide":15,"bbox":[545,150,265,48]}
+{"kind":"textbox","id":"sh/dgzqd0ry","slide":15,"text":"主要問題","textPreview":"主要問題","textChars":4,"textLines":1,"bbox":[555,163,245,24]}
+{"kind":"shape","id":"sh/tkjyl8z6","slide":15,"bbox":[810,150,230,48]}
+{"kind":"textbox","id":"sh/8jaxc3il","slide":15,"text":"可支持的結論","textPreview":"可支持的結論","textChars":6,"textLines":1,"bbox":[820,163,210,24]}
+{"kind":"shape","id":"sh/7i1gjih0","slide":15,"bbox":[1040,150,170,48]}
+{"kind":"textbox","id":"sh/6hsfad0v","slide":15,"text":"證據等級","textPreview":"證據等級","textChars":4,"textLines":1,"bbox":[1050,163,150,24]}
+{"kind":"shape","id":"sh/h83ypszi","slide":15,"bbox":[54,198,230,58]}
+{"kind":"textbox","id":"sh/gnuhgnix","slide":15,"text":"Ball Cache","textPreview":"Ball Cache","textChars":10,"textLines":1,"bbox":[64,210,210,36]}
+{"kind":"shape","id":"sh/vmlgnihc","slide":15,"bbox":[284,198,261,58]}
+{"kind":"textbox","id":"sh/ulczed0r","slide":15,"text":"07-21_17-29-49","textPreview":"07-21_17-29-49","textChars":14,"textLines":1,"bbox":[294,210,241,36]}
+{"kind":"shape","id":"sh/5c3ytsze","slide":15,"bbox":[545,198,265,58]}
+{"kind":"textbox","id":"sh/4buhknit","slide":15,"text":"cache reset 是否成立","textPreview":"cache reset 是否成立","textChars":16,"textLines":1,"bbox":[555,210,245,36]}
+{"kind":"shape","id":"sh/of21gbq5","slide":15,"bbox":[810,198,230,58]}
+{"kind":"textbox","id":"sh/pgbipg7q","slide":15,"text":"整合可執行","textPreview":"整合可執行","textChars":5,"textLines":1,"bbox":[820,210,210,36]}
+{"kind":"shape","id":"sh/2tkje18z","slide":15,"bbox":[1040,198,170,58]}
+{"kind":"textbox","id":"sh/3ut0n6pk","slide":15,"text":"smoke","textPreview":"smoke","textChars":5,"textLines":1,"bbox":[1050,210,150,36]}
+{"kind":"shape","id":"sh/cjm1kb61","slide":15,"bbox":[54,256,230,58]}
+{"kind":"textbox","id":"sh/xkvitg7m","slide":15,"text":"Sustained Cache","textPreview":"Sustained Cache","textChars":15,"textLines":1,"bbox":[64,268,210,36]}
+{"kind":"shape","id":"sh/ah4ji18b","slide":15,"bbox":[284,256,261,58]}
+{"kind":"textbox","id":"sh/bid0r6pg","slide":15,"text":"07-21_18-22-39","textPreview":"07-21_18-22-39","textChars":14,"textLines":1,"bbox":[294,268,241,36]}
+{"kind":"shape","id":"sh/snih8rqx","slide":15,"bbox":[545,256,265,58]}
+{"kind":"textbox","id":"sh/torihw7i","slide":15,"text":"多姿勢持續旋轉","textPreview":"多姿勢持續旋轉","textChars":7,"textLines":1,"bbox":[555,268,245,36]}
+{"kind":"shape","id":"sh/vu1c3edc","slide":15,"bbox":[810,256,230,58]}
+{"kind":"textbox","id":"sh/utsva9wr","slide":15,"text":"正式 baseline","textPreview":"正式 baseline","textChars":11,"textLines":1,"bbox":[820,268,210,36]}
+{"kind":"shape","id":"sh/hgju5ov2","slide":15,"bbox":[1040,256,170,58]}
+{"kind":"textbox","id":"sh/gvadcjux","slide":15,"text":"999 iter","textPreview":"999 iter","textChars":8,"textLines":1,"bbox":[1050,268,150,36]}
+{"kind":"shape","id":"sh/7qhczed0","slide":15,"bbox":[54,314,230,58]}
+{"kind":"textbox","id":"sh/6p8b69wf","slide":15,"text":"Retention Grey-zone","textPreview":"Retention Grey-zone","textChars":19,"textLines":1,"bbox":[64,326,210,36]}
+{"kind":"shape","id":"sh/tszu1ov6","slide":15,"bbox":[284,314,261,58]}
+{"kind":"textbox","id":"sh/8rqd8jel","slide":15,"text":"07-21_22-58-39","textPreview":"07-21_22-58-39","textChars":14,"textLines":1,"bbox":[294,326,241,36]}
+{"kind":"shape","id":"sh/jmhcvud4","slide":15,"bbox":[545,314,265,58]}
+{"kind":"textbox","id":"sh/ylob2pwj","slide":15,"text":"15–30 mm local optimum","textPreview":"15–30 mm local optimum","textChars":22,"textLines":1,"bbox":[555,326,245,36]}
+{"kind":"shape","id":"sh/etsf6xs3","slide":15,"bbox":[810,314,230,58]}
+{"kind":"textbox","id":"sh/zu1gz29o","slide":15,"text":"位置維持改善","textPreview":"位置維持改善","textChars":6,"textLines":1,"bbox":[820,326,210,36]}
+{"kind":"shape","id":"sh/0vah87a9","slide":15,"bbox":[1040,314,170,58]}
+{"kind":"textbox","id":"sh/1wjy1cru","slide":15,"text":"999 iter","textPreview":"999 iter","textChars":8,"textLines":1,"bbox":[1050,326,150,36]}
+{"kind":"shape","id":"sh/q58f2ds7","slide":15,"bbox":[54,372,230,58]}
+{"kind":"textbox","id":"sh/r6hgvi9c","slide":15,"text":"Finger Gaiting","textPreview":"Finger Gaiting","textChars":14,"textLines":1,"bbox":[64,384,210,36]}
+{"kind":"shape","id":"sh/c7qx4nax","slide":15,"bbox":[284,372,261,58]}
+{"kind":"textbox","id":"sh/d8jyxsri","slide":15,"text":"07-22_15-47-22","textPreview":"07-22_15-47-22","textChars":14,"textLines":1,"bbox":[294,384,241,36]}
+{"kind":"shape","id":"sh/218fydsv","slide":15,"bbox":[545,372,265,58]}
+{"kind":"textbox","id":"sh/32hgri9g","slide":15,"text":"是否缺少換指","textPreview":"是否缺少換指","textChars":6,"textLines":1,"bbox":[555,384,245,36]}
+{"kind":"shape","id":"sh/5wnidgby","slide":15,"bbox":[810,372,230,58]}
+{"kind":"textbox","id":"sh/kve14bud","slide":15,"text":"正向速度才是瓶頸","textPreview":"正向速度才是瓶頸","textChars":8,"textLines":1,"bbox":[820,384,210,36]}
+{"kind":"shape","id":"sh/ju50b6ts","slide":15,"bbox":[1040,372,170,58]}
+{"kind":"textbox","id":"sh/itwj21cn","slide":15,"text":"100 iter","textPreview":"100 iter","textChars":8,"textLines":1,"bbox":[1050,384,150,36]}
+{"kind":"shape","id":"sh/xsni9gb2","slide":15,"bbox":[54,430,230,58]}
+{"kind":"textbox","id":"sh/wre10buh","slide":15,"text":"Direct","textPreview":"Direct","textChars":6,"textLines":1,"bbox":[64,442,210,36]}
+{"kind":"shape","id":"sh/vql076tw","slide":15,"bbox":[284,430,261,58]}
+{"kind":"textbox","id":"sh/apcjy1cb","slide":15,"text":"07-22_21-27-39","textPreview":"07-22_21-27-39","textChars":14,"textLines":1,"bbox":[294,442,241,36]}
+{"kind":"shape","id":"sh/9o3i5wbq","slide":15,"bbox":[545,430,265,58]}
+{"kind":"textbox","id":"sh/8nu1wru5","slide":15,"text":"旋轉 acquisition","textPreview":"旋轉 acquisition","textChars":14,"textLines":1,"bbox":[555,442,245,36]}
+{"kind":"shape","id":"sh/07y1cr21","slide":15,"bbox":[810,430,230,58]}
+{"kind":"textbox","id":"sh/1872lwjm","slide":15,"text":"降低稀疏性有效","textPreview":"降低稀疏性有效","textChars":7,"textLines":1,"bbox":[820,442,210,36]}
+{"kind":"shape","id":"sh/e5gja1kv","slide":15,"bbox":[1040,430,170,58]}
+{"kind":"textbox","id":"sh/f6p0jm1g","slide":15,"text":"99 iter","textPreview":"99 iter","textChars":7,"textLines":1,"bbox":[1050,442,150,36]}
+{"kind":"shape","id":"sh/s3e18r25","slide":15,"bbox":[54,488,230,58]}
+{"kind":"textbox","id":"sh/d47ihwjq","slide":15,"text":"Sustained V3-A","textPreview":"Sustained V3-A","textChars":14,"textLines":1,"bbox":[64,500,210,36]}
+{"kind":"shape","id":"sh/qhwj6hkz","slide":15,"bbox":[284,488,261,58]}
+{"kind":"textbox","id":"sh/r250fm1k","slide":15,"text":"07-27_00-36-25","textPreview":"07-27_00-36-25","textChars":14,"textLines":1,"bbox":[294,500,241,36]}
+{"kind":"shape","id":"sh/wzi1kb29","slide":15,"bbox":[545,488,265,58]}
+{"kind":"textbox","id":"sh/x0r2tgju","slide":15,"text":"簡化 reward","textPreview":"簡化 reward","textChars":9,"textLines":1,"bbox":[555,500,245,36]}
+{"kind":"shape","id":"sh/7ut4jalw","slide":15,"bbox":[810,488,230,58]}
+{"kind":"textbox","id":"sh/6tk3ap4b","slide":15,"text":"保留直接目標訊號","textPreview":"保留直接目標訊號","textChars":8,"textLines":1,"bbox":[820,500,210,36]}
+{"kind":"shape","id":"sh/twvmlk32","slide":15,"bbox":[1040,488,170,58]}
+{"kind":"textbox","id":"sh/8vm5cfmh","slide":15,"text":"199 iter","textPreview":"199 iter","textChars":8,"textLines":1,"bbox":[1050,500,150,36]}
+{"kind":"shape","id":"sh/vyd4nul8","slide":15,"bbox":[54,546,230,58]}
+{"kind":"textbox","id":"sh/ux4nep4n","slide":15,"text":"Cache Gaiting V2","textPreview":"Cache Gaiting V2","textChars":16,"textLines":1,"bbox":[64,558,210,36]}
+{"kind":"shape","id":"sh/h0vmp43y","slide":15,"bbox":[284,546,261,58]}
+{"kind":"textbox","id":"sh/gzm5gzmt","slide":15,"text":"07-27_12-26-57","textPreview":"07-27_12-26-57","textChars":14,"textLines":1,"bbox":[294,558,241,36]}
+{"kind":"shape","id":"sh/b294bqlo","slide":15,"bbox":[545,546,265,58]}
+{"kind":"textbox","id":"sh/a103254j","slide":15,"text":"受限 handoff 整合","textPreview":"受限 handoff 整合","textChars":13,"textLines":1,"bbox":[555,558,245,36]}
+{"kind":"shape","id":"sh/ydgbm983","slide":15,"bbox":[810,546,230,58]}
+{"kind":"textbox","id":"sh/zepcfe9o","slide":15,"text":"可完整存活；旋轉待驗證","textPreview":"可完整存活；旋轉待驗證","textChars":11,"textLines":1,"bbox":[820,558,210,36]}
+{"kind":"shape","id":"sh/0fytojq9","slide":15,"bbox":[1040,546,170,58]}
+{"kind":"textbox","id":"sh/lg7uhoru","slide":15,"text":"299 iter","textPreview":"299 iter","textChars":8,"textLines":1,"bbox":[1050,558,150,36]}
+{"kind":"textbox","id":"sh/mhgbq98f","slide":15,"text":"歷史 checkpoint 的正確 reward 來源是該 RunId 的 run_config.json，而不是今天的父 YAML。","textPreview":"歷史 checkpoint 的正確 reward 來源是該 RunId 的 run_config.json，而不是今天的父 YAML。","textChars":67,"textLines":1,"bbox":[54,625,1120,30]}
+{"kind":"notes","id":"nt/7hxdaq","slide":15,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheRotation/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallFingerGaitingRotation/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallDirectRotation/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheGaitingRotation/*/run_config.json"}
+{"kind":"slide","id":"sl/y90qis","slide":16,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":9}
+{"kind":"textbox","id":"sh/tkn29kv2","slide":16,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/6xw3e5wr","slide":16,"text":"下一階段先證明能持續轉，再重新引入 handoff","textPreview":"下一階段先證明能持續轉，再重新引入 handoff","textChars":25,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/7y5k7axc","slide":16,"text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[1120,664,104,30]}
+{"kind":"textbox","id":"sh/kvulcfel","slide":16,"text":"本月得到的三個可靠結論","textPreview":"本月得到的三個可靠結論","textChars":11,"textLines":1,"bbox":[54,150,440,32]}
+{"kind":"textbox","id":"sh/lwn250f6","slide":16,"text":"1  Ball-specific cache 與真實碰撞是有效訓練的必要前提。\n\n2  Retention 改善不能代表持續旋轉；必須量測 signed axis speed 與 net angle。\n\n3  Handoff 是長期必要技能，但在 rotation acquisition 尚未成立時強制加入會增加探索稀疏性。","textPreview":"1  Ball-specific cache 與真實碰撞是有效訓練的必要前提。 |  | 2  Retention 改善不能代表持續旋轉；必須量測 signed axis speed 與 net angle。 |  | 3  Handoff 是長期必要技能，但在 rotat...","textChars":163,"textLines":5,"bbox":[54,208,560,275]}
+{"kind":"shape","id":"sh/ytc3a5wf","slide":16,"bbox":[690,145,455,380]}
+{"kind":"textbox","id":"sh/julk3ax0","slide":16,"text":"下一步驗證順序","textPreview":"下一步驗證順序","textChars":7,"textLines":1,"bbox":[720,176,360,34]}
+{"kind":"textbox","id":"sh/wru18vep","slide":16,"text":"01  固定 cache / seed 做 reward ablation\n02  報告 axis-speed duration 與 net turns\n03  用 viewer 排除 palm support / 穿模\n04  只有 acquisition 穩定後才加入 handoff\n05  至少三個 seeds 比較 success rate\n06  最後才增加 domain randomization","textPreview":"01  固定 cache / seed 做 reward ablation | 02  報告 axis-speed duration 與 net turns | 03  用 viewer 排除 palm support / 穿模 | 04  只有 acquisition 穩...","textChars":206,"textLines":6,"bbox":[720,244,370,220]}
+{"kind":"textbox","id":"sh/xs3210fa","slide":16,"text":"成功標準","textPreview":"成功標準","textChars":4,"textLines":1,"bbox":[54,520,220,28]}
+{"kind":"textbox","id":"sh/xobi14zy","slide":16,"text":"持續正向旋轉時間 · 多圈 net angle · 低 orthogonal speed · 不掉球 · 合格 handoff · 跨 seed 穩定","textPreview":"持續正向旋轉時間 · 多圈 net angle · 低 orthogonal speed · 不掉球 · 合格 handoff · 跨 seed 穩定","textChars":75,"textLines":1,"bbox":[54,566,1090,58]}
+{"kind":"notes","id":"nt/y90qis","slide":16,"text":"收尾維持研究上的保守結論：目前已定位問題，但不宣稱 Cache Gaiting 已完成持續轉球。\n\n[Sources]\n- D:/UniLab/AGENTS.md#Dexterous-Manipulation-Training-Guidance\n- D:/UniLab/DEVELOPMENT_LOG.md"}

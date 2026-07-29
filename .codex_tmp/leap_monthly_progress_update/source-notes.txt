@@ -1,0 +1,3 @@
+Slides 7–8 use local UniLab TensorBoard metrics and run metadata only.
+All metrics are arithmetic means over the final 10% of recorded iterations.
+Slide 7 uses axis-speed EMA. Slide 8 uses raw axis speed because EMA and sustained-duration metrics were not logged by those runs.

@@ -1,0 +1,5 @@
+Source deck: LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_Updated.pptx
+Slide count: 16
+Visual system: white background, Aptos, dark navy titles, blue eyebrow and run identifiers, colored stage markers, page number at lower right.
+Edit scope: slides 7 and 8 only. Slides 1–6 and 9–16 are preserved.
+Slides 7–8 are slide-local generated content; their master/layout relationship remains unchanged.

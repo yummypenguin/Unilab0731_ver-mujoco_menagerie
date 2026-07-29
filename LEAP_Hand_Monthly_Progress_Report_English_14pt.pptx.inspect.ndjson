@@ -1,0 +1,583 @@
+{"kind":"deck","id":"pr/e6u914","name":"Deck"}
+{"kind":"layout","layoutId":"1a98b605-9388-479b-b346-7ee329073c2a","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"5b27a69d-5ad9-4cb1-afb3-dff23940f525","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/mf4pkc","slide":1,"title":"UNILAB · DEXTEROUS MANIPULATION","textShapes":6}
+{"kind":"textbox","id":"sh/l8zil87e","slide":1,"text":"UNILAB · DEXTEROUS MANIPULATION","textPreview":"UNILAB · DEXTEROUS MANIPULATION","textChars":31,"textLines":1,"bbox":[54,44,720,26]}
+{"kind":"textbox","id":"sh/y58jat83","slide":1,"text":"LEAP Hand Dexterous Manipulation\nOne-Month Research Progress","textPreview":"LEAP Hand Dexterous Manipulation | One-Month Research Progress","textChars":60,"textLines":2,"bbox":[54,170,890,174]}
+{"kind":"textbox","id":"sh/z6h0jyp8","slide":1,"text":"An evidence chain from model integration and ball caches to sustained rotation and finger gaiting","textPreview":"An evidence chain from model integration and ball caches to sustained rotation and finger gaiting","textChars":97,"textLines":1,"bbox":[58,382,880,70]}
+{"kind":"shape","id":"sh/8va1g365","slide":1,"bbox":[1010,170,180,280]}
+{"kind":"textbox","id":"sh/9wj2p87q","slide":1,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[1027,202,145,94]}
+{"kind":"textbox","id":"sh/m98jedoz","slide":1,"text":"cache tasks\n13 reward versions","textPreview":"cache tasks | 13 reward versions","textChars":30,"textLines":2,"bbox":[1028,316,145,82]}
+{"kind":"textbox","id":"sh/7a10nipk","slide":1,"text":"Reporting period: July 13–28, 2026","textPreview":"Reporting period: July 13–28, 2026","textChars":34,"textLines":1,"bbox":[58,630,620,28]}
+{"kind":"notes","id":"nt/mf4pkc","slide":1,"text":"This report reconstructs progress from saved code, configurations, run metadata, TensorBoard diagnostics, and native-viewer inspection.\n\n[Sources]\n- D:/UniLab/DEVELOPMENT_LOG.md\n- D:/UniLab/logs/rsl_rl_ppo/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/*/run_summary.json"}
+{"kind":"slide","id":"sl/gtg05u","slide":2,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":17}
+{"kind":"textbox","id":"sh/4bad8nql","slide":2,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/3a1wfi90","slide":2,"text":"From Trainable Environments to Diagnosable Experiments","textPreview":"From Trainable Environments to Diagnosable Experiments","textChars":54,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/i9sv6d8f","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"shape","id":"sh/h8jed8ru","slide":2,"bbox":[54,170,330,140]}
+{"kind":"textbox","id":"sh/g7ad4nqp","slide":2,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[74,190,290,52]}
+{"kind":"textbox","id":"sh/v61wbi94","slide":2,"text":"MuJoCo / Motrix backend","textPreview":"MuJoCo / Motrix backend","textChars":23,"textLines":1,"bbox":[74,252,290,40]}
+{"kind":"shape","id":"sh/u5sv2d8j","slide":2,"bbox":[420,170,330,140]}
+{"kind":"textbox","id":"sh/14nepc7e","slide":2,"text":"50k","textPreview":"50k","textChars":3,"textLines":1,"bbox":[440,190,290,52]}
+{"kind":"textbox","id":"sh/03exg7qt","slide":2,"text":"LEAP-specific ball grasp states","textPreview":"LEAP-specific ball grasp states","textChars":31,"textLines":1,"bbox":[440,252,290,40]}
+{"kind":"shape","id":"sh/u1gju9oj","slide":2,"bbox":[786,170,330,140]}
+{"kind":"textbox","id":"sh/v2p03ep4","slide":2,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[806,190,290,52]}
+{"kind":"textbox","id":"sh/g3y1wj6p","slide":2,"text":"independently comparable cache tasks","textPreview":"independently comparable cache tasks","textChars":36,"textLines":1,"bbox":[806,252,290,40]}
+{"kind":"shape","id":"sh/h4ri5o7a","slide":2,"bbox":[54,365,8,34]}
+{"kind":"textbox","id":"sh/mxgjq9o7","slide":2,"text":"Core Deliverables","textPreview":"Core Deliverables","textChars":17,"textLines":1,"bbox":[78,367,1100,32]}
+{"kind":"textbox","id":"sh/7yp0zeps","slide":2,"text":"Model and Physics","textPreview":"Model and Physics","textChars":17,"textLines":1,"bbox":[78,420,250,30]}
+{"kind":"textbox","id":"sh/8zy1sj6d","slide":2,"text":"Imported LEAP assets, dedicated ball/cube scenes, self-collision, and adjacent-link contact filtering.","textPreview":"Imported LEAP assets, dedicated ball/cube scenes, self-collision, and adjacent-link contact filtering.","textChars":102,"textLines":1,"bbox":[78,462,300,100]}
+{"kind":"textbox","id":"sh/907i147y","slide":2,"text":"Reset Distribution","textPreview":"Reset Distribution","textChars":18,"textLines":1,"bbox":[430,420,250,30]}
+{"kind":"textbox","id":"sh/qt0j2tor","slide":2,"text":"Identified the cube-cache mismatch, built a 50k ball-specific cache, and stored a per-reset anchor.","textPreview":"Identified the cube-cache mismatch, built a 50k ball-specific cache, and stored a per-reset anchor.","textChars":99,"textLines":1,"bbox":[430,462,300,100]}
+{"kind":"textbox","id":"sh/ru9kbypc","slide":2,"text":"Research Method","textPreview":"Research Method","textChars":15,"textLines":1,"bbox":[782,420,250,30]}
+{"kind":"textbox","id":"sh/nelg3q5o","slide":2,"text":"Used checkpoints, task diagnostics, the MuJoCo viewer, and RunIds for controlled reward and curriculum analysis.","textPreview":"Used checkpoints, task diagnostics, the MuJoCo viewer, and RunIds for controlled reward and curriculum analysis.","textChars":112,"textLines":1,"bbox":[782,462,330,100]}
+{"kind":"textbox","id":"sh/2dcful43","slide":2,"text":"Sustained rotation is not yet claimed as solved; the ordering of acquisition, retention, and handoff is now measurable.","textPreview":"Sustained rotation is not yet claimed as solved; the ordering of acquisition, retention, and handoff is now measurable.","textChars":119,"textLines":1,"bbox":[54,612,1130,36]}
+{"kind":"notes","id":"nt/gtg05u","slide":2,"text":"The emphasis is a reliable experimental foundation and traceable evidence, not the highest aggregate reward.\n\n[Sources]\n- D:/UniLab/AGENTS.md\n- D:/UniLab/DEVELOPMENT_LOG.md"}
+{"kind":"slide","id":"sl/qg4dfw","slide":3,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":19}
+{"kind":"textbox","id":"sh/na9kbuts","slide":3,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/obi14zad","slide":3,"text":"Platform First, Then the Sustained-Rotation Bottleneck","textPreview":"Platform First, Then the Sustained-Rotation Bottleneck","textChars":54,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/9cr2d4by","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"shape","id":"sh/e5gjypcb","slide":3,"bbox":[82,292,1090,0]}
+{"kind":"shape","id":"sh/z6p07utw","slide":3,"bbox":[92,286,12,12]}
+{"kind":"textbox","id":"sh/07y10zah","slide":3,"text":"7/13–14","textPreview":"7/13–14","textChars":7,"textLines":1,"bbox":[84,242,128,24]}
+{"kind":"textbox","id":"sh/187i9kbm","slide":3,"text":"Environment","textPreview":"Environment","textChars":11,"textLines":1,"bbox":[84,310,186,46]}
+{"kind":"textbox","id":"sh/y1kja9sf","slide":3,"text":"Windows 11 setup, MuJoCo smoke tests, Motrix training, and diagnosis of wgpu OOM recording failures.","textPreview":"Windows 11 setup, MuJoCo smoke tests, Motrix training, and diagnosis of wgpu OOM recording failures.","textChars":100,"textLines":1,"bbox":[84,364,190,92]}
+{"kind":"shape","id":"sh/j2tkjet0","slide":3,"bbox":[315,286,12,12]}
+{"kind":"textbox","id":"sh/369wzel0","slide":3,"text":"7/14–17","textPreview":"7/14–17","textChars":7,"textLines":1,"bbox":[307,242,128,24]}
+{"kind":"textbox","id":"sh/250f69kf","slide":3,"text":"LEAP Integration","textPreview":"LEAP Integration","textChars":16,"textLines":1,"bbox":[307,310,186,46]}
+{"kind":"textbox","id":"sh/psre1o36","slide":3,"text":"Imported the hand and dedicated ball/cube assets; added in-hand rotation and toss tasks.","textPreview":"Imported the hand and dedicated ball/cube assets; added in-hand rotation and toss tasks.","textChars":88,"textLines":1,"bbox":[307,364,190,92]}
+{"kind":"shape","id":"sh/orix8j2l","slide":3,"bbox":[538,286,12,12]}
+{"kind":"textbox","id":"sh/bu9w3ylc","slide":3,"text":"7/17–21","textPreview":"7/17–21","textChars":7,"textLines":1,"bbox":[530,242,128,24]}
+{"kind":"textbox","id":"sh/qt0fatkr","slide":3,"text":"Physics and Cache","textPreview":"Physics and Cache","textChars":17,"textLines":1,"bbox":[530,310,186,46]}
+{"kind":"textbox","id":"sh/dwre5o3i","slide":3,"text":"Corrected penetration and self-collision behavior; produced the ball-specific 50k reset cache.","textPreview":"Corrected penetration and self-collision behavior; produced the ball-specific 50k reset cache.","textChars":94,"textLines":1,"bbox":[530,364,190,92]}
+{"kind":"shape","id":"sh/cvixc32x","slide":3,"bbox":[761,286,12,12]}
+{"kind":"textbox","id":"sh/zytw7yl8","slide":3,"text":"7/21–23","textPreview":"7/21–23","textChars":7,"textLines":1,"bbox":[753,242,128,24]}
+{"kind":"textbox","id":"sh/yxkfetkn","slide":3,"text":"Sustained Spin","textPreview":"Sustained Spin","textChars":14,"textLines":1,"bbox":[753,310,186,46]}
+{"kind":"textbox","id":"sh/at4z6x4v","slide":3,"text":"Created sustained, retention, gaiting, and direct-rotation diagnostic branches.","textPreview":"Created sustained, retention, gaiting, and direct-rotation diagnostic branches.","textChars":79,"textLines":1,"bbox":[753,364,190,92]}
+{"kind":"shape","id":"sh/vud0z25g","slide":3,"bbox":[984,286,12,12]}
+{"kind":"textbox","id":"sh/wvmh87m1","slide":3,"text":"7/25–28","textPreview":"7/25–28","textChars":7,"textLines":1,"bbox":[976,242,128,24]}
+{"kind":"textbox","id":"sh/xwfi1cnm","slide":3,"text":"Simplification","textPreview":"Simplification","textChars":14,"textLines":1,"bbox":[976,310,186,46]}
+{"kind":"textbox","id":"sh/mp4z2x4z","slide":3,"text":"Removed ineffective shaping and converged on the V3-A / V3-B cache-gaiting direction.","textPreview":"Removed ineffective shaping and converged on the V3-A / V3-B cache-gaiting direction.","textChars":85,"textLines":1,"bbox":[976,364,190,92]}
+{"kind":"textbox","id":"sh/nqd0v25k","slide":3,"text":"Experimental policy: integration smoke test → short diagnostic run → long training only after the direction is supported.","textPreview":"Experimental policy: integration smoke test → short diagnostic run → long training only after the direction is supported.","textChars":121,"textLines":1,"bbox":[54,584,1130,42]}
+{"kind":"notes","id":"nt/qg4dfw","slide":3,"text":"[Sources]\n- D:/UniLab/DEVELOPMENT_LOG.md\n- D:/UniLab/AGENTS.md#Dexterous-Manipulation-Training-Guidance"}
+{"kind":"slide","id":"sl/kuzwpf","slide":4,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":8}
+{"kind":"textbox","id":"sh/9wzehwne","slide":4,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/mt8v6hon","slide":4,"text":"Both Backends Train; Rendering Reliability Differs","textPreview":"Both Backends Train; Rendering Reliability Differs","textChars":50,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/7uhwfm58","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"shape","id":"sh/krqd476x","slide":4,"bbox":[54,160,520,380]}
+{"kind":"textbox","id":"sh/lszedc7i","slide":4,"text":"MuJoCo","textPreview":"MuJoCo","textChars":6,"textLines":1,"bbox":[86,190,220,40]}
+{"kind":"textbox","id":"sh/yp8v2hor","slide":4,"text":"• PPO smoke and formal training run successfully\n• Native viewer supports checkpoint inspection\n• Strong XML, contact, and penetration diagnostics\n• Primary backend for current research decisions","textPreview":"• PPO smoke and formal training run successfully | • Native viewer supports checkpoint inspection | • Strong XML, contact, and penetratio...","textChars":195,"textLines":4,"bbox":[86,260,430,220]}
+{"kind":"shape","id":"sh/zqhwb2pc","slide":4,"bbox":[626,160,520,380]}
+{"kind":"textbox","id":"sh/cn6d076l","slide":4,"text":"Motrix","textPreview":"Motrix","textChars":6,"textLines":1,"bbox":[658,190,220,40]}
+{"kind":"textbox","id":"sh/xofe9c76","slide":4,"text":"• Training and interactive playback run successfully\n• Intel Arc recording triggered wgpu out-of-memory\n• Vulkan and DX12 both closed the render channel\n• Retained for backend-contract and performance checks","textPreview":"• Training and interactive playback run successfully | • Intel Arc recording triggered wgpu out-of-memory | • Vulkan and DX12 both closed...","textChars":207,"textLines":4,"bbox":[658,260,430,220]}
+{"kind":"textbox","id":"sh/1gv65or6","slide":4,"text":"Decision: use the native MuJoCo viewer for behavioral evidence; do not treat Motrix recording failures as training or physics failures.","textPreview":"Decision: use the native MuJoCo viewer for behavioral evidence; do not treat Motrix recording failures as training or physics failures.","textChars":135,"textLines":1,"bbox":[54,592,1120,48]}
+{"kind":"notes","id":"nt/kuzwpf","slide":4,"text":"[Sources]\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_*/mujoco.yaml\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_*/motrix.yaml\n- D:/UniLab/DEVELOPMENT_LOG.md"}
+{"kind":"slide","id":"sl/s0mw42","slide":5,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":18}
+{"kind":"textbox","id":"sh/xor6903a","slide":5,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/al0ny5kz","slide":5,"text":"How the Production 50k Ball Cache Is Collected","textPreview":"How the Production 50k Ball Cache Is Collected","textChars":46,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/bm9o7al4","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"shape","id":"sh/oji5wv2t","slide":5,"bbox":[54,148,62,84]}
+{"kind":"textbox","id":"sh/pkr6503e","slide":5,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[54,170,62,36]}
+{"kind":"textbox","id":"sh/2hgnulkn","slide":5,"text":"Validated seed","textPreview":"Validated seed","textChars":14,"textLines":1,"bbox":[142,150,300,30]}
+{"kind":"textbox","id":"sh/ni9o3ql8","slide":5,"text":"Start from grasp_seed_qpos: a ball-owned state refined through penetration coordinate scans and full settling checks. Cube and toss caches are never read.","textPreview":"Start from grasp_seed_qpos: a ball-owned state refined through penetration coordinate scans and full settling checks. Cube and toss cache...","textChars":154,"textLines":1,"bbox":[142,186,620,64]}
+{"kind":"shape","id":"sh/8f2p8z2x","slide":5,"bbox":[54,264,62,84]}
+{"kind":"textbox","id":"sh/9gb6hkji","slide":5,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[54,286,62,36]}
+{"kind":"textbox","id":"sh/x8j2to3i","slide":5,"text":"Reset proposals","textPreview":"Reset proposals","textChars":15,"textLines":1,"bbox":[142,266,300,30]}
+{"kind":"textbox","id":"sh/w7al0j2d","slide":5,"text":"The current owner samples every hand joint within ±0.10 rad, clips to LEAP joint limits, keeps ball-position noise at zero, and initializes zero velocity.","textPreview":"The current owner samples every hand joint within ±0.10 rad, clips to LEAP joint limits, keeps ball-position noise at zero, and initializ...","textChars":154,"textLines":1,"bbox":[142,302,620,64]}
+{"kind":"shape","id":"sh/bmhkryls","slide":5,"bbox":[54,380,62,84]}
+{"kind":"textbox","id":"sh/al83ytk7","slide":5,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[54,402,62,36]}
+{"kind":"textbox","id":"sh/9kz2po3m","slide":5,"text":"Zero-action hold","textPreview":"Zero-action hold","textChars":16,"textLines":1,"bbox":[142,382,300,30]}
+{"kind":"textbox","id":"sh/ojq1wj21","slide":5,"text":"apply_action() discards policy output. PD control holds each sampled reset target for a 2.5 s episode; strict validation begins after the 0.5 s warm-up.","textPreview":"apply_action() discards policy output. PD control holds each sampled reset target for a 2.5 s episode; strict validation begins after the...","textChars":152,"textLines":1,"bbox":[142,418,620,64]}
+{"kind":"shape","id":"sh/nihknelg","slide":5,"bbox":[54,496,62,84]}
+{"kind":"textbox","id":"sh/mh8ju9kv","slide":5,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[54,518,62,36]}
+{"kind":"textbox","id":"sh/tg32183q","slide":5,"text":"Save only survivors","textPreview":"Save only survivors","textChars":19,"textLines":1,"bbox":[142,498,300,30]}
+{"kind":"textbox","id":"sh/8ful832l","slide":5,"text":"Only non-terminated truncations are serialized to float32, reconstructed in MuJoCo, rechecked, deduplicated, and atomically published until 50,000 rows are reached.","textPreview":"Only non-terminated truncations are serialized to float32, reconstructed in MuJoCo, rechecked, deduplicated, and atomically published unt...","textChars":164,"textLines":1,"bbox":[142,534,620,64]}
+{"kind":"shape","id":"sh/sj254rah","slide":5,"bbox":[820,148,350,440]}
+{"kind":"textbox","id":"sh/dkbmxwr2","slide":5,"text":"Production acceptance contract","textPreview":"Production acceptance contract","textChars":30,"textLines":1,"bbox":[848,176,294,58]}
+{"kind":"textbox","id":"sh/qh0n2hsb","slide":5,"text":"During the episode\n• finite state and valid joint limits\n• object remains above reset height\n• anchor drift ≤ 5 mm\n• all tips within 0.10 m\n• at least two contacts, including thumb\n• bounded ball/joint speed and work\n\nAfter float32 reconstruction\n• contact gate repeated\n• every tip surface gap ≤ 9.95 mm\n• self and object penetration ≤ 1 mm","textPreview":"During the episode | • finite state and valid joint limits | • object remains above reset height | • anchor drift ≤ 5 mm | • all tips wit...","textChars":341,"textLines":12,"bbox":[848,248,294,300]}
+{"kind":"textbox","id":"sh/rit4vm9w","slide":5,"text":"Row format: 16 hand qpos + 3 ball position + 4 quaternion = 23 float32 values","textPreview":"Row format: 16 hand qpos + 3 ball position + 4 quaternion = 23 float32 values","textChars":77,"textLines":1,"bbox":[54,625,1110,32]}
+{"kind":"notes","id":"nt/s0mw42","slide":5,"text":"[Sources]\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/ball_grasp_gen.py\n- D:/UniLab/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml\n- D:/UniLab/src/unilab/assets/robots/leap_hand/caches/ball_grasp_official_50k.npy"}
+{"kind":"slide","id":"sl/s5xb44","slide":6,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":7}
+{"kind":"textbox","id":"sh/0b6p8nap","slide":6,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/zaxozi94","slide":6,"text":"Why the Cache-Rotation Task Branched","textPreview":"Why the Cache-Rotation Task Branched","textChars":36,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/y9476dsz","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"textbox","id":"sh/cnmp4nat","slide":6,"text":"How to read the map","textPreview":"How to read the map","textChars":19,"textLines":1,"bbox":[920,150,300,34]}
+{"kind":"textbox","id":"sh/bmdovi98","slide":6,"text":"1  Sustained Cache is the common multi-grasp rotation problem.\n\n2  Finger Gaiting tests whether the first spin stalls because the hand cannot change contacts.\n\n3  V3-A removes complex shaping and returns to an Allegro-style rotation objective.\n\n4  Direct Rotation is supporting evidence: positive rotation can be acquired without a handoff objective.\n\n5  Cache Gaiting V3-B recombines the simplified rotation base with constrained handoff.","textPreview":"1  Sustained Cache is the common multi-grasp rotation problem. |  | 2  Finger Gaiting tests whether the first spin stalls because the han...","textChars":439,"textLines":9,"bbox":[920,206,300,330]}
+{"kind":"textbox","id":"sh/ql472dsn","slide":6,"text":"Interpretation","textPreview":"Interpretation","textChars":14,"textLines":1,"bbox":[920,558,180,28]}
+{"kind":"textbox","id":"sh/xkzq9cri","slide":6,"text":"The branches are controlled diagnostic experiments, not a linear sequence of task replacements.","textPreview":"The branches are controlled diagnostic experiments, not a linear sequence of task replacements.","textChars":95,"textLines":1,"bbox":[920,596,300,60]}
+{"kind":"image","id":"im/0rux0rq1","slide":6,"name":"","alt":"Task evolution for cache rotation and gaiting","bbox":[54,142,830,468]}
+{"kind":"notes","id":"nt/s5xb44","slide":6,"text":"[Sources]\n- C:/Users/timli/Downloads/ChatGPT Image 2026年7月28日 下午05_27_48.png\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/sustained_cache_rotation.py\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/finger_gaiting_rotation.py\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/direct_rotation.py\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/sustained_cache_gaiting_rotation.py"}
+{"kind":"slide","id":"sl/bwderq","slide":7,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":25}
+{"kind":"textbox","id":"sh/hcvu1obi","slide":7,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/u94bqtcr","slide":7,"text":"Sustained Cache S1–S6: From Curriculum to Fixed Speed","textPreview":"Sustained Cache S1–S6: From Curriculum to Fixed Speed","textChars":53,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/vadczytc","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"shape","id":"sh/4zmtw3a9","slide":7,"bbox":[54,132,105,54]}
+{"kind":"textbox","id":"sh/50fu58be","slide":7,"text":"S1","textPreview":"S1","textChars":2,"textLines":1,"bbox":[54,145,105,30]}
+{"kind":"textbox","id":"sh/id4buts3","slide":7,"text":"spin +1.5；retention +0.5；support +0.25；action -0.001；torque -0.005；work -0.05；failure -5","textPreview":"spin +1.5；retention +0.5；support +0.25；action -0.001；torque -0.005；work -0.05；failure -5","textChars":88,"textLines":1,"bbox":[186,136,630,46]}
+{"kind":"textbox","id":"sh/3edc3yto","slide":7,"text":"2026-07-21_17-50-30","textPreview":"2026-07-21_17-50-30","textChars":19,"textLines":1,"bbox":[842,141,362,34]}
+{"kind":"shape","id":"sh/k32tkzup","slide":7,"bbox":[54,200,105,54]}
+{"kind":"textbox","id":"sh/l4but4ba","slide":7,"text":"S2","textPreview":"S2","textChars":2,"textLines":1,"bbox":[54,213,105,30]}
+{"kind":"textbox","id":"sh/1cfm9sbu","slide":7,"text":"+ anchor_proximity 0.1 to pull the 15–30 mm grey zone back toward the cache anchor","textPreview":"+ anchor_proximity 0.1 to pull the 15–30 mm grey zone back toward the cache anchor","textChars":82,"textLines":1,"bbox":[186,204,630,46]}
+{"kind":"textbox","id":"sh/0b6l0na9","slide":7,"text":"2026-07-21_22-47-15","textPreview":"2026-07-21_22-47-15","textChars":19,"textLines":1,"bbox":[842,209,362,34]}
+{"kind":"shape","id":"sh/fax47ito","slide":7,"bbox":[54,268,105,54]}
+{"kind":"textbox","id":"sh/e9o3ydsj","slide":7,"text":"S3","textPreview":"S3","textChars":2,"textLines":1,"bbox":[54,281,105,30]}
+{"kind":"textbox","id":"sh/p0zmdsb6","slide":7,"text":"Level-dependent positive-spin retention floor: L0–2=0.5, L3–7=0.25","textPreview":"Level-dependent positive-spin retention floor: L0–2=0.5, L3–7=0.25","textChars":66,"textLines":1,"bbox":[186,272,630,46]}
+{"kind":"textbox","id":"sh/ofql4nal","slide":7,"text":"2026-07-22_02-36-35","textPreview":"2026-07-22_02-36-35","textChars":19,"textLines":1,"bbox":[842,277,362,34]}
+{"kind":"shape","id":"sh/neh4b2t0","slide":7,"bbox":[54,336,105,54]}
+{"kind":"textbox","id":"sh/2do32xsf","slide":7,"text":"S4","textPreview":"S4","textChars":2,"textLines":1,"bbox":[54,349,105,30]}
+{"kind":"textbox","id":"sh/x4zmhcr2","slide":7,"text":"Disable anchor reward; restore all floors to 0.5; enable direct_spin_reward","textPreview":"Disable anchor reward; restore all floors to 0.5; enable direct_spin_reward","textChars":75,"textLines":1,"bbox":[186,340,630,46]}
+{"kind":"textbox","id":"sh/w3ql87ah","slide":7,"text":"2026-07-22_23-04-12","textPreview":"2026-07-22_23-04-12","textChars":19,"textLines":1,"bbox":[842,345,362,34]}
+{"kind":"shape","id":"sh/gjixkfm5","slide":7,"bbox":[54,404,105,54]}
+{"kind":"textbox","id":"sh/hkretk3q","slide":7,"text":"S5","textPreview":"S5","textChars":2,"textLines":1,"bbox":[54,417,105,30]}
+{"kind":"textbox","id":"sh/ux0fi54z","slide":7,"text":"Remove the eight-stage curriculum; fix target at 0.30 rad/s; spin=3.0; floor=1.0","textPreview":"Remove the eight-stage curriculum; fix target at 0.30 rad/s; spin=3.0; floor=1.0","textChars":80,"textLines":1,"bbox":[186,408,630,46]}
+{"kind":"textbox","id":"sh/vi9wralk","slide":7,"text":"2026-07-23_00-19-50","textPreview":"2026-07-23_00-19-50","textChars":19,"textLines":1,"bbox":[842,413,362,34]}
+{"kind":"shape","id":"sh/4n2xofm1","slide":7,"bbox":[54,472,105,54]}
+{"kind":"textbox","id":"sh/5obexk3m","slide":7,"text":"S6","textPreview":"S6","textChars":2,"textLines":1,"bbox":[54,485,105,30]}
+{"kind":"textbox","id":"sh/il0fmp4v","slide":7,"text":"+ spin_continuity -0.05 to address the policy stopping after the initial spin","textPreview":"+ spin_continuity -0.05 to address the policy stopping after the initial spin","textChars":77,"textLines":1,"bbox":[186,476,630,46]}
+{"kind":"textbox","id":"sh/3m9wvalg","slide":7,"text":"2026-07-23_02-11-05","textPreview":"2026-07-23_02-11-05","textChars":19,"textLines":1,"bbox":[842,481,362,34]}
+{"kind":"shape","id":"sh/kryxsvmx","slide":7,"bbox":[54,552,520,98]}
+{"kind":"textbox","id":"sh/ls7el03i","slide":7,"text":"Generation 1 · S1–S3","textPreview":"Generation 1 · S1–S3","textChars":20,"textLines":1,"bbox":[76,566,250,24]}
+{"kind":"textbox","id":"sh/nmx0ry50","slide":7,"text":"Hold → slow spin → faster spin. Retention and support could substitute for actual rotation.","textPreview":"Hold → slow spin → faster spin. Retention and support could substitute for actual rotation.","textChars":91,"textLines":1,"bbox":[76,600,470,42]}
+{"kind":"shape","id":"sh/2l4zytof","slide":7,"bbox":[610,552,536,98]}
+{"kind":"textbox","id":"sh/p8fit8nq","slide":7,"text":"Generation 2 · S4–S6","textPreview":"Generation 2 · S4–S6","textChars":20,"textLines":1,"bbox":[632,566,250,24]}
+{"kind":"textbox","id":"sh/o76h036l","slide":7,"text":"Use one fixed target speed and continuity pressure to isolate positive-rotation acquisition.","textPreview":"Use one fixed target speed and continuity pressure to isolate positive-rotation acquisition.","textChars":92,"textLines":1,"bbox":[632,600,480,42]}
+{"kind":"notes","id":"nt/bwderq","slide":7,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/*/run_config.json\n- D:/UniLab/DEVELOPMENT_LOG.md:2244\n- D:/UniLab/DEVELOPMENT_LOG.md:2297"}
+{"kind":"slide","id":"sl/vq84b4","slide":8,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":28}
+{"kind":"textbox","id":"sh/byh4zul0","slide":8,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/czqlsz2l","slide":8,"text":"Sustained Cache S7–S13: Converging on V3-A","textPreview":"Sustained Cache S7–S13: Converging on V3-A","textChars":42,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/d0zm1436","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"shape","id":"sh/29o3mpkj","slide":8,"bbox":[54,126,105,54]}
+{"kind":"textbox","id":"sh/3axkvulo","slide":8,"text":"S7","textPreview":"S7","textChars":2,"textLines":1,"bbox":[54,139,105,30]}
+{"kind":"textbox","id":"sh/ob6lof29","slide":8,"text":"Disable old shaping; keep Allegro rotate +1.25; failure=0; allow 10 mm drop","textPreview":"Disable old shaping; keep Allegro rotate +1.25; failure=0; allow 10 mm drop","textChars":75,"textLines":1,"bbox":[186,130,630,46]}
+{"kind":"textbox","id":"sh/pcz2xk3u","slide":8,"text":"2026-07-23_03-57-44","textPreview":"2026-07-23_03-57-44","textChars":19,"textLines":1,"bbox":[842,135,362,34]}
+{"kind":"shape","id":"sh/m5s3y9kn","slide":8,"bbox":[54,188,105,54]}
+{"kind":"textbox","id":"sh/n6147e18","slide":8,"text":"S8","textPreview":"S8","textChars":2,"textLines":1,"bbox":[54,201,105,30]}
+{"kind":"textbox","id":"sh/bypw36xg","slide":8,"text":"+ obj_linvel -0.3 to suppress whole-object translation","textPreview":"+ obj_linvel -0.3 to suppress whole-object translation","textChars":54,"textLines":1,"bbox":[186,192,630,46]}
+{"kind":"textbox","id":"sh/adgva1gv","slide":8,"text":"2026-07-23_15-34-09","textPreview":"2026-07-23_15-34-09","textChars":19,"textLines":1,"bbox":[842,197,362,34]}
+{"kind":"shape","id":"sh/x07e5wf6","slide":8,"bbox":[54,250,105,54]}
+{"kind":"textbox","id":"sh/wzydcryl","slide":8,"text":"S9","textPreview":"S9","textChars":2,"textLines":1,"bbox":[54,263,105,30]}
+{"kind":"textbox","id":"sh/j29w76xc","slide":8,"text":"+ position_error -5; relax workspace termination to 50 mm","textPreview":"+ position_error -5; relax workspace termination to 50 mm","textChars":57,"textLines":1,"bbox":[186,254,630,46]}
+{"kind":"textbox","id":"sh/y1gve1gr","slide":8,"text":"2026-07-23_20-18-51","textPreview":"2026-07-23_20-18-51","textChars":19,"textLines":1,"bbox":[842,259,362,34]}
+{"kind":"shape","id":"sh/l4re9gfi","slide":8,"bbox":[54,312,105,54]}
+{"kind":"textbox","id":"sh/k3idgbyx","slide":8,"text":"S10","textPreview":"S10","textChars":3,"textLines":1,"bbox":[54,325,105,30]}
+{"kind":"textbox","id":"sh/769wbqxo","slide":8,"text":"Contact-weighted rotation via base / index / middle: 0.25 / 0.375 / 0.375","textPreview":"Contact-weighted rotation via base / index / middle: 0.25 / 0.375 / 0.375","textChars":73,"textLines":1,"bbox":[186,316,630,46]}
+{"kind":"textbox","id":"sh/650vilg3","slide":8,"text":"2026-07-23_21-54-51","textPreview":"2026-07-23_21-54-51","textChars":19,"textLines":1,"bbox":[842,321,362,34]}
+{"kind":"shape","id":"sh/i14zap0b","slide":8,"bbox":[54,374,105,54]}
+{"kind":"textbox","id":"sh/32dg3ahw","slide":8,"text":"S11","textPreview":"S11","textChars":3,"textLines":1,"bbox":[54,387,105,30]}
+{"kind":"textbox","id":"sh/43mhcfi1","slide":8,"text":"+ support-pose 0.25、opposition-progress 0.20","textPreview":"+ support-pose 0.25、opposition-progress 0.20","textChars":44,"textLines":1,"bbox":[186,378,630,46]}
+{"kind":"textbox","id":"sh/5ovy5kzm","slide":8,"text":"2026-07-25_03-50-30","textPreview":"2026-07-25_03-50-30","textChars":19,"textLines":1,"bbox":[842,383,362,34]}
+{"kind":"shape","id":"sh/uxkz650z","slide":8,"bbox":[54,436,105,54]}
+{"kind":"textbox","id":"sh/vytgzahk","slide":8,"text":"S12","textPreview":"S12","textChars":3,"textLines":1,"bbox":[54,449,105,30]}
+{"kind":"textbox","id":"sh/gz2h8fi5","slide":8,"text":"V3-A: remove pose shaping; position -5→-6; failure 0→-1; square the gate","textPreview":"V3-A: remove pose shaping; position -5→-6; failure 0→-1; square the gate","textChars":72,"textLines":1,"bbox":[186,440,630,46]}
+{"kind":"textbox","id":"sh/h0by1kzq","slide":8,"text":"2026-07-26_23-27-56","textPreview":"2026-07-26_23-27-56","textChars":19,"textLines":1,"bbox":[842,445,362,34]}
+{"kind":"shape","id":"sh/etozi90j","slide":8,"bbox":[54,498,105,54]}
+{"kind":"textbox","id":"sh/fuxgbuho","slide":8,"text":"S13","textPreview":"S13","textChars":3,"textLines":1,"bbox":[54,511,105,30]}
+{"kind":"textbox","id":"sh/poz2h8j6","slide":8,"text":"Current version: V3-A + position-gated spin_continuity -0.05","textPreview":"Current version: V3-A + position-gated spin_continuity -0.05","textChars":60,"textLines":1,"bbox":[186,502,630,46]}
+{"kind":"textbox","id":"sh/onq1832l","slide":8,"text":"2026-07-27_00-36-25","textPreview":"2026-07-27_00-36-25","textChars":19,"textLines":1,"bbox":[842,507,362,34]}
+{"kind":"textbox","id":"sh/nmhkfy10","slide":8,"text":"Current formula","textPreview":"Current formula","textChars":15,"textLines":1,"bbox":[54,570,150,24]}
+{"kind":"textbox","id":"sh/2l8j6tkf","slide":8,"text":"e=‖ball-anchor‖；p=clip(axis_speed/0.30,-1,1)；purity=exp(-(orth_speed/0.10)²)；gate=position_gate(e)²","textPreview":"e=‖ball-anchor‖；p=clip(axis_speed/0.30,-1,1)；purity=exp(-(orth_speed/0.10)²)；gate=position_gate(e)²","textChars":99,"textLines":1,"bbox":[180,570,1020,26]}
+{"kind":"textbox","id":"sh/1kz2doju","slide":8,"text":"rotate: forward=1.25×0.30×clip(p,0,1)×purity×gate; reverse=1.25×0.30×clip(p,-1,0)","textPreview":"rotate: forward=1.25×0.30×clip(p,0,1)×purity×gate; reverse=1.25×0.30×clip(p,-1,0)","textChars":81,"textLines":1,"bbox":[210,602,990,26]}
+{"kind":"textbox","id":"sh/0j614j29","slide":8,"text":"reward=dt×(rotate-0.3‖v‖₁-6e-0.05×gate×(1-clip(p,0,1)))-failure; gate=1 within 15 mm; terminate beyond 50 mm","textPreview":"reward=dt×(rotate-0.3‖v‖₁-6e-0.05×gate×(1-clip(p,0,1)))-failure; gate=1 within 15 mm; terminate beyond 50 mm","textChars":108,"textLines":1,"bbox":[210,634,990,26]}
+{"kind":"notes","id":"nt/vq84b4","slide":8,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/*/run_config.json\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_sustained_cache/mujoco.yaml"}
+{"kind":"slide","id":"sl/8hkxt1","slide":9,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":38}
+{"kind":"textbox","id":"sh/ml03e98r","slide":9,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/9ormpori","slide":9,"text":"Anchor Proximity Improved Retention, Not Sustained Rotation","textPreview":"Anchor Proximity Improved Retention, Not Sustained Rotation","textChars":59,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/8nilgjqx","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"textbox","id":"sh/zy94ju9g","slide":9,"text":"RUN  Baseline  2026-07-21_18-22-39_mujoco","textPreview":"RUN  Baseline  2026-07-21_18-22-39_mujoco","textChars":41,"textLines":1,"bbox":[54,138,520,24]}
+{"kind":"textbox","id":"sh/yxg3ap8v","slide":9,"text":"RUN  Grey-zone  2026-07-21_22-58-39_mujoco","textPreview":"RUN  Grey-zone  2026-07-21_22-58-39_mujoco","textChars":42,"textLines":1,"bbox":[650,138,520,24]}
+{"kind":"shape","id":"sh/lkrml4r6","slide":9,"bbox":[54,190,296,50]}
+{"kind":"textbox","id":"sh/0jilczq1","slide":9,"text":"Diagnostic","textPreview":"Diagnostic","textChars":10,"textLines":1,"bbox":[64,200,276,30]}
+{"kind":"shape","id":"sh/bup4fu94","slide":9,"bbox":[350,190,200,50]}
+{"kind":"textbox","id":"sh/qtg36p8j","slide":9,"text":"Baseline","textPreview":"Baseline","textChars":8,"textLines":1,"bbox":[360,200,180,30]}
+{"kind":"shape","id":"sh/8fi10z2h","slide":9,"bbox":[550,190,200,50]}
+{"kind":"textbox","id":"sh/9gr294j2","slide":9,"text":"+ anchor","textPreview":"+ anchor","textChars":8,"textLines":1,"bbox":[560,200,180,30]}
+{"kind":"shape","id":"sh/mt0jypkb","slide":9,"bbox":[750,190,430,50]}
+{"kind":"textbox","id":"sh/7u9k7u1w","slide":9,"text":"Interpretation","textPreview":"Interpretation","textChars":14,"textLines":1,"bbox":[760,200,410,30]}
+{"kind":"shape","id":"sh/kri1wf25","slide":9,"bbox":[54,240,296,50]}
+{"kind":"textbox","id":"sh/lsr25kjq","slide":9,"text":"anchor position error","textPreview":"anchor position error","textChars":21,"textLines":1,"bbox":[64,250,276,30]}
+{"kind":"shape","id":"sh/ypgjupkf","slide":9,"bbox":[350,240,200,50]}
+{"kind":"textbox","id":"sh/zq9k3u10","slide":9,"text":"23.35 mm","textPreview":"23.35 mm","textChars":8,"textLines":1,"bbox":[360,250,180,30]}
+{"kind":"shape","id":"sh/4n2l8jip","slide":9,"bbox":[550,240,200,50]}
+{"kind":"textbox","id":"sh/5ob2hoja","slide":9,"text":"20.09 mm","textPreview":"20.09 mm","textChars":8,"textLines":1,"bbox":[560,250,180,30]}
+{"kind":"shape","id":"sh/d4r2lobe","slide":9,"bbox":[750,240,430,50]}
+{"kind":"textbox","id":"sh/s3y1sjat","slide":9,"text":"14% lower; object stays closer to reset anchor","textPreview":"14% lower; object stays closer to reset anchor","textChars":46,"textLines":1,"bbox":[760,250,410,30]}
+{"kind":"shape","id":"sh/r2pkzet8","slide":9,"bbox":[54,290,296,50]}
+{"kind":"textbox","id":"sh/q1gjq9sn","slide":9,"text":"fingertip contacts","textPreview":"fingertip contacts","textChars":18,"textLines":1,"bbox":[64,300,276,30]}
+{"kind":"shape","id":"sh/5072x4b2","slide":9,"bbox":[350,290,200,50]}
+{"kind":"textbox","id":"sh/4fy1ozuh","slide":9,"text":"2.15","textPreview":"2.15","textChars":4,"textLines":1,"bbox":[360,300,180,30]}
+{"kind":"shape","id":"sh/3epkvutc","slide":9,"bbox":[550,290,200,50]}
+{"kind":"textbox","id":"sh/idgjmpcr","slide":9,"text":"3.00","textPreview":"3.00","textChars":4,"textLines":1,"bbox":[560,300,180,30]}
+{"kind":"shape","id":"sh/hc7it4b6","slide":9,"bbox":[750,290,430,50]}
+{"kind":"textbox","id":"sh/gbe1kzul","slide":9,"text":"Stronger enclosure and retention","textPreview":"Stronger enclosure and retention","textChars":32,"textLines":1,"bbox":[760,300,410,30]}
+{"kind":"shape","id":"sh/6hczu5sj","slide":9,"bbox":[54,340,296,50]}
+{"kind":"textbox","id":"sh/7ilgnq94","slide":9,"text":"stage-valid fraction","textPreview":"stage-valid fraction","textChars":20,"textLines":1,"bbox":[64,350,276,30]}
+{"kind":"shape","id":"sh/8juhwvq9","slide":9,"bbox":[350,340,200,50]}
+{"kind":"textbox","id":"sh/tknyp0ru","slide":9,"text":"10.96%","textPreview":"10.96%","textChars":6,"textLines":1,"bbox":[360,350,180,30]}
+{"kind":"shape","id":"sh/ydczqls7","slide":9,"bbox":[550,340,200,50]}
+{"kind":"textbox","id":"sh/jelgjq9s","slide":9,"text":"16.22%","textPreview":"16.22%","textChars":6,"textLines":1,"bbox":[560,350,180,30]}
+{"kind":"shape","id":"sh/kfuhsvad","slide":9,"bbox":[750,340,430,50]}
+{"kind":"textbox","id":"sh/lg3yl0ry","slide":9,"text":"+5.26 percentage points of valid states","textPreview":"+5.26 percentage points of valid states","textChars":39,"textLines":1,"bbox":[760,350,410,30]}
+{"kind":"shape","id":"sh/apsfmlsb","slide":9,"bbox":[54,390,296,50]}
+{"kind":"textbox","id":"sh/ba1gf69w","slide":9,"text":"axis-speed EMA","textPreview":"axis-speed EMA","textChars":14,"textLines":1,"bbox":[64,400,276,30]}
+{"kind":"shape","id":"sh/n2lcrmdc","slide":9,"bbox":[350,390,200,50]}
+{"kind":"textbox","id":"sh/21cvyhcr","slide":9,"text":"+0.010","textPreview":"+0.010","textChars":6,"textLines":1,"bbox":[360,400,180,30]}
+{"kind":"shape","id":"sh/p43utwvi","slide":9,"bbox":[550,390,200,50]}
+{"kind":"textbox","id":"sh/o3ud0rux","slide":9,"text":"+0.013 rad/s","textPreview":"+0.013 rad/s","textChars":12,"textLines":1,"bbox":[560,400,180,30]}
+{"kind":"shape","id":"sh/fylcn2dg","slide":9,"bbox":[750,390,430,50]}
+{"kind":"textbox","id":"sh/exsvuhcv","slide":9,"text":"Only a small gain; still far below target speed","textPreview":"Only a small gain; still far below target speed","textChars":47,"textLines":1,"bbox":[760,400,410,30]}
+{"kind":"shape","id":"sh/103upcvm","slide":9,"bbox":[54,440,296,50]}
+{"kind":"textbox","id":"sh/gzudw7u1","slide":9,"text":"sustained ≥2 s","textPreview":"sustained ≥2 s","textChars":14,"textLines":1,"bbox":[64,450,276,30]}
+{"kind":"shape","id":"sh/ra1cj2d4","slide":9,"bbox":[350,440,200,50]}
+{"kind":"textbox","id":"sh/69svqxcz","slide":9,"text":"0.45%","textPreview":"0.45%","textChars":5,"textLines":1,"bbox":[360,450,180,30]}
+{"kind":"shape","id":"sh/w3614z65","slide":9,"bbox":[550,440,200,50]}
+{"kind":"textbox","id":"sh/x4fid47q","slide":9,"text":"2.16%","textPreview":"2.16%","textChars":5,"textLines":1,"bbox":[560,450,180,30]}
+{"kind":"shape","id":"sh/a14j29of","slide":9,"bbox":[750,440,430,50]}
+{"kind":"textbox","id":"sh/v2x0bup0","slide":9,"text":"Short successes increased but remained rare","textPreview":"Short successes increased but remained rare","textChars":43,"textLines":1,"bbox":[760,450,410,30]}
+{"kind":"shape","id":"sh/k7618j6h","slide":9,"bbox":[54,490,296,50]}
+{"kind":"textbox","id":"sh/5sf2ho72","slide":9,"text":"sustained ≥5 / 10 s","textPreview":"sustained ≥5 / 10 s","textChars":19,"textLines":1,"bbox":[64,500,276,30]}
+{"kind":"shape","id":"sh/i5oj69ob","slide":9,"bbox":[350,490,200,50]}
+{"kind":"textbox","id":"sh/j6xkfepw","slide":9,"text":"0% / 0%","textPreview":"0% / 0%","textChars":7,"textLines":1,"bbox":[360,500,180,30]}
+{"kind":"shape","id":"sh/0bm1wfqd","slide":9,"bbox":[550,490,200,50]}
+{"kind":"textbox","id":"sh/lwvi5k7i","slide":9,"text":"0% / 0%","textPreview":"0% / 0%","textChars":7,"textLines":1,"bbox":[560,500,180,30]}
+{"kind":"shape","id":"sh/1sny9gzm","slide":9,"bbox":[750,490,430,50]}
+{"kind":"textbox","id":"sh/0reh0bi1","slide":9,"text":"No sustained rotation was acquired","textPreview":"No sustained rotation was acquired","textChars":34,"textLines":1,"bbox":[760,500,410,30]}
+{"kind":"shape","id":"sh/fq5g76hg","slide":9,"bbox":[54,540,296,50]}
+{"kind":"textbox","id":"sh/e5czy10v","slide":9,"text":"survival seconds","textPreview":"survival seconds","textChars":16,"textLines":1,"bbox":[64,550,276,30]}
+{"kind":"shape","id":"sh/pwnydgzi","slide":9,"bbox":[350,540,200,50]}
+{"kind":"textbox","id":"sh/oveh4vix","slide":9,"text":"13.11 s","textPreview":"13.11 s","textChars":7,"textLines":1,"bbox":[360,550,180,30]}
+{"kind":"shape","id":"sh/nu5gbqhs","slide":9,"bbox":[550,540,200,50]}
+{"kind":"textbox","id":"sh/2twz2l07","slide":9,"text":"12.78 s","textPreview":"12.78 s","textChars":7,"textLines":1,"bbox":[560,550,180,30]}
+{"kind":"shape","id":"sh/x07ih0zu","slide":9,"bbox":[750,540,430,50]}
+{"kind":"textbox","id":"sh/czyh8vi9","slide":9,"text":"No survival improvement","textPreview":"No survival improvement","textChars":23,"textLines":1,"bbox":[760,550,410,30]}
+{"kind":"textbox","id":"sh/u58v2xgr","slide":9,"text":"Conclusion: anchor proximity repaired the 15–30 mm grey zone and improved contact retention, but it did not create long-duration positive angular speed or finger switching.","textPreview":"Conclusion: anchor proximity repaired the 15–30 mm grey zone and improved contact retention, but it did not create long-duration positive...","textChars":172,"textLines":1,"bbox":[54,610,1130,48]}
+{"kind":"notes","id":"nt/8hkxt1","slide":9,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/2026-07-21_18-22-39_mujoco/events.out.tfevents.1784683360.沅霆.15996.0\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/2026-07-21_22-58-39_mujoco/events.out.tfevents.1784699921.沅霆.13112.0\n- D:/UniLab/DEVELOPMENT_LOG.md:2297"}
+{"kind":"slide","id":"sl/z8d4ab","slide":10,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":20}
+{"kind":"textbox","id":"sh/9sbux43m","slide":10,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/mpkvmpkb","slide":10,"text":"Finger Gaiting: Testing Contact Switching","textPreview":"Finger Gaiting: Testing Contact Switching","textChars":41,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/nqtcvulw","slide":10,"text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"textbox","id":"sh/0n2dkz25","slide":10,"text":"Observed failure sequence","textPreview":"Observed failure sequence","textChars":25,"textLines":1,"bbox":[54,150,360,30]}
+{"kind":"shape","id":"sh/1obut43q","slide":10,"bbox":[170,245,82,0]}
+{"kind":"shape","id":"sh/e1kvipkz","slide":10,"bbox":[54,205,195,80]}
+{"kind":"textbox","id":"sh/z2tcrulk","slide":10,"text":"Initial push","textPreview":"Initial push","textChars":12,"textLines":1,"bbox":[70,229,163,30]}
+{"kind":"shape","id":"sh/kjmdwj29","slide":10,"bbox":[445,245,82,0]}
+{"kind":"shape","id":"sh/lkfe5o3u","slide":10,"bbox":[329,205,195,80]}
+{"kind":"textbox","id":"sh/xsvehc3m","slide":10,"text":"Brief +Z spin","textPreview":"Brief +Z spin","textChars":13,"textLines":1,"bbox":[345,229,163,30]}
+{"kind":"shape","id":"sh/wrmd872h","slide":10,"bbox":[720,245,82,0]}
+{"kind":"shape","id":"sh/vqdwf2lw","slide":10,"bbox":[604,205,195,80]}
+{"kind":"textbox","id":"sh/a54v6hkb","slide":10,"text":"Contacts freeze","textPreview":"Contacts freeze","textChars":15,"textLines":1,"bbox":[620,229,163,30]}
+{"kind":"shape","id":"sh/94vedc3q","slide":10,"bbox":[879,205,195,80]}
+{"kind":"textbox","id":"sh/832d4725","slide":10,"text":"Speed decays to zero","textPreview":"Speed decays to zero","textChars":20,"textLines":1,"bbox":[895,229,163,30]}
+{"kind":"shape","id":"sh/n2twb2lk","slide":10,"bbox":[54,350,8,34]}
+{"kind":"textbox","id":"sh/m1kv2xkz","slide":10,"text":"Added rewards and gates","textPreview":"Added rewards and gates","textChars":23,"textLines":1,"bbox":[78,352,1100,32]}
+{"kind":"shape","id":"sh/t0fepw3u","slide":10,"bbox":[54,408,264.6,48]}
+{"kind":"shape","id":"sh/sz6xgr29","slide":10,"bbox":[318.6,408,225.4,48]}
+{"kind":"textbox","id":"sh/s3exsfal","slide":10,"text":"Gaiting term","textPreview":"Gaiting term","textChars":12,"textLines":1,"bbox":[66,417,240.6,34]}
+{"kind":"textbox","id":"sh/d4nylkb6","slide":10,"text":"Weight","textPreview":"Weight","textChars":6,"textLines":1,"bbox":[330.6,417,201.4,34]}
+{"kind":"shape","id":"sh/q1wfq5sf","slide":10,"bbox":[54,456,264.6,48]}
+{"kind":"shape","id":"sh/r25gjat0","slide":10,"bbox":[318.6,456,225.4,48]}
+{"kind":"textbox","id":"sh/4zuxovap","slide":10,"text":"stable_support","textPreview":"stable_support","textChars":14,"textLines":1,"bbox":[66,465,240.6,34]}
+{"kind":"textbox","id":"sh/50nyh0ba","slide":10,"text":"+0.20","textPreview":"+0.20","textChars":5,"textLines":1,"bbox":[330.6,465,201.4,34]}
+{"kind":"shape","id":"sh/ixcfmlsj","slide":10,"bbox":[54,504,264.6,48]}
+{"kind":"shape","id":"sh/3ylgfqt4","slide":10,"bbox":[318.6,504,225.4,48]}
+{"kind":"textbox","id":"sh/gbuxkvad","slide":10,"text":"release_progress","textPreview":"release_progress","textChars":16,"textLines":1,"bbox":[66,513,240.6,34]}
+{"kind":"textbox","id":"sh/hc3ydgby","slide":10,"text":"+0.05","textPreview":"+0.05","textChars":5,"textLines":1,"bbox":[330.6,513,201.4,34]}
+{"kind":"shape","id":"sh/j61gnqd0","slide":10,"bbox":[54,552,264.6,48]}
+{"kind":"shape","id":"sh/y5szulwf","slide":10,"bbox":[318.6,552,225.4,48]}
+{"kind":"textbox","id":"sh/l83ypgvq","slide":10,"text":"qualified_handoff","textPreview":"qualified_handoff","textChars":17,"textLines":1,"bbox":[66,561,240.6,34]}
+{"kind":"textbox","id":"sh/k7ahwbu5","slide":10,"text":"+0.25","textPreview":"+0.25","textChars":5,"textLines":1,"bbox":[330.6,561,201.4,34]}
+{"kind":"textbox","id":"sh/7algrqdw","slide":10,"text":"A qualified handoff requires","textPreview":"A qualified handoff requires","textChars":28,"textLines":1,"bbox":[620,408,430,30]}
+{"kind":"textbox","id":"sh/69czylcb","slide":10,"text":"• one finger released for at least 2 control steps\n• at least 2 other fingertips remain in contact\n• object stays inside the retention gate with no palm contact\n• released finger reconnects before timeout and speed recovers","textPreview":"• one finger released for at least 2 control steps | • at least 2 other fingertips remain in contact | • object stays inside the retentio...","textChars":223,"textLines":4,"bbox":[620,458,500,150]}
+{"kind":"textbox","id":"sh/tw3it0v2","slide":10,"text":"RUN  V1  12-19-14 / 12-36-43     V2  14-58-36 / 15-47-22","textPreview":"RUN  V1  12-19-14 / 12-36-43     V2  14-58-36 / 15-47-22","textChars":56,"textLines":1,"bbox":[54,626,900,24]}
+{"kind":"notes","id":"nt/z8d4ab","slide":10,"text":"[Sources]\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/finger_gaiting_rotation.py\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_finger_gaiting/mujoco.yaml\n- D:/UniLab/DEVELOPMENT_LOG.md:2385"}
+{"kind":"slide","id":"sl/jwveo5","slide":11,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":20}
+{"kind":"textbox","id":"sh/g3i54ve1","slide":11,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/f29ovqxg","slide":11,"text":"Finger Gaiting Exposed Positive Rotation as the Bottleneck","textPreview":"Finger Gaiting Exposed Positive Rotation as the Bottleneck","textChars":58,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/u10n25wv","slide":11,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"textbox","id":"sh/t076t0fa","slide":11,"text":"RUN  2026-07-22_15-47-22_mujoco","textPreview":"RUN  2026-07-22_15-47-22_mujoco","textChars":31,"textLines":1,"bbox":[54,142,500,24]}
+{"kind":"shape","id":"sh/szy50vep","slide":11,"bbox":[54,192,250,140]}
+{"kind":"textbox","id":"sh/7yp4rqx4","slide":11,"text":"22.33 s","textPreview":"22.33 s","textChars":7,"textLines":1,"bbox":[74,212,210,52]}
+{"kind":"textbox","id":"sh/6dgnylwj","slide":11,"text":"mean survival time","textPreview":"mean survival time","textChars":18,"textLines":1,"bbox":[74,274,210,40]}
+{"kind":"shape","id":"sh/5c7mpgfe","slide":11,"bbox":[330,192,250,140]}
+{"kind":"textbox","id":"sh/kby5wbet","slide":11,"text":"10.48 mm","textPreview":"10.48 mm","textChars":8,"textLines":1,"bbox":[350,212,210,52]}
+{"kind":"textbox","id":"sh/epgjm1sr","slide":11,"text":"mean anchor error","textPreview":"mean anchor error","textChars":17,"textLines":1,"bbox":[350,274,210,40]}
+{"kind":"shape","id":"sh/fqp0v6tc","slide":11,"bbox":[606,192,250,140]}
+{"kind":"textbox","id":"sh/0ry1obah","slide":11,"text":"2.12","textPreview":"2.12","textChars":4,"textLines":1,"bbox":[626,212,210,52]}
+{"kind":"textbox","id":"sh/1c7ixgb2","slide":11,"text":"mean fingertip contacts","textPreview":"mean fingertip contacts","textChars":23,"textLines":1,"bbox":[626,274,210,40]}
+{"kind":"shape","id":"sh/qlwji1sf","slide":11,"bbox":[882,192,250,140]}
+{"kind":"textbox","id":"sh/rmp0rmt0","slide":11,"text":"0.055%","textPreview":"0.055%","textChars":6,"textLines":1,"bbox":[902,212,210,52]}
+{"kind":"textbox","id":"sh/sny1kral","slide":11,"text":"termination rate","textPreview":"termination rate","textChars":16,"textLines":1,"bbox":[902,274,210,40]}
+{"kind":"shape","id":"sh/do7itwb6","slide":11,"bbox":[54,380,8,34]}
+{"kind":"textbox","id":"sh/ihwzehsj","slide":11,"text":"The gates that actually failed","textPreview":"The gates that actually failed","textChars":30,"textLines":1,"bbox":[78,382,1100,32]}
+{"kind":"textbox","id":"sh/3i50nmt4","slide":11,"text":"Positive speed gate","textPreview":"Positive speed gate","textChars":19,"textLines":1,"bbox":[78,432,300,34]}
+{"kind":"textbox","id":"sh/7mlgfi9w","slide":11,"text":"1.97%","textPreview":"1.97%","textChars":5,"textLines":1,"bbox":[78,480,220,60]}
+{"kind":"textbox","id":"sh/m1sfmd8b","slide":11,"text":"Qualified handoff","textPreview":"Qualified handoff","textChars":17,"textLines":1,"bbox":[430,432,300,34]}
+{"kind":"textbox","id":"sh/9o3yhsrm","slide":11,"text":"< 0.11%","textPreview":"< 0.11%","textChars":7,"textLines":1,"bbox":[430,480,220,60]}
+{"kind":"textbox","id":"sh/8nuxonq1","slide":11,"text":"2s / 5s / 10s success","textPreview":"2s / 5s / 10s success","textChars":21,"textLines":1,"bbox":[782,432,320,34]}
+{"kind":"textbox","id":"sh/vqlgj29s","slide":11,"text":"all zero","textPreview":"all zero","textChars":8,"textLines":1,"bbox":[782,480,220,60]}
+{"kind":"textbox","id":"sh/upcfqx87","slide":11,"text":"Interpretation: forcing handoff before reliable positive rotation makes an already sparse exploration problem even harder.","textPreview":"Interpretation: forcing handoff before reliable positive rotation makes an already sparse exploration problem even harder.","textChars":122,"textLines":1,"bbox":[54,610,1130,38]}
+{"kind":"notes","id":"nt/jwveo5","slide":11,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallFingerGaitingRotation/2026-07-22_15-47-22_mujoco/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallFingerGaitingRotation/2026-07-22_15-47-22_mujoco/run_summary.json\n- D:/UniLab/DEVELOPMENT_LOG.md:2624"}
+{"kind":"slide","id":"sl/zexg5f","slide":12,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":33}
+{"kind":"textbox","id":"sh/jmh0juxc","slide":12,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/4na1szex","slide":12,"text":"Direct Rotation Isolates Basic +Z Acquisition","textPreview":"Direct Rotation Isolates Basic +Z Acquisition","textChars":45,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/5ojil4fi","slide":12,"text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"textbox","id":"sh/6psju9w3","slide":12,"text":"Fixed target: world +Z · 0.30 rad/s · cache reset · 25-second episode · no handoff objective","textPreview":"Fixed target: world +Z · 0.30 rad/s · cache reset · 25-second episode · no handoff objective","textChars":92,"textLines":1,"bbox":[54,137,1120,28]}
+{"kind":"shape","id":"sh/ra10nexo","slide":12,"bbox":[54,190,270,48]}
+{"kind":"shape","id":"sh/sba1wje9","slide":12,"bbox":[324,190,230,48]}
+{"kind":"textbox","id":"sh/tcjip4fe","slide":12,"text":"Positive term","textPreview":"Positive term","textChars":13,"textLines":1,"bbox":[66,199,246,34]}
+{"kind":"textbox","id":"sh/edsjy9wz","slide":12,"text":"Weight","textPreview":"Weight","textChars":6,"textLines":1,"bbox":[336,199,206,34]}
+{"kind":"shape","id":"sh/fel0rexk","slide":12,"bbox":[54,238,270,48]}
+{"kind":"shape","id":"sh/n6t0rilk","slide":12,"bbox":[324,238,230,48]}
+{"kind":"textbox","id":"sh/mlkjid4z","slide":12,"text":"stable_rotation","textPreview":"stable_rotation","textChars":15,"textLines":1,"bbox":[66,247,246,34]}
+{"kind":"textbox","id":"sh/98bits3q","slide":12,"text":"+6.0","textPreview":"+6.0","textChars":4,"textLines":1,"bbox":[336,247,206,34]}
+{"kind":"shape","id":"sh/8721knm5","slide":12,"bbox":[54,286,270,48]}
+{"kind":"shape","id":"sh/zi90nyl8","slide":12,"bbox":[324,286,230,48]}
+{"kind":"textbox","id":"sh/yh0zed43","slide":12,"text":"rotation_streak","textPreview":"rotation_streak","textChars":15,"textLines":1,"bbox":[66,295,246,34]}
+{"kind":"textbox","id":"sh/lkbip83e","slide":12,"text":"+0.5","textPreview":"+0.5","textChars":4,"textLines":1,"bbox":[336,295,206,34]}
+{"kind":"shape","id":"sh/0ji1g3mt","slide":12,"bbox":[54,334,270,48]}
+{"kind":"shape","id":"sh/jed0z2ls","slide":12,"bbox":[324,334,230,48]}
+{"kind":"textbox","id":"sh/id4jqxk7","slide":12,"text":"thumb_contact","textPreview":"thumb_contact","textChars":13,"textLines":1,"bbox":[66,343,246,34]}
+{"kind":"textbox","id":"sh/u9o3i14f","slide":12,"text":"+0.1","textPreview":"+0.1","textChars":4,"textLines":1,"bbox":[336,343,206,34]}
+{"kind":"shape","id":"sh/fah4r650","slide":12,"bbox":[54,382,270,48]}
+{"kind":"shape","id":"sh/gvqlkbml","slide":12,"bbox":[324,382,230,48]}
+{"kind":"textbox","id":"sh/hwzmtgnq","slide":12,"text":"fingertip_support","textPreview":"fingertip_support","textChars":17,"textLines":1,"bbox":[66,391,246,34]}
+{"kind":"textbox","id":"sh/2x83ml4b","slide":12,"text":"+0.15","textPreview":"+0.15","textChars":5,"textLines":1,"bbox":[336,391,206,34]}
+{"kind":"shape","id":"sh/3yh4v65w","slide":12,"bbox":[54,430,270,48]}
+{"kind":"shape","id":"sh/4zqlobmh","slide":12,"bbox":[324,430,230,48]}
+{"kind":"textbox","id":"sh/p0zmxgn2","slide":12,"text":"center_recovery","textPreview":"center_recovery","textChars":15,"textLines":1,"bbox":[66,439,246,34]}
+{"kind":"textbox","id":"sh/i143aho7","slide":12,"text":"+1.0","textPreview":"+1.0","textChars":4,"textLines":1,"bbox":[336,439,206,34]}
+{"kind":"shape","id":"sh/j2dkjm5s","slide":12,"bbox":[620,190,291.6,48]}
+{"kind":"shape","id":"sh/lw36pk7a","slide":12,"bbox":[911.6,190,248.4,48]}
+{"kind":"textbox","id":"sh/0vupgf6p","slide":12,"text":"Cost / penalty","textPreview":"Cost / penalty","textChars":14,"textLines":1,"bbox":[632,199,267.6,34]}
+{"kind":"textbox","id":"sh/zulonap4","slide":12,"text":"Weight","textPreview":"Weight","textChars":6,"textLines":1,"bbox":[923.6,199,224.4,34]}
+{"kind":"shape","id":"sh/ytc7e5oj","slide":12,"bbox":[620,238,291.6,48]}
+{"kind":"shape","id":"sh/9036t476","slide":12,"bbox":[911.6,238,248.4,48]}
+{"kind":"textbox","id":"sh/8zupkz6l","slide":12,"text":"stall","textPreview":"stall","textChars":5,"textLines":1,"bbox":[632,247,267.6,34]}
+{"kind":"textbox","id":"sh/nylorupg","slide":12,"text":"-1.0","textPreview":"-1.0","textChars":4,"textLines":1,"bbox":[923.6,247,224.4,34]}
+{"kind":"shape","id":"sh/mxc7ipov","slide":12,"bbox":[620,286,291.6,48]}
+{"kind":"shape","id":"sh/p4j6h072","slide":12,"bbox":[911.6,286,248.4,48]}
+{"kind":"textbox","id":"sh/o3a5ovqh","slide":12,"text":"reverse","textPreview":"reverse","textChars":7,"textLines":1,"bbox":[632,295,267.6,34]}
+{"kind":"textbox","id":"sh/sjy9w3q5","slide":12,"text":"-4.0","textPreview":"-4.0","textChars":4,"textLines":1,"bbox":[923.6,295,224.4,34]}
+{"kind":"shape","id":"sh/tkrap8rq","slide":12,"bbox":[620,334,291.6,48]}
+{"kind":"shape","id":"sh/6hgrut8z","slide":12,"bbox":[911.6,334,248.4,48]}
+{"kind":"textbox","id":"sh/7ipsny9k","slide":12,"text":"object_center","textPreview":"object_center","textChars":13,"textLines":1,"bbox":[632,343,267.6,34]}
+{"kind":"textbox","id":"sh/kfy9s3qt","slide":12,"text":"-2.5","textPreview":"-2.5","textChars":4,"textLines":1,"bbox":[923.6,343,224.4,34]}
+{"kind":"shape","id":"sh/5g7alore","slide":12,"bbox":[620,382,291.6,48]}
+{"kind":"shape","id":"sh/itgrqt83","slide":12,"bbox":[911.6,382,248.4,48]}
+{"kind":"textbox","id":"sh/jup8jy9o","slide":12,"text":"object_linear_velocity","textPreview":"object_linear_velocity","textChars":22,"textLines":1,"bbox":[632,391,267.6,34]}
+{"kind":"textbox","id":"sh/wre9ojqx","slide":12,"text":"-0.4","textPreview":"-0.4","textChars":4,"textLines":1,"bbox":[923.6,391,224.4,34]}
+{"kind":"shape","id":"sh/xsnqhori","slide":12,"bbox":[620,430,291.6,48]}
+{"kind":"shape","id":"sh/zm5sret4","slide":12,"bbox":[911.6,430,248.4,48]}
+{"kind":"textbox","id":"sh/ylcry9cz","slide":12,"text":"palm_contact","textPreview":"palm_contact","textChars":12,"textLines":1,"bbox":[632,439,267.6,34]}
+{"kind":"textbox","id":"sh/lonatoba","slide":12,"text":"-1.0","textPreview":"-1.0","textChars":4,"textLines":1,"bbox":[923.6,439,224.4,34]}
+{"kind":"shape","id":"sh/0net0jup","slide":12,"bbox":[620,478,291.6,48]}
+{"kind":"shape","id":"sh/nq5svytg","slide":12,"bbox":[911.6,478,248.4,48]}
+{"kind":"textbox","id":"sh/mpwb2tcv","slide":12,"text":"orthogonal_speed","textPreview":"orthogonal_speed","textChars":16,"textLines":1,"bbox":[632,487,267.6,34]}
+{"kind":"textbox","id":"sh/9snaxobm","slide":12,"text":"-0.25","textPreview":"-0.25","textChars":5,"textLines":1,"bbox":[923.6,487,224.4,34]}
+{"kind":"shape","id":"sh/8ret4ju1","slide":12,"bbox":[620,526,291.6,48]}
+{"kind":"shape","id":"sh/vepszytc","slide":12,"bbox":[911.6,526,248.4,48]}
+{"kind":"textbox","id":"sh/adgb6tcr","slide":12,"text":"failure","textPreview":"failure","textChars":7,"textLines":1,"bbox":[632,535,267.6,34]}
+{"kind":"textbox","id":"sh/6lk3e10b","slide":12,"text":"-5.0","textPreview":"-5.0","textChars":4,"textLines":1,"bbox":[923.6,535,224.4,34]}
+{"kind":"textbox","id":"sh/rmt4n6hw","slide":12,"text":"Direct uses a different reward scale; aggregate return is comparable only among checkpoints from this task.","textPreview":"Direct uses a different reward scale; aggregate return is comparable only among checkpoints from this task.","textChars":107,"textLines":1,"bbox":[54,620,1110,36]}
+{"kind":"notes","id":"nt/zexg5f","slide":12,"text":"[Sources]\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_direct/mujoco.yaml\n- D:/UniLab/src/unilab/envs/manipulation/leap_inhand/direct_rotation.py\n- D:/UniLab/DEVELOPMENT_LOG.md:2620"}
+{"kind":"slide","id":"sl/83z80v","slide":13,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":33}
+{"kind":"textbox","id":"sh/lkfy9cfa","slide":13,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/yx4zexwz","slide":13,"text":"Direct Acquired Forward Spin, Not Sustained Motion","textPreview":"Direct Acquired Forward Spin, Not Sustained Motion","textChars":50,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/zyxg72x4","slide":13,"text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"textbox","id":"sh/8n6hk7e1","slide":13,"text":"RUN  2026-07-22_21-27-39_mujoco","textPreview":"RUN  2026-07-22_21-27-39_mujoco","textChars":31,"textLines":1,"bbox":[54,142,500,24]}
+{"kind":"textbox","id":"sh/9ofidcfm","slide":13,"text":"Rotation acquisition","textPreview":"Rotation acquisition","textChars":20,"textLines":1,"bbox":[54,200,300,30]}
+{"kind":"shape","id":"sh/mlozihwv","slide":13,"bbox":[54,246,291.6,46]}
+{"kind":"shape","id":"sh/nmx0bmxg","slide":13,"bbox":[345.6,246,248.4,46]}
+{"kind":"textbox","id":"sh/ormh8nyh","slide":13,"text":"Task metric","textPreview":"Task metric","textChars":11,"textLines":1,"bbox":[66,255,267.6,32]}
+{"kind":"textbox","id":"sh/psvy1sf2","slide":13,"text":"Final value","textPreview":"Final value","textChars":11,"textLines":1,"bbox":[357.6,255,224.4,32]}
+{"kind":"shape","id":"sh/9g7y9gzu","slide":13,"bbox":[54,292,291.6,46]}
+{"kind":"shape","id":"sh/8fyx0bip","slide":13,"bbox":[345.6,292,248.4,46]}
+{"kind":"textbox","id":"sh/nepg76h4","slide":13,"text":"target +Z speed","textPreview":"target +Z speed","textChars":15,"textLines":1,"bbox":[66,301,267.6,32]}
+{"kind":"textbox","id":"sh/mdgfy10j","slide":13,"text":"0.300 rad/s","textPreview":"0.300 rad/s","textChars":11,"textLines":1,"bbox":[357.6,301,224.4,32]}
+{"kind":"shape","id":"sh/h4rydgz6","slide":13,"bbox":[54,338,291.6,46]}
+{"kind":"shape","id":"sh/w3yx4bil","slide":13,"bbox":[345.6,338,248.4,46]}
+{"kind":"textbox","id":"sh/v2pgb6h0","slide":13,"text":"axis-speed EMA","textPreview":"axis-speed EMA","textChars":14,"textLines":1,"bbox":[66,347,267.6,32]}
+{"kind":"textbox","id":"sh/uhgf2l0f","slide":13,"text":"+0.246 rad/s","textPreview":"+0.246 rad/s","textChars":12,"textLines":1,"bbox":[357.6,347,224.4,32]}
+{"kind":"shape","id":"sh/58ryh0z2","slide":13,"bbox":[54,384,291.6,46]}
+{"kind":"shape","id":"sh/47ix8vyh","slide":13,"bbox":[345.6,384,248.4,46]}
+{"kind":"textbox","id":"sh/ona903a5","slide":13,"text":"axis purity","textPreview":"axis purity","textChars":11,"textLines":1,"bbox":[66,393,267.6,32]}
+{"kind":"textbox","id":"sh/pojqt8bq","slide":13,"text":"84.3%","textPreview":"84.3%","textChars":5,"textLines":1,"bbox":[357.6,393,224.4,32]}
+{"kind":"shape","id":"sh/2lsrytsz","slide":13,"bbox":[54,430,291.6,46]}
+{"kind":"shape","id":"sh/3m18rytk","slide":13,"bbox":[345.6,430,248.4,46]}
+{"kind":"textbox","id":"sh/cra943a1","slide":13,"text":"mean anchor error","textPreview":"mean anchor error","textChars":17,"textLines":1,"bbox":[66,439,267.6,32]}
+{"kind":"textbox","id":"sh/dsjqx8bm","slide":13,"text":"14.7 mm","textPreview":"14.7 mm","textChars":7,"textLines":1,"bbox":[357.6,439,224.4,32]}
+{"kind":"shape","id":"sh/qpsr2tsb","slide":13,"bbox":[54,476,291.6,46]}
+{"kind":"shape","id":"sh/bq18vytg","slide":13,"bbox":[345.6,476,248.4,46]}
+{"kind":"textbox","id":"sh/svq9sjax","slide":13,"text":"mean fingertip contacts","textPreview":"mean fingertip contacts","textChars":23,"textLines":1,"bbox":[66,485,267.6,32]}
+{"kind":"textbox","id":"sh/twzqlobi","slide":13,"text":"2.47","textPreview":"2.47","textChars":4,"textLines":1,"bbox":[357.6,485,224.4,32]}
+{"kind":"shape","id":"sh/va5crmd0","slide":13,"bbox":[54,522,291.6,46]}
+{"kind":"shape","id":"sh/a9wbyhcf","slide":13,"bbox":[345.6,522,248.4,46]}
+{"kind":"textbox","id":"sh/hc7utcv6","slide":13,"text":"palm contact rate","textPreview":"palm contact rate","textChars":17,"textLines":1,"bbox":[66,531,267.6,32]}
+{"kind":"textbox","id":"sh/wbet0rul","slide":13,"text":"0.0%","textPreview":"0.0%","textChars":4,"textLines":1,"bbox":[357.6,531,224.4,32]}
+{"kind":"textbox","id":"sh/nm5cn2do","slide":13,"text":"Sustainability check","textPreview":"Sustainability check","textChars":20,"textLines":1,"bbox":[650,200,300,30]}
+{"kind":"shape","id":"sh/mlwbuxcj","slide":13,"bbox":[650,246,270,46]}
+{"kind":"shape","id":"sh/9onupcvu","slide":13,"bbox":[920,246,230,46]}
+{"kind":"textbox","id":"sh/8netw7u9","slide":13,"text":"Success gate","textPreview":"Success gate","textChars":12,"textLines":1,"bbox":[662,255,246,32]}
+{"kind":"textbox","id":"sh/zilcj2ds","slide":13,"text":"Observed fraction","textPreview":"Observed fraction","textChars":17,"textLines":1,"bbox":[932,255,206,32]}
+{"kind":"shape","id":"sh/yhcbqxc7","slide":13,"bbox":[650,292,270,46]}
+{"kind":"shape","id":"sh/epwful8r","slide":13,"bbox":[920,292,230,46]}
+{"kind":"textbox","id":"sh/fqpgnq9c","slide":13,"text":"continuous spin ≥ 2 s","textPreview":"continuous spin ≥ 2 s","textChars":21,"textLines":1,"bbox":[662,301,246,32]}
+{"kind":"textbox","id":"sh/0ryxwvqx","slide":13,"text":"0.012%","textPreview":"0.012%","textChars":6,"textLines":1,"bbox":[932,301,206,32]}
+{"kind":"shape","id":"sh/1s7yp0ri","slide":13,"bbox":[650,338,270,46]}
+{"kind":"shape","id":"sh/q1wfql8v","slide":13,"bbox":[920,338,230,46]}
+{"kind":"textbox","id":"sh/rm5gjq9g","slide":13,"text":"continuous spin ≥ 5 s","textPreview":"continuous spin ≥ 5 s","textChars":21,"textLines":1,"bbox":[662,347,246,32]}
+{"kind":"textbox","id":"sh/snexsvq1","slide":13,"text":"0%","textPreview":"0%","textChars":2,"textLines":1,"bbox":[932,347,206,32]}
+{"kind":"shape","id":"sh/donyl0r6","slide":13,"bbox":[650,384,270,46]}
+{"kind":"shape","id":"sh/ixcfm1sj","slide":13,"bbox":[920,384,230,46]}
+{"kind":"textbox","id":"sh/3ylwf694","slide":13,"text":"continuous spin ≥ 10 s","textPreview":"continuous spin ≥ 10 s","textChars":22,"textLines":1,"bbox":[662,393,246,32]}
+{"kind":"textbox","id":"sh/lcbi14bm","slide":13,"text":"0%","textPreview":"0%","textChars":2,"textLines":1,"bbox":[932,393,206,32]}
+{"kind":"shape","id":"sh/kr21sja1","slide":13,"bbox":[650,430,270,46]}
+{"kind":"shape","id":"sh/zqt0zetw","slide":13,"bbox":[920,430,230,46]}
+{"kind":"textbox","id":"sh/yp0jq9sb","slide":13,"text":"natural handoff rate","textPreview":"natural handoff rate","textChars":20,"textLines":1,"bbox":[662,439,246,32]}
+{"kind":"textbox","id":"sh/xorix4bq","slide":13,"text":"0.061%","textPreview":"0.061%","textChars":6,"textLines":1,"bbox":[932,439,206,32]}
+{"kind":"shape","id":"sh/cnihoza5","slide":13,"bbox":[650,476,270,46]}
+{"kind":"shape","id":"sh/bm90vutk","slide":13,"bbox":[920,476,230,46]}
+{"kind":"textbox","id":"sh/al0zmpsz","slide":13,"text":"final success fraction","textPreview":"final success fraction","textChars":22,"textLines":1,"bbox":[662,485,246,32]}
+{"kind":"textbox","id":"sh/pkritkbe","slide":13,"text":"0.061%","textPreview":"0.061%","textChars":6,"textLines":1,"bbox":[932,485,206,32]}
+{"kind":"textbox","id":"sh/ojihkza9","slide":13,"text":"Conclusion: the policy can generate positive +Z rotation, but it cannot maintain the motion, switch contacts, or complete multiple turns.","textPreview":"Conclusion: the policy can generate positive +Z rotation, but it cannot maintain the motion, switch contacts, or complete multiple turns.","textChars":137,"textLines":1,"bbox":[54,620,1100,42]}
+{"kind":"notes","id":"nt/83z80v","slide":13,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallDirectRotation/2026-07-22_21-27-39_mujoco/events.out.tfevents.1784780863.沅霆.41532.0\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallDirectRotation/2026-07-22_21-27-39_mujoco/run_config.json"}
+{"kind":"slide","id":"sl/fop79n","slide":14,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":25}
+{"kind":"textbox","id":"sh/x0j6pcb6","slide":14,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/ax8nuhsf","slide":14,"text":"Cache Gaiting Held Position but Did Not Spin or Handoff","textPreview":"Cache Gaiting Held Position but Did Not Spin or Handoff","textChars":55,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/byhonmt0","slide":14,"text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"shape","id":"sh/obq5s7ap","slide":14,"bbox":[54,150,500,280]}
+{"kind":"textbox","id":"sh/9wz6lcba","slide":14,"text":"V1","textPreview":"V1","textChars":2,"textLines":1,"bbox":[84,188,90,34]}
+{"kind":"textbox","id":"sh/m98nqxsj","slide":14,"text":"Combined the simplified rotation objective with stable-support, release-progress, and handoff shaping.\n\nProblem: gaiting pressure increased exploration cost before stable rotation existed.","textPreview":"Combined the simplified rotation objective with stable-support, release-progress, and handoff shaping. |  | Problem: gaiting pressure inc...","textChars":188,"textLines":3,"bbox":[84,244,410,150]}
+{"kind":"textbox","id":"sh/nahoj2t4","slide":14,"text":"RUN  2026-07-27_12-09-05_mujoco","textPreview":"RUN  2026-07-27_12-09-05_mujoco","textChars":31,"textLines":1,"bbox":[84,392,390,24]}
+{"kind":"shape","id":"sh/07q5o7ad","slide":14,"bbox":[626,150,520,280]}
+{"kind":"textbox","id":"sh/18z6hsby","slide":14,"text":"V2","textPreview":"V2","textChars":2,"textLines":1,"bbox":[656,188,90,34]}
+{"kind":"textbox","id":"sh/94vm9ovy","slide":14,"text":"Kept the rotation objective, removed stable/release shaping, reduced handoff influence, and allowed release only for non-thumb fingers.\n\nGoal: acquire rotation first, then require contact switching.","textPreview":"Kept the rotation objective, removed stable/release shaping, reduced handoff influence, and allowed release only for non-thumb fingers. |...","textChars":198,"textLines":3,"bbox":[656,244,430,150]}
+{"kind":"textbox","id":"sh/83mlgjed","slide":14,"text":"RUN  2026-07-27_12-26-57_mujoco","textPreview":"RUN  2026-07-27_12-26-57_mujoco","textChars":31,"textLines":1,"bbox":[656,392,430,24]}
+{"kind":"shape","id":"sh/72d47eds","slide":14,"bbox":[54,470,399.6,30]}
+{"kind":"shape","id":"sh/m143e9w7","slide":14,"bbox":[453.6,470,340.4,30]}
+{"kind":"textbox","id":"sh/l0vm54vm","slide":14,"text":"Latest task metric","textPreview":"Latest task metric","textChars":18,"textLines":1,"bbox":[66,479,375.6,16]}
+{"kind":"textbox","id":"sh/kz2lczeh","slide":14,"text":"Observed value","textPreview":"Observed value","textChars":14,"textLines":1,"bbox":[465.6,479,316.4,16]}
+{"kind":"shape","id":"sh/zytk3edw","slide":14,"bbox":[54,500,399.6,30]}
+{"kind":"shape","id":"sh/yxk3a9wb","slide":14,"bbox":[453.6,500,340.4,30]}
+{"kind":"textbox","id":"sh/xwb214vq","slide":14,"text":"position gate","textPreview":"position gate","textChars":13,"textLines":1,"bbox":[66,509,375.6,16]}
+{"kind":"textbox","id":"sh/cb2l8ze5","slide":14,"text":"98.8%","textPreview":"98.8%","textChars":5,"textLines":1,"bbox":[465.6,509,316.4,16]}
+{"kind":"shape","id":"sh/orqd43qd","slide":14,"bbox":[54,530,399.6,30]}
+{"kind":"shape","id":"sh/pszud87y","slide":14,"bbox":[453.6,530,340.4,30]}
+{"kind":"textbox","id":"sh/2pov2t87","slide":14,"text":"axis purity","textPreview":"axis purity","textChars":11,"textLines":1,"bbox":[66,539,375.6,16]}
+{"kind":"textbox","id":"sh/nqxcbyps","slide":14,"text":"95.1%","textPreview":"95.1%","textChars":5,"textLines":1,"bbox":[465.6,539,316.4,16]}
+{"kind":"shape","id":"sh/0n6d0jq1","slide":14,"bbox":[54,560,399.6,30]}
+{"kind":"shape","id":"sh/1ofu9o7m","slide":14,"bbox":[453.6,560,340.4,30]}
+{"kind":"textbox","id":"sh/e1oby98b","slide":14,"text":"axis speed","textPreview":"axis speed","textChars":10,"textLines":1,"bbox":[66,569,375.6,16]}
+{"kind":"textbox","id":"sh/f2xc7epg","slide":14,"text":"+0.001 rad/s","textPreview":"+0.001 rad/s","textChars":12,"textLines":1,"bbox":[465.6,569,316.4,16]}
+{"kind":"shape","id":"sh/kjadcnql","slide":14,"bbox":[54,590,399.6,30]}
+{"kind":"shape","id":"sh/lkjuls76","slide":14,"bbox":[453.6,590,340.4,30]}
+{"kind":"textbox","id":"sh/velgbm98","slide":14,"text":"net turns / episode","textPreview":"net turns / episode","textChars":19,"textLines":1,"bbox":[66,599,375.6,16]}
+{"kind":"textbox","id":"sh/udcfihsn","slide":14,"text":"0.0069","textPreview":"0.0069","textChars":6,"textLines":1,"bbox":[465.6,599,316.4,16]}
+{"kind":"shape","id":"sh/hg3ydcre","slide":14,"bbox":[54,620,399.6,30]}
+{"kind":"shape","id":"sh/wfuxkrat","slide":14,"bbox":[453.6,620,340.4,30]}
+{"kind":"textbox","id":"sh/ji5gfm94","slide":14,"text":"speed > 0.10 rad/s","textPreview":"speed > 0.10 rad/s","textChars":18,"textLines":1,"bbox":[66,629,375.6,16]}
+{"kind":"textbox","id":"sh/ihwfmhsj","slide":14,"text":"0.73%","textPreview":"0.73%","textChars":5,"textLines":1,"bbox":[465.6,629,316.4,16]}
+{"kind":"shape","id":"sh/5knyhwra","slide":14,"bbox":[54,650,399.6,30]}
+{"kind":"shape","id":"sh/4jexorap","slide":14,"bbox":[453.6,650,340.4,30]}
+{"kind":"textbox","id":"sh/zm1w3290","slide":14,"text":"qualified handoff rate","textPreview":"qualified handoff rate","textChars":22,"textLines":1,"bbox":[66,659,375.6,16]}
+{"kind":"textbox","id":"sh/ylsfaxsf","slide":14,"text":"0.006%","textPreview":"0.006%","textChars":6,"textLines":1,"bbox":[465.6,659,316.4,16]}
+{"kind":"textbox","id":"sh/q5wfqx0b","slide":14,"text":"Interpretation","textPreview":"Interpretation","textChars":14,"textLines":1,"bbox":[860,474,220,30]}
+{"kind":"textbox","id":"sh/b65gj2hw","slide":14,"text":"The object stayed near its anchor and the rotation axis was clean, but axis speed and qualified handoffs were almost zero.\n\nRetention is not sustained rotation.","textPreview":"The object stayed near its anchor and the rotation axis was clean, but axis speed and qualified handoffs were almost zero. |  | Retention...","textChars":160,"textLines":3,"bbox":[860,524,290,112]}
+{"kind":"notes","id":"nt/fop79n","slide":14,"text":"[Sources]\n- D:/UniLab/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheGaitingRotation/2026-07-27_12-26-57_mujoco/events.out.tfevents.1785180421.沅霆.36252.0\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheGaitingRotation/2026-07-27_12-26-57_mujoco/run_config.json"}
+{"kind":"slide","id":"sl/t2r36o","slide":15,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":44}
+{"kind":"textbox","id":"sh/gvypgf2d","slide":15,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/fup87als","slide":15,"text":"Each Task Answers a Different Diagnostic Question","textPreview":"Each Task Answers a Different Diagnostic Question","textChars":49,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/etw7e5k7","slide":15,"text":"15","textPreview":"15","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"shape","id":"sh/p07qdk3u","slide":15,"bbox":[54,150,230,48]}
+{"kind":"textbox","id":"sh/ozypkf2p","slide":15,"text":"Task","textPreview":"Task","textChars":4,"textLines":1,"bbox":[64,163,210,24]}
+{"kind":"shape","id":"sh/3yp8bal4","slide":15,"bbox":[284,150,261,48]}
+{"kind":"textbox","id":"sh/2xg7ipkj","slide":15,"text":"Representative RunId","textPreview":"Representative RunId","textChars":20,"textLines":1,"bbox":[294,163,241,24]}
+{"kind":"shape","id":"sh/54nq103q","slide":15,"bbox":[545,150,265,48]}
+{"kind":"textbox","id":"sh/43ep8v25","slide":15,"text":"Question","textPreview":"Question","textChars":8,"textLines":1,"bbox":[555,163,245,24]}
+{"kind":"shape","id":"sh/elwri5cz","slide":15,"bbox":[810,150,230,48]}
+{"kind":"textbox","id":"sh/zm58rat4","slide":15,"text":"Supported conclusion","textPreview":"Supported conclusion","textChars":20,"textLines":1,"bbox":[820,163,210,24]}
+{"kind":"shape","id":"sh/0ne9kfup","slide":15,"bbox":[1040,150,170,48]}
+{"kind":"textbox","id":"sh/1onqtkba","slide":15,"text":"Evidence","textPreview":"Evidence","textChars":8,"textLines":1,"bbox":[1050,163,150,24]}
+{"kind":"shape","id":"sh/mpwrmpcv","slide":15,"bbox":[54,198,230,58]}
+{"kind":"textbox","id":"sh/nq5svutg","slide":15,"text":"Ball Cache","textPreview":"Ball Cache","textChars":10,"textLines":1,"bbox":[64,210,210,36]}
+{"kind":"shape","id":"sh/ore9ozu1","slide":15,"bbox":[284,198,261,58]}
+{"kind":"textbox","id":"sh/9snaxkbm","slide":15,"text":"07-21_17-29-49","textPreview":"07-21_17-29-49","textChars":14,"textLines":1,"bbox":[294,210,241,36]}
+{"kind":"shape","id":"sh/atgrqpcr","slide":15,"bbox":[545,198,265,58]}
+{"kind":"textbox","id":"sh/bupszutc","slide":15,"text":"Does cache reset work?","textPreview":"Does cache reset work?","textChars":22,"textLines":1,"bbox":[555,210,245,36]}
+{"kind":"shape","id":"sh/7ip8nu9k","slide":15,"bbox":[810,198,230,58]}
+{"kind":"textbox","id":"sh/6hg7e98z","slide":15,"text":"Integration is executable","textPreview":"Integration is executable","textChars":25,"textLines":1,"bbox":[820,210,210,36]}
+{"kind":"shape","id":"sh/tkrqp4rq","slide":15,"bbox":[1040,198,170,58]}
+{"kind":"textbox","id":"sh/8jy9gzq5","slide":15,"text":"integration only","textPreview":"integration only","textChars":16,"textLines":1,"bbox":[1050,210,150,36]}
+{"kind":"shape","id":"sh/jup8ju9o","slide":15,"bbox":[54,256,230,58]}
+{"kind":"textbox","id":"sh/ytg7ap83","slide":15,"text":"Sustained Cache","textPreview":"Sustained Cache","textChars":15,"textLines":1,"bbox":[64,268,210,36]}
+{"kind":"shape","id":"sh/lw7ql4re","slide":15,"bbox":[284,256,261,58]}
+{"kind":"textbox","id":"sh/kvypczqt","slide":15,"text":"07-21_18-22-39","textPreview":"07-21_18-22-39","textChars":14,"textLines":1,"bbox":[294,268,241,36]}
+{"kind":"shape","id":"sh/bq58fa9c","slide":15,"bbox":[545,256,265,58]}
+{"kind":"textbox","id":"sh/apw7658r","slide":15,"text":"Can many grasps rotate?","textPreview":"Can many grasps rotate?","textChars":23,"textLines":1,"bbox":[555,268,245,36]}
+{"kind":"shape","id":"sh/0vu5gb6p","slide":15,"bbox":[810,256,230,58]}
+{"kind":"textbox","id":"sh/1w369g7a","slide":15,"text":"Formal baseline established","textPreview":"Formal baseline established","textChars":27,"textLines":1,"bbox":[820,268,210,36]}
+{"kind":"shape","id":"sh/etcneloj","slide":15,"bbox":[1040,256,170,58]}
+{"kind":"textbox","id":"sh/zul476p4","slide":15,"text":"rotation metrics","textPreview":"rotation metrics","textChars":16,"textLines":1,"bbox":[1050,268,150,36]}
+{"kind":"shape","id":"sh/ozu5kv6l","slide":15,"bbox":[54,314,230,58]}
+{"kind":"textbox","id":"sh/9036d076","slide":15,"text":"Retention Grey-zone","textPreview":"Retention Grey-zone","textChars":19,"textLines":1,"bbox":[64,326,210,36]}
+{"kind":"shape","id":"sh/mxcnilov","slide":15,"bbox":[284,314,261,58]}
+{"kind":"textbox","id":"sh/nylobqpg","slide":15,"text":"07-21_22-58-39","textPreview":"07-21_22-58-39","textChars":14,"textLines":1,"bbox":[294,326,241,36]}
+{"kind":"shape","id":"sh/43a58r6h","slide":15,"bbox":[545,314,265,58]}
+{"kind":"textbox","id":"sh/p4jm1w72","slide":15,"text":"Why settle at 15–30 mm?","textPreview":"Why settle at 15–30 mm?","textChars":23,"textLines":1,"bbox":[555,326,245,36]}
+{"kind":"shape","id":"sh/xkvehw76","slide":15,"bbox":[810,314,230,58]}
+{"kind":"textbox","id":"sh/wzmx8r61","slide":15,"text":"Retention improved, spin did not","textPreview":"Retention improved, spin did not","textChars":32,"textLines":1,"bbox":[820,326,210,36]}
+{"kind":"shape","id":"sh/vydwfmpg","slide":15,"bbox":[1040,314,170,58]}
+{"kind":"textbox","id":"sh/axkf61ov","slide":15,"text":"A/B diagnosis","textPreview":"A/B diagnosis","textChars":13,"textLines":1,"bbox":[1050,326,150,36]}
+{"kind":"shape","id":"sh/9wbedw7a","slide":15,"bbox":[54,372,230,58]}
+{"kind":"textbox","id":"sh/8v2x4r6p","slide":15,"text":"Finger Gaiting","textPreview":"Finger Gaiting","textChars":14,"textLines":1,"bbox":[64,384,210,36]}
+{"kind":"shape","id":"sh/nutwbmp4","slide":15,"bbox":[284,372,261,58]}
+{"kind":"textbox","id":"sh/mtkf2hoj","slide":15,"text":"07-22_15-47-22","textPreview":"07-22_15-47-22","textChars":14,"textLines":1,"bbox":[294,384,241,36]}
+{"kind":"shape","id":"sh/lsbe9c7e","slide":15,"bbox":[545,372,265,58]}
+{"kind":"textbox","id":"sh/0r2x076t","slide":15,"text":"Is contact switching missing?","textPreview":"Is contact switching missing?","textChars":29,"textLines":1,"bbox":[555,384,245,36]}
+{"kind":"shape","id":"sh/qxgbad4b","slide":15,"bbox":[810,372,230,58]}
+{"kind":"textbox","id":"sh/by9cji5w","slide":15,"text":"Positive speed is the first bottleneck","textPreview":"Positive speed is the first bottleneck","textChars":38,"textLines":1,"bbox":[820,384,210,36]}
+{"kind":"shape","id":"sh/czitcnmh","slide":15,"bbox":[1040,372,170,58]}
+{"kind":"textbox","id":"sh/d0rulsn2","slide":15,"text":"gate metrics","textPreview":"gate metrics","textChars":12,"textLines":1,"bbox":[1050,384,150,36]}
+{"kind":"shape","id":"sh/29gb6d4f","slide":15,"bbox":[54,430,230,58]}
+{"kind":"textbox","id":"sh/3upcfy50","slide":15,"text":"Direct","textPreview":"Direct","textChars":6,"textLines":1,"bbox":[64,442,210,36]}
+{"kind":"shape","id":"sh/ovyt83ml","slide":15,"bbox":[284,430,261,58]}
+{"kind":"textbox","id":"sh/pw7uh8n6","slide":15,"text":"07-22_21-27-39","textPreview":"07-22_21-27-39","textChars":14,"textLines":1,"bbox":[294,442,241,36]}
+{"kind":"shape","id":"sh/u5wb2toj","slide":15,"bbox":[545,430,265,58]}
+{"kind":"textbox","id":"sh/f65cby5o","slide":15,"text":"Can forward spin be acquired?","textPreview":"Can forward spin be acquired?","textChars":29,"textLines":1,"bbox":[555,442,245,36]}
+{"kind":"shape","id":"sh/jal8julg","slide":15,"bbox":[810,430,230,58]}
+{"kind":"textbox","id":"sh/i9crap4b","slide":15,"text":"Acquisition is possible but brief","textPreview":"Acquisition is possible but brief","textChars":33,"textLines":1,"bbox":[820,442,210,36]}
+{"kind":"shape","id":"sh/5c3ql43m","slide":15,"bbox":[1040,430,170,58]}
+{"kind":"textbox","id":"sh/kbu9cz21","slide":15,"text":"duration metrics","textPreview":"duration metrics","textChars":16,"textLines":1,"bbox":[1050,442,150,36]}
+{"kind":"shape","id":"sh/7el8nels","slide":15,"bbox":[54,488,230,58]}
+{"kind":"textbox","id":"sh/6dcre9k7","slide":15,"text":"Sustained V3-A","textPreview":"Sustained V3-A","textChars":14,"textLines":1,"bbox":[64,500,210,36]}
+{"kind":"shape","id":"sh/t0nap43y","slide":15,"bbox":[284,488,261,58]}
+{"kind":"textbox","id":"sh/sfe9gz2d","slide":15,"text":"07-27_00-36-25","textPreview":"07-27_00-36-25","textChars":14,"textLines":1,"bbox":[294,500,241,36]}
+{"kind":"shape","id":"sh/ni18balo","slide":15,"bbox":[545,488,265,58]}
+{"kind":"textbox","id":"sh/mhsr2543","slide":15,"text":"Can reward be simplified?","textPreview":"Can reward be simplified?","textChars":25,"textLines":1,"bbox":[555,500,245,36]}
+{"kind":"shape","id":"sh/cb6xw7yp","slide":15,"bbox":[810,488,230,58]}
+{"kind":"textbox","id":"sh/dcfepcfu","slide":15,"text":"Direct task signals retained","textPreview":"Direct task signals retained","textChars":28,"textLines":1,"bbox":[820,500,210,36]}
+{"kind":"shape","id":"sh/q94fuhgj","slide":15,"bbox":[1040,488,170,58]}
+{"kind":"textbox","id":"sh/radwnmx4","slide":15,"text":"reward ablation","textPreview":"reward ablation","textChars":15,"textLines":1,"bbox":[1050,500,150,36]}
+{"kind":"shape","id":"sh/47mxs7yd","slide":15,"bbox":[54,546,230,58]}
+{"kind":"textbox","id":"sh/p8velcfy","slide":15,"text":"Cache Gaiting V2","textPreview":"Cache Gaiting V2","textChars":16,"textLines":1,"bbox":[64,558,210,36]}
+{"kind":"shape","id":"sh/254fqxg7","slide":15,"bbox":[284,546,261,58]}
+{"kind":"textbox","id":"sh/36dwj2xs","slide":15,"text":"07-27_12-26-57","textPreview":"07-27_12-26-57","textChars":14,"textLines":1,"bbox":[294,558,241,36]}
+{"kind":"shape","id":"sh/o3qx4reh","slide":15,"bbox":[545,546,265,58]}
+{"kind":"textbox","id":"sh/94zyxwf2","slide":15,"text":"Can constrained handoff return?","textPreview":"Can constrained handoff return?","textChars":31,"textLines":1,"bbox":[555,558,245,36]}
+{"kind":"shape","id":"sh/hg32dcby","slide":15,"bbox":[810,546,230,58]}
+{"kind":"textbox","id":"sh/wfu1k7ad","slide":15,"text":"Retention works; rotation remains absent","textPreview":"Retention works; rotation remains absent","textChars":40,"textLines":1,"bbox":[820,558,210,36]}
+{"kind":"shape","id":"sh/vu1kb2ts","slide":15,"bbox":[1040,546,170,58]}
+{"kind":"textbox","id":"sh/utsjixs7","slide":15,"text":"task metrics","textPreview":"task metrics","textChars":12,"textLines":1,"bbox":[1050,558,150,36]}
+{"kind":"textbox","id":"sh/5k32hcbu","slide":15,"text":"Historical checkpoints must be interpreted with their saved run_config.json, not the current parent YAML.","textPreview":"Historical checkpoints must be interpreted with their saved run_config.json, not the current parent YAML.","textChars":105,"textLines":1,"bbox":[54,625,1120,30]}
+{"kind":"notes","id":"nt/t2r36o","slide":15,"text":"[Sources]\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheRotation/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallSustainedCacheRotation/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallFingerGaitingRotation/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallDirectRotation/*/run_config.json\n- D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheGaitingRotation/*/run_config.json"}
+{"kind":"slide","id":"sl/rogf67","slide":16,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":9}
+{"kind":"textbox","id":"sh/pg3m1szq","slide":16,"text":"LEAP HAND MONTHLY PROGRESS","textPreview":"LEAP HAND MONTHLY PROGRESS","textChars":26,"textLines":1,"bbox":[54,24,900,30]}
+{"kind":"textbox","id":"sh/2dsnqdgf","slide":16,"text":"Prove Sustained Rotation Before Reintroducing Handoff","textPreview":"Prove Sustained Rotation Before Reintroducing Handoff","textChars":53,"textLines":1,"bbox":[54,58,1135,62]}
+{"kind":"textbox","id":"sh/3el4zih0","slide":16,"text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[1024,664,176,30]}
+{"kind":"textbox","id":"sh/cju5w7yh","slide":16,"text":"Three defensible conclusions","textPreview":"Three defensible conclusions","textChars":28,"textLines":1,"bbox":[54,150,440,32]}
+{"kind":"textbox","id":"sh/dk3m5cf2","slide":16,"text":"1  A ball-specific reset cache and physically valid collision model are prerequisites.\n\n2  Better retention does not imply sustained rotation; signed axis speed and net angle must be measured.\n\n3  Handoff is eventually necessary, but forcing it before rotation acquisition increases exploration sparsity.","textPreview":"1  A ball-specific reset cache and physically valid collision model are prerequisites. |  | 2  Better retention does not imply sustained ...","textChars":304,"textLines":5,"bbox":[54,208,560,275]}
+{"kind":"shape","id":"sh/qhcnuxgb","slide":16,"bbox":[690,145,455,380]}
+{"kind":"textbox","id":"sh/ril432xw","slide":16,"text":"Validation order","textPreview":"Validation order","textChars":16,"textLines":1,"bbox":[720,176,360,34]}
+{"kind":"textbox","id":"sh/snalk3yd","slide":16,"text":"01  Reward ablation with fixed cache and seed\n02  Report axis-speed duration and net turns\n03  Use the viewer to reject palm support or penetration\n04  Add handoff only after acquisition is stable\n05  Compare success rate across at least three seeds\n06  Add domain randomization last","textPreview":"01  Reward ablation with fixed cache and seed | 02  Report axis-speed duration and net turns | 03  Use the viewer to reject palm support ...","textChars":283,"textLines":6,"bbox":[720,244,370,220]}
+{"kind":"textbox","id":"sh/tojmt8zy","slide":16,"text":"Success criteria","textPreview":"Success criteria","textChars":16,"textLines":1,"bbox":[54,520,220,28]}
+{"kind":"textbox","id":"sh/lcn2hgnm","slide":16,"text":"Sustained positive rotation · multiple net turns · low orthogonal speed · no drop · qualified handoff · cross-seed stability","textPreview":"Sustained positive rotation · multiple net turns · low orthogonal speed · no drop · qualified handoff · cross-seed stability","textChars":124,"textLines":1,"bbox":[54,566,1090,58]}
+{"kind":"notes","id":"nt/rogf67","slide":16,"text":"Maintain a conservative conclusion: the bottleneck is localized, but sustained Cache Gaiting is not yet solved.\n\n[Sources]\n- D:/UniLab/AGENTS.md#Dexterous-Manipulation-Training-Guidance\n- D:/UniLab/DEVELOPMENT_LOG.md"}

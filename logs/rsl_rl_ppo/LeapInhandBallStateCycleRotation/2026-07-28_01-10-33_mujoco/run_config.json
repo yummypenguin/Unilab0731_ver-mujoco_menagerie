@@ -1,0 +1,354 @@
+{
+  "run": {
+    "algo": "ppo",
+    "task": "LeapInhandBallStateCycleRotation",
+    "sim_backend": "mujoco",
+    "device": "cpu",
+    "collector_device": null,
+    "log_dir": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallStateCycleRotation\\2026-07-28_01-10-33_mujoco",
+    "start_time_utc": "2026-07-28T08:10:33.333063+00:00",
+    "hostname": "\u6c85\u9706",
+    "user": "timli",
+    "git": {
+      "commit": "41ddbc445783d2f6c7ee84f9c2a5d14c6bfc8b4a",
+      "branch": "codex/leap-state-cycle-timeout-diagnostics",
+      "dirty": false
+    },
+    "hardware": {
+      "platform": "Windows-11-10.0.26200-SP0",
+      "chip": "16",
+      "cpu_total_cores": "Intel(R) Core(TM) Ultra 9 185H",
+      "cpu_performance_cores": "unknown",
+      "cpu_efficiency_cores": "unknown",
+      "gpu_name": "unknown",
+      "memory": "31.7 GB"
+    },
+    "wandb": {
+      "project": "unilab",
+      "entity": null,
+      "name": "ppo__LeapInhandBallStateCycleRotation__2026-07-28_01-10-33_mujoco",
+      "group": "LeapInhandBallStateCycleRotation",
+      "job_type": "ppo",
+      "tags": [
+        "ppo",
+        "LeapInhandBallStateCycleRotation",
+        "mujoco",
+        "user-timli"
+      ],
+      "notes": null,
+      "mode": null
+    },
+    "configured_seed": 1,
+    "configured_seed_source": "algo.seed",
+    "effective_seed": 1
+  },
+  "config": {
+    "algo": {
+      "algo": "ppo",
+      "algo_log_name": "rsl_rl_ppo",
+      "seed": 1,
+      "num_envs": 4096,
+      "num_steps_per_env": 8,
+      "max_iterations": 300,
+      "save_interval": 25,
+      "empirical_normalization": false,
+      "runner_class_name": "OnPolicyRunner",
+      "obs_groups": {
+        "default": [
+          "policy"
+        ],
+        "actor": [
+          "policy"
+        ],
+        "critic": [
+          "policy"
+        ]
+      },
+      "experiment_name": "test",
+      "run_name": "",
+      "resume": false,
+      "load_run": "-1",
+      "checkpoint": -1,
+      "load_mode": "resume",
+      "resume_path": null,
+      "policy": {
+        "init_noise_std": 1.0,
+        "actor_hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "critic_hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "activation": "elu",
+        "class_name": "ActorCritic"
+      },
+      "algorithm": {
+        "class_name": "unilab.algos.torch.rsl_rl_ppo:FinalObservationAwarePPO",
+        "value_loss_coef": 4.0,
+        "use_clipped_value_loss": true,
+        "clip_param": 0.2,
+        "entropy_coef": 0.0,
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "adaptive",
+        "gamma": 0.99,
+        "lam": 0.95,
+        "desired_kl": 0.02,
+        "target_kl_stop": null,
+        "max_grad_norm": 1.0,
+        "adaptive_kl_beta": 0.9,
+        "adaptive_lr_growth": 1.1,
+        "adaptive_lr_decay": 1.2,
+        "adaptive_lr_update_interval": 5,
+        "metrics_interval": 8,
+        "finite_check_interval": 8,
+        "enable_compile": false,
+        "warmup_strict_iters": 10,
+        "warmup_metrics_interval": 2,
+        "warmup_finite_check_interval": 2,
+        "disable_finite_checks": true
+      },
+      "actor": {
+        "class_name": "rsl_rl.models.MLPModel",
+        "hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "activation": "elu",
+        "obs_normalization": true,
+        "distribution_cfg": {
+          "class_name": "rsl_rl.modules.distribution.GaussianDistribution",
+          "init_std": 0.3,
+          "std_type": "scalar"
+        }
+      },
+      "critic": {
+        "class_name": "rsl_rl.models.MLPModel",
+        "hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "activation": "elu",
+        "obs_normalization": true
+      }
+    },
+    "training": {
+      "task_name": "LeapInhandBallStateCycleRotation",
+      "device": null,
+      "logger": "tensorboard",
+      "wandb_project": "unilab",
+      "wandb_entity": null,
+      "wandb_group": null,
+      "wandb_job_type": null,
+      "wandb_name": null,
+      "wandb_tags": [],
+      "wandb_notes": null,
+      "wandb_mode": null,
+      "sim_backend": "mujoco",
+      "nan_guard": {
+        "enabled": true,
+        "buffer_size": 100,
+        "max_envs_to_dump": 5,
+        "output_dir": null
+      },
+      "play_only": false,
+      "no_play": true,
+      "sim2sim_strict": true,
+      "play_render_mode": "auto",
+      "play_env_num": 16,
+      "render_spacing": 0.5,
+      "play_steps": 200,
+      "cam_distance": 1.2,
+      "cam_elevation": -20.0,
+      "cam_azimuth": 90.0,
+      "cam_lookat": [
+        0.0,
+        0.0,
+        0.5
+      ],
+      "cam_tracking": false,
+      "cam_tracking_env_idx": 0,
+      "cam_tracking_extra_envs": 2,
+      "log_root": null,
+      "num_timesteps": null,
+      "log_dir": null
+    },
+    "interactive": {
+      "action_mode": "zero",
+      "policy_obs_mode": "auto",
+      "show_target_bodies": false,
+      "show_reward_debug": false,
+      "target_show_axes": false,
+      "target_body_names": "",
+      "target_max_bodies": 0,
+      "target_marker_radius": 0.02,
+      "target_axis_length": 0.08,
+      "target_marker_alpha": 0.75,
+      "reward_debug_show_velocity": false,
+      "reward_debug_lin_vel_scale": 0.08,
+      "reward_debug_ang_vel_scale": 0.05,
+      "reward_debug_show_connectors": false,
+      "reward_debug_show_global_anchor": false,
+      "camera_follow_body": true,
+      "camera_focus_body_name": "",
+      "camera_height_offset": 0.15,
+      "camera_distance": null,
+      "camera_elevation": null,
+      "camera_azimuth": null,
+      "use_env_visual_model": true,
+      "show_object_rotation": true,
+      "rotation_body_name": "leap_object",
+      "show_reward_values": false,
+      "reward_value_keys": "",
+      "reward_value_max_terms": 12,
+      "show_phase": true,
+      "phase_info_key": "state_cycle_phase",
+      "phase_step_info_key": "state_cycle_phase_steps",
+      "phase_names": [
+        "READY_TO_A",
+        "A_TO_B",
+        "B_TO_READY"
+      ],
+      "speed": 1.0,
+      "start_paused": false,
+      "keyboard": false,
+      "keyboard_step_lin": 0.1,
+      "keyboard_step_ang": 0.2
+    },
+    "viser": {
+      "port": 8080,
+      "env_idx": 0,
+      "display_mode": "all",
+      "max_envs": 16
+    },
+    "env": {
+      "post_step_forward_sensor": false,
+      "adaptive_chunk_size": true,
+      "chunk_size": null,
+      "sim_dt": 0.005,
+      "ctrl_dt": 0.05,
+      "max_episode_seconds": 30.0,
+      "rotation_axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "joint_velocity_scale": 0.2,
+      "termination_workspace_radius": 0.05,
+      "noise_config": {
+        "level": 0.0,
+        "scale_joint_angle": 0.02
+      },
+      "control_config": {
+        "action_scale": 0.041666666666666664,
+        "kp": 3.0,
+        "kd": 0.1
+      },
+      "domain_rand": {
+        "randomize_base_mass": false,
+        "random_com": false,
+        "randomize_gravity": false,
+        "push_robots": false,
+        "joint_noise": 0.0,
+        "ball_vel_noise": 0.0,
+        "ball_z_offset": 0.0
+      },
+      "state_cycle": {
+        "cycle_target_net_angle_rad": 0.1,
+        "reset_pose_weights": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "ready_to_a": {
+          "target_pose": "A",
+          "timeout_seconds": 2.0,
+          "pose_tolerance": 0.08,
+          "position_tolerance_m": 0.02,
+          "max_ball_speed_m_s": 0.1,
+          "minimum_contacts": 2,
+          "minimum_net_angle_rad": 0.0,
+          "hold_steps": 4
+        },
+        "a_to_b": {
+          "target_pose": "B",
+          "timeout_seconds": 2.0,
+          "pose_tolerance": 0.08,
+          "position_tolerance_m": 0.02,
+          "max_ball_speed_m_s": 0.1,
+          "minimum_contacts": 2,
+          "minimum_net_angle_rad": 0.08,
+          "hold_steps": 4
+        },
+        "b_to_ready": {
+          "target_pose": "ready",
+          "timeout_seconds": 1.3,
+          "pose_tolerance": 0.08,
+          "position_tolerance_m": 0.02,
+          "max_ball_speed_m_s": 0.1,
+          "minimum_contacts": 2,
+          "minimum_net_angle_rad": 0.0,
+          "hold_steps": 4
+        }
+      }
+    },
+    "reward": {
+      "pose_progress_scale": 4.0,
+      "pose_tracking_scale": 0.5,
+      "pose_sigma": 0.08,
+      "rotation_progress_scale": 3.0,
+      "reverse_rotation_scale": 5.0,
+      "rotation_target_axis_speed_rad_s": 0.5,
+      "rotation_overspeed_scale": 1.0,
+      "rotation_workspace_full_radius_m": 0.015,
+      "rotation_workspace_zero_radius_m": 0.035,
+      "position_error_scale": 6.0,
+      "object_linvel_scale": 0.3,
+      "transition_success_bonus": 0.1,
+      "cycle_success_bonus": 0.3,
+      "invalid_cycle_penalty": 0.15,
+      "timeout_penalty": 0.25,
+      "failure_penalty": 3.0,
+      "failure_rotation_clawback_cap": 5.0
+    },
+    "play_profile": {
+      "enabled": true,
+      "env": {
+        "render_spacing": 2.0
+      }
+    }
+  },
+  "contract_snapshot": {
+    "algo.obs_groups": {
+      "default": [
+        "policy"
+      ],
+      "actor": [
+        "policy"
+      ],
+      "critic": [
+        "policy"
+      ]
+    },
+    "env.control_config.action_scale": 0.041666666666666664,
+    "algo.policy.actor_hidden_dims": [
+      512,
+      256,
+      128
+    ],
+    "algo.policy.critic_hidden_dims": [
+      512,
+      256,
+      128
+    ],
+    "algo.empirical_normalization": false,
+    "env.ctrl_dt": 0.05
+  }
+}
