@@ -40,7 +40,7 @@ class CacheGaitingRewardConfig(AllegroStyleRotationRewardConfig):
         default_factory=lambda: {
             "rotate": 1.25,
             "obj_linvel": -0.3,
-            "position_error": -6.0,
+            "position_error": -1.5,
             "spin_progress": 0.0,
             "spin_continuity": -0.05,
             "retention": 0.0,

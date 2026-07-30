@@ -192,7 +192,7 @@ def test_leap_objects_are_owned_by_leap_asset_directory() -> None:
     assert 'name="leap_object"' in cube
     assert 'size="0.0375 0.0375 0.0375"' in cube
     assert 'name="leap_object"' in ball
-    assert 'size="0.04"' in ball
+    assert 'size="0.0335"' in ball
     assert 'diaginertia="0.0001 0.0001 0.0001"' in ball
     assert '<include file="ball.xml"/>' in ball_scene
     assert "allegro" not in cube.lower() + ball.lower() + ball_scene.lower()
@@ -211,6 +211,7 @@ def test_leap_ball_rotation_marker_is_visual_only() -> None:
     )
 
     assert model.geom_type[collision_id] == mujoco.mjtGeom.mjGEOM_SPHERE
+    assert model.geom_size[collision_id, 0] == pytest.approx(0.0335)
     assert model.geom_type[marker_id] == mujoco.mjtGeom.mjGEOM_CAPSULE
     assert model.geom_bodyid[marker_id] == object_body_id
     assert model.geom_contype[marker_id] == 0
@@ -2350,6 +2351,13 @@ def test_stall_penalty_is_scaled_by_ctrl_dt() -> None:
     ctrl_dt = 0.05
     step_penalty = penalty_rate * ctrl_dt
     np.testing.assert_allclose(step_penalty, [-0.0025])
+
+
+def test_cache_gaiting_uses_reduced_position_error_scale() -> None:
+    cfg = CacheGaitingRewardConfig()
+
+    assert cfg.scales["position_error"] == -1.5
+    assert AllegroStyleRotationRewardConfig().scales["position_error"] == -6.0
 
 
 @pytest.mark.parametrize("backend", ["mujoco", "motrix"])

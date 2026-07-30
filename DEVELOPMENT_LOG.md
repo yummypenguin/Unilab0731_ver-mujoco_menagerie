@@ -2697,3 +2697,94 @@ validation output from the development session.
   PowerPoint points. The revised `_14pt` deck clamps editable text to 19 px,
   which exports as a verified minimum of 14.25 pt, and uses a wider footer
   frame for two-digit page numbers.
+
+## 2026-07-28: CacheGaiting V2 Position-Error Ablation
+
+### Evidence
+
+- Completed V2 run `2026-07-27_12-26-57_mujoco` used a `-6.0` position-error
+  scale. Over its final 10% of iterations, mean anchor error was 5.82 mm and
+  the mean position gate was 0.989, while target-axis speed remained only
+  0.00066 rad/s and qualified handoffs remained effectively absent.
+- At that operating point, the position-error cost was the largest dense
+  negative term and exceeded the stall cost, despite the object already being
+  close to the cache anchor. This can over-prioritize static centering over
+  exploratory motion needed for rotation and handoff acquisition.
+
+### Scope
+
+- Reduced only `LeapInhandBallCacheGaitingRotation` position-error scale from
+  `-6.0` to `-3.0` in its Hydra owner config and Python default.
+- Kept the shared `AllegroStyleRotationRewardConfig` at `-6.0`; sustained-cache
+  and other LEAP tasks are unchanged.
+- Added a regression test that verifies both sides of this task boundary.
+- The comparison run retains V2's fresh-training setup: 8,192 environments,
+  8 steps per environment, 300 iterations, checkpoint interval 25, seed 1,
+  and initial policy standard deviation 0.3.
+
+### Validation
+
+- Focused Ruff passed. The CacheGaiting default/runtime pytest selection passed
+  all 3 cases and also verified that the shared sustained-cache default remains
+  `-6.0`.
+- The first launch, `2026-07-28_21-59-04_mujoco`, was aborted after iteration 5
+  by an outer command timeout and is excluded from comparisons.
+- Fresh comparison run `2026-07-28_22-02-32_mujoco` completed all 300
+  iterations and 19,660,800 environment steps in 6,772 seconds. Its final
+  checkpoint is `model_299.pt`.
+- Over the final 30 iterations, reducing the scale improved mean reward from
+  `-2.196` to `-0.543`, but most of this reflects the mechanically smaller
+  position cost and a collapsed stall cost; it is not evidence of task success.
+- Mean anchor error changed only from 5.82 mm to 5.92 mm and the position gate
+  improved from 0.989 to 0.997, so retention did not materially degrade.
+- Mean target-axis speed rose from 0.00066 to 0.00339 rad/s and mean net turns
+  from 0.00638 to 0.01640, but normalized progress fell from 0.00698 to
+  0.00266 and final target-axis speed remained only 0.00099 rad/s. Sustained
+  rotation was not acquired.
+- Curriculum level mean collapsed from 0.447 to 0.018, qualified handoffs fell
+  to zero, and middle-finger contact duty collapsed from 44.4% to 1.82%. The
+  policy converged on an index/thumb static-support strategy rather than active
+  finger gaiting. The `-3.0` ablation is therefore retained as a documented
+  negative result, not promoted as the new successful reward setting.
+
+## 2026-07-29: CacheGaiting Position-Error -1.5 Ablation
+
+### Rationale And Scope
+
+- Halved the CacheGaiting-only position-error scale again, from `-3.0` to
+  `-1.5`, to test whether additional freedom around the cache anchor improves
+  rotation exploration.
+- This is a single-variable fresh-training comparison. Curriculum, handoff
+  gates, termination, cache, observations, controls, and all other reward and
+  PPO settings remain unchanged from V2.
+- The previous `-3.0` result already showed degraded middle-finger
+  participation and zero qualified handoffs. This lower-weight run is intended
+  to confirm or reject that trend, not assumed to be an improvement.
+- Training uses 8,192 environments, 8 steps per environment, 300 iterations,
+  checkpoint interval 25, seed 1, and initial policy standard deviation 0.3.
+
+### Validation
+
+- Focused Ruff passed and the CacheGaiting default/runtime pytest selection
+  passed all 3 cases.
+- Fresh run `2026-07-29_00-01-08_mujoco` reached `model_225.pt` before the
+  outer two-hour command timeout stopped its worker. Full optimizer, policy,
+  critic, action-standard-deviation, iteration, and logger state were resumed
+  from that checkpoint.
+- Continuation run `2026-07-29_02-54-44_mujoco` completed at `model_299.pt`.
+  RSL-RL resumes inclusively from saved iteration 225, so the split run
+  executed one repeated update and reports 19,726,336 environment steps rather
+  than exactly 19,660,800; the difference is 0.33% and is documented here.
+- In the final 30 iterations, mean anchor error increased from 5.82 mm at
+  `-6.0` and 5.92 mm at `-3.0` to 8.00 mm at `-1.5`; the position gate fell to
+  0.924.
+- Mean target-axis speed became negative at `-0.00189 rad/s`, mean net turns
+  became `-0.0259`, and the fraction above 0.05 rad/s fell to 0.164%. The
+  policy did not acquire sustained positive rotation.
+- Qualified handoffs remained zero. Middle-finger duty recovered from 1.82%
+  at `-3.0` to 9.26%, but remained far below the 44.4% observed at `-6.0` and
+  did not produce actual handoffs.
+- This ablation confirms that further reducing the position-error weight alone
+  trades away anchor retention without solving rotation or gaiting. The
+  `-1.5` setting is retained as a negative experimental result and should not
+  be interpreted as the preferred CacheGaiting reward configuration.

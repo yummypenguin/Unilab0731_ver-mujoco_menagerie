@@ -11,7 +11,7 @@ reward:
   scales:
     rotate: 1.25
     obj_linvel: -0.3
-    position_error: -6.0
+    position_error: -1.5
     spin_progress: 0.0
 
     # Metadata mirror only.
