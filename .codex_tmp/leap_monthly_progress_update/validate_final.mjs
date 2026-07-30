@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import { FileBlob, PresentationFile } from "@oai/artifact-tool";
 
-const INPUT = "D:/UniLab/LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_Performance_Updated.pptx";
-const OUT = "D:/UniLab/.codex_tmp/leap_monthly_progress_update/final_check";
+const INPUT = "D:/UniLab/LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_FingerGaiting_Updated.pptx";
+const OUT = "D:/UniLab/.codex_tmp/leap_monthly_progress_update/final_check_finger_gaiting";
 const W = 1280;
 const H = 720;
 

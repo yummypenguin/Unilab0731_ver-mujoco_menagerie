@@ -1,0 +1,845 @@
+{"kind":"layout","layoutId":"/ppt/slideMasters/slideMaster1.xml","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout1.xml","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/y90nupkv","slide":1,"title":"UNILAB · DEXTEROUS MANIPULATION","textShapes":6}
+{"kind":"textbox","id":"sh/fu94fe98","slide":1,"textChars":31,"textLines":1}
+{"kind":"textbox","id":"sh/547294r6","slide":1,"textChars":60,"textLines":2}
+{"kind":"textbox","id":"sh/k3yl0zql","slide":1,"textChars":97,"textLines":1}
+{"kind":"shape","id":"sh/7qp4be9c","slide":1,"name":"矩形 3","bbox":[1010,170,180,280]}
+{"kind":"textbox","id":"sh/65g3298r","slide":1,"textChars":1,"textLines":1}
+{"kind":"textbox","id":"sh/ts7md4r2","slide":1,"textChars":30,"textLines":2}
+{"kind":"textbox","id":"sh/sryl4zqx","slide":1,"textChars":34,"textLines":1}
+{"kind":"notes","id":"nt/y90nupkv","slide":1,"text":"This report reconstructs progress from saved code, configurations, run metada..."}
+{"kind":"slide","id":"sl/hwbqtkby","slide":2,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":17}
+{"kind":"textbox","id":"sh/76twva5c","slide":2,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/9072xkry","slide":2,"textChars":54,"textLines":1}
+{"kind":"textbox","id":"sh/ozy1ofad","slide":2,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/b29kza94","slide":2,"name":"矩形: 圓角 3","bbox":[54,170,330,140]}
+{"kind":"textbox","id":"sh/a10jqpsj","slide":2,"textChars":1,"textLines":1}
+{"kind":"textbox","id":"sh/x4r21kru","slide":2,"textChars":23,"textLines":1}
+{"kind":"shape","id":"sh/w3i1sfa9","slide":2,"name":"矩形: 圓角 6","bbox":[420,170,330,140]}
+{"kind":"textbox","id":"sh/r65knqtk","slide":2,"textChars":3,"textLines":1}
+{"kind":"textbox","id":"sh/q5wjelsz","slide":2,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/ove9o7yd","slide":2,"name":"矩形: 圓角 9","bbox":[786,170,330,140]}
+{"kind":"textbox","id":"sh/9wnqhczy","slide":2,"textChars":1,"textLines":1}
+{"kind":"textbox","id":"sh/mtwrmxg7","slide":2,"textChars":36,"textLines":1}
+{"kind":"shape","id":"sh/nu58f2hs","slide":2,"name":"矩形 12","bbox":[54,365,8,34]}
+{"kind":"textbox","id":"sh/wjy9sry9","slide":2,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/xk7qlczu","slide":2,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/ahwrqhgj","slide":2,"textChars":102,"textLines":1}
+{"kind":"textbox","id":"sh/bip8jmho","slide":2,"textChars":18,"textLines":1}
+{"kind":"textbox","id":"sh/cnupgny5","slide":2,"textChars":99,"textLines":1}
+{"kind":"textbox","id":"sh/do3q9szq","slide":2,"textChars":15,"textLines":1}
+{"kind":"textbox","id":"sh/t8byxkn2","slide":2,"textChars":112,"textLines":1}
+{"kind":"textbox","id":"sh/s72xofmh","slide":2,"textChars":119,"textLines":1}
+{"kind":"notes","id":"nt/hwbqtkby","slide":2,"text":"The emphasis is a reliable experimental foundation and traceable evidence, no..."}
+{"kind":"slide","id":"sl/ofy9wn61","slide":3,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":19}
+{"kind":"textbox","id":"sh/sfix03y9","slide":3,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/cza94vmx","slide":3,"textChars":54,"textLines":1}
+{"kind":"textbox","id":"sh/d0jax03i","slide":3,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/po3ilcvm","slide":3,"name":"直線單箭頭接點 36","bbox":[82,292,1090,0]}
+{"kind":"shape","id":"sh/3ah8rqlg","slide":3,"name":"橢圓 4","bbox":[92,286,12,12]}
+{"kind":"textbox","id":"sh/obq90bml","slide":3,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/pcjqtg36","slide":3,"textChars":11,"textLines":1}
+{"kind":"textbox","id":"sh/m5cra54z","slide":3,"textChars":100,"textLines":1}
+{"kind":"shape","id":"sh/n6ls3alk","slide":3,"name":"橢圓 8","bbox":[315,286,12,12]}
+{"kind":"textbox","id":"sh/n2l4fq98","slide":3,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/m1c3mlsn","slide":3,"textChars":16,"textLines":1}
+{"kind":"textbox","id":"sh/943mhgre","slide":3,"textChars":88,"textLines":1}
+{"kind":"shape","id":"sh/83ulovat","slide":3,"name":"橢圓 12","bbox":[538,286,12,12]}
+{"kind":"textbox","id":"sh/v6l4jq94","slide":3,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/a5c3ql8z","slide":3,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/x8nml0ra","slide":3,"textChars":94,"textLines":1}
+{"kind":"shape","id":"sh/w7ulsvqp","slide":3,"name":"橢圓 16","bbox":[761,286,12,12]}
+{"kind":"textbox","id":"sh/ja54na9g","slide":3,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/i9w3u58v","slide":3,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/e10f2twf","slide":3,"textChars":79,"textLines":1}
+{"kind":"shape","id":"sh/f29gbyx0","slide":3,"name":"橢圓 20","bbox":[984,286,12,12]}
+{"kind":"textbox","id":"sh/03ix43e5","slide":3,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/14ryd8fq","slide":3,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/6d0fytg3","slide":3,"textChars":85,"textLines":1}
+{"kind":"textbox","id":"sh/re9g7yxo","slide":3,"textChars":121,"textLines":1}
+{"kind":"notes","id":"nt/ofy9wn61","slide":3,"text":"[Sources] | - D:/UniLab/DEVELOPMENT_LOG.md | - D:/UniLab/AGENTS.md#Dexterous-..."}
+{"kind":"slide","id":"sl/jyx0ra1s","slide":4,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":8}
+{"kind":"textbox","id":"sh/5cva1cfq","slide":4,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/1cj2d8b6","slide":4,"textChars":50,"textLines":1}
+{"kind":"textbox","id":"sh/0ba143al","slide":4,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/rm1k7yt4","slide":4,"name":"矩形 3","bbox":[54,160,520,380]}
+{"kind":"textbox","id":"sh/ql8jytsj","slide":4,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/doj29oba","slide":4,"textChars":195,"textLines":4}
+{"kind":"shape","id":"sh/sna103ap","slide":4,"name":"矩形 6","bbox":[626,160,520,380]}
+{"kind":"textbox","id":"sh/3ihk3et8","slide":4,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/ih8ju9sn","slide":4,"textChars":207,"textLines":4}
+{"kind":"textbox","id":"sh/kbm987y5","slide":4,"textChars":135,"textLines":1}
+{"kind":"notes","id":"nt/jyx0ra1s","slide":4,"text":"[Sources] | - D:/UniLab/conf/ppo/task/leap_inhand_ball_*/mujoco.yaml | - D:/U..."}
+{"kind":"slide","id":"sl/i107q5of","slide":5,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":18}
+{"kind":"textbox","id":"sh/pkr6tgjy","slide":5,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/dgbulwnm","slide":5,"textChars":44,"textLines":1}
+{"kind":"textbox","id":"sh/cf2tcr61","slide":5,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/z2tcnm5s","slide":5,"name":"矩形: 圓角 3","bbox":[54,148,62,84]}
+{"kind":"textbox","id":"sh/yhkbe1o7","slide":5,"textChars":1,"textLines":1}
+{"kind":"textbox","id":"sh/l4bupwny","slide":5,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/032tgr6d","slide":5,"textChars":148,"textLines":1}
+{"kind":"shape","id":"sh/n6dcr65o","slide":5,"name":"矩形: 圓角 7","bbox":[54,264,62,84]}
+{"kind":"textbox","id":"sh/m5kbi1oj","slide":5,"textChars":1,"textLines":1}
+{"kind":"textbox","id":"sh/w32dkbuh","slide":5,"textChars":18,"textLines":1}
+{"kind":"textbox","id":"sh/x4vedgvm","slide":5,"textChars":162,"textLines":1}
+{"kind":"shape","id":"sh/ahkvi1cb","slide":5,"name":"矩形: 圓角 11","bbox":[54,380,62,84]}
+{"kind":"textbox","id":"sh/v2twb6dw","slide":5,"textChars":1,"textLines":1}
+{"kind":"textbox","id":"sh/k7mxovud","slide":5,"textChars":16,"textLines":1}
+{"kind":"textbox","id":"sh/58vehgvy","slide":5,"textChars":145,"textLines":1}
+{"kind":"shape","id":"sh/i54fmlc7","slide":5,"name":"矩形: 圓角 15","bbox":[54,496,62,84]}
+{"kind":"textbox","id":"sh/j6dwfqds","slide":5,"textChars":1,"textLines":1}
+{"kind":"textbox","id":"sh/sb6xsvu9","slide":5,"textChars":19,"textLines":1}
+{"kind":"textbox","id":"sh/tcfel0vu","slide":5,"textChars":195,"textLines":1}
+{"kind":"shape","id":"sh/hgrmpwj2","slide":5,"name":"矩形: 圓角 19","bbox":[820,148,350,440]}
+{"kind":"textbox","id":"sh/gfi5grih","slide":5,"textChars":27,"textLines":1}
+{"kind":"textbox","id":"sh/fe94nm1w","slide":5,"textChars":325,"textLines":12}
+{"kind":"textbox","id":"sh/ud0ne10b","slide":5,"textChars":96,"textLines":1}
+{"kind":"notes","id":"nt/i107q5of","slide":5,"text":"The page records the production path used for ball_grasp_official_50k.npy. Th..."}
+{"kind":"slide","id":"sl/x8f69ofe","slide":6,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":7}
+{"kind":"textbox","id":"sh/pc76hkr2","slide":6,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/yhg7epsj","slide":6,"textChars":36,"textLines":1}
+{"kind":"textbox","id":"sh/zi98nu94","slide":6,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/98rqt4r6","slide":6,"textChars":19,"textLines":1}
+{"kind":"textbox","id":"sh/ml07i9sv","slide":6,"textChars":439,"textLines":9}
+{"kind":"textbox","id":"sh/7m98ru9g","slide":6,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/oryp8fah","slide":6,"textChars":95,"textLines":1}
+{"kind":"notes","id":"nt/x8f69ofe","slide":6,"text":"[Sources] | - C:/Users/timli/Downloads/ChatGPT Image 2026年7月28日 下午05_27_48.pn..."}
+{"kind":"slide","id":"sl/gnmp4jqx","slide":7,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":73}
+{"kind":"textbox","id":"sh/h0byhgby","slide":7,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/cb2tkvap","slide":7,"textChars":48,"textLines":1}
+{"kind":"textbox","id":"sh/dcbud0ra","slide":7,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/ydkbm5sv","slide":7,"textChars":43,"textLines":1}
+{"kind":"shape","id":"sh/zedcfa9g","slide":7,"bbox":[54,142,70,36]}
+{"kind":"textbox","id":"sh/kzmdova1","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/l0vuh0rm","slide":7,"bbox":[124,142,216,36]}
+{"kind":"textbox","id":"sh/eh0ba1sr","slide":7,"textChars":13,"textLines":1}
+{"kind":"shape","id":"sh/fi9c369c","slide":7,"bbox":[340,142,264,36]}
+{"kind":"textbox","id":"sh/baxkjqlk","slide":7,"textChars":13,"textLines":1}
+{"kind":"shape","id":"sh/a9ojq5kz","slide":7,"bbox":[604,142,82,36]}
+{"kind":"textbox","id":"sh/xcz2l03q","slide":7,"textChars":10,"textLines":2}
+{"kind":"shape","id":"sh/cbq1sv25","slide":7,"bbox":[686,142,70,36]}
+{"kind":"textbox","id":"sh/n6x0fqlo","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/25ojml43","slide":7,"bbox":[756,142,94,36]}
+{"kind":"textbox","id":"sh/p8fih03e","slide":7,"textChars":11,"textLines":2}
+{"kind":"shape","id":"sh/o761ov2t","slide":7,"bbox":[850,142,92,36]}
+{"kind":"textbox","id":"sh/f2d0b6lc","slide":7,"textChars":8,"textLines":2}
+{"kind":"shape","id":"sh/eh4jil4r","slide":7,"bbox":[942,142,78,36]}
+{"kind":"textbox","id":"sh/id4ju1oz","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/jedkn654","slide":7,"bbox":[1020,142,100,36]}
+{"kind":"textbox","id":"sh/4fm1wb6p","slide":7,"textChars":12,"textLines":2}
+{"kind":"shape","id":"sh/50v2pgna","slide":7,"bbox":[54,178,70,47]}
+{"kind":"shape","id":"sh/q143ylov","slide":7,"bbox":[60,185,58,33]}
+{"kind":"textbox","id":"sh/r2dkrq5g","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/s3ml0v61","slide":7,"bbox":[124,178,216,47]}
+{"kind":"textbox","id":"sh/d4f2t0nm","slide":7,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/e5o32lor","slide":7,"bbox":[340,178,264,47]}
+{"kind":"textbox","id":"sh/f6xkvq5c","slide":7,"textChars":19,"textLines":1}
+{"kind":"shape","id":"sh/p0zmlk7u","slide":7,"bbox":[604,178,82,47]}
+{"kind":"textbox","id":"sh/ozq5szq9","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/nyh4jupo","slide":7,"bbox":[686,178,70,47]}
+{"kind":"textbox","id":"sh/2x8nqp83","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/x4j6p47q","slide":7,"bbox":[756,178,94,47]}
+{"kind":"textbox","id":"sh/c3a5wzq5","slide":7,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/b2h4nupk","slide":7,"bbox":[850,178,92,47]}
+{"kind":"textbox","id":"sh/a18nup8z","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/lsj6t47m","slide":7,"bbox":[942,178,78,47]}
+{"kind":"textbox","id":"sh/kra50jqh","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/wneps3ap","slide":7,"bbox":[1020,178,100,47]}
+{"kind":"textbox","id":"sh/honq18ru","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/ulc7qdsj","slide":7,"bbox":[54,225,70,47]}
+{"kind":"shape","id":"sh/vm58zi94","slide":7,"bbox":[60,232,58,33]}
+{"kind":"textbox","id":"sh/8jupo3ad","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/9k3qx8ry","slide":7,"bbox":[124,225,216,47]}
+{"kind":"textbox","id":"sh/mxc7mts7","slide":7,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/7yl8vy9s","slide":7,"bbox":[340,225,264,47]}
+{"kind":"textbox","id":"sh/sfy907ah","slide":7,"textChars":18,"textLines":1}
+{"kind":"shape","id":"sh/tg7q9sr2","slide":7,"bbox":[604,225,82,47]}
+{"kind":"textbox","id":"sh/na9sz6tk","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/290bq1cz","slide":7,"bbox":[686,225,70,47]}
+{"kind":"textbox","id":"sh/pcra1wba","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/obitsrup","slide":7,"bbox":[756,225,94,47]}
+{"kind":"textbox","id":"sh/betc36tg","slide":7,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/adkbu1cv","slide":7,"bbox":[850,225,92,47]}
+{"kind":"textbox","id":"sh/xgbu5gbm","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/cf2twbu1","slide":7,"bbox":[942,225,78,47]}
+{"kind":"textbox","id":"sh/ripsrmtc","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/6hgbihcr","slide":7,"bbox":[1020,225,100,47]}
+{"kind":"textbox","id":"sh/uponm90b","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/vah4fehw","slide":7,"bbox":[54,272,70,47]}
+{"kind":"shape","id":"sh/gbq5ojih","slide":7,"bbox":[60,279,58,33]}
+{"kind":"textbox","id":"sh/hczmhoz2","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/6loni90f","slide":7,"bbox":[124,272,216,47]}
+{"kind":"textbox","id":"sh/7mx4buh0","slide":7,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/8n65kzil","slide":7,"bbox":[340,272,264,47]}
+{"kind":"textbox","id":"sh/tofmd4z6","slide":7,"textChars":18,"textLines":1}
+{"kind":"shape","id":"sh/yh4nep0j","slide":7,"bbox":[604,272,82,47]}
+{"kind":"textbox","id":"sh/jix47uho","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/1c3qdsj6","slide":7,"bbox":[686,272,70,47]}
+{"kind":"textbox","id":"sh/0bupkn21","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/fal8bi1g","slide":7,"bbox":[756,272,94,47]}
+{"kind":"textbox","id":"sh/e9c7ixkv","slide":7,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/d8jq9sja","slide":7,"bbox":[850,272,92,47]}
+{"kind":"textbox","id":"sh/s7apgn2p","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/r6187i14","slide":7,"bbox":[942,272,78,47]}
+{"kind":"textbox","id":"sh/q5s7edkj","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/54jq58je","slide":7,"bbox":[1020,272,100,47]}
+{"kind":"textbox","id":"sh/4japc32t","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/gj2doje1","slide":7,"bbox":[54,319,70,47]}
+{"kind":"shape","id":"sh/hkvuxovm","slide":7,"bbox":[60,326,58,33]}
+{"kind":"textbox","id":"sh/uhkvm9wv","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/fitcvedg","slide":7,"bbox":[124,319,216,47]}
+{"kind":"textbox","id":"sh/4nmdsjux","slide":7,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/povu1ovi","slide":7,"bbox":[340,319,264,47]}
+{"kind":"textbox","id":"sh/2l4vqtc7","slide":7,"textChars":23,"textLines":1}
+{"kind":"shape","id":"sh/3mdczydc","slide":7,"bbox":[604,319,82,47]}
+{"kind":"textbox","id":"sh/cb6dw3u9","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/dcfe58vu","slide":7,"bbox":[686,319,70,47]}
+{"kind":"textbox","id":"sh/n6hgv2xw","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/m58f2xwb","slide":7,"bbox":[756,319,94,47]}
+{"kind":"textbox","id":"sh/98zyxcf2","slide":7,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/o7qx47eh","slide":7,"bbox":[850,319,92,47]}
+{"kind":"textbox","id":"sh/zixgr2xk","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/ehofyxgf","slide":7,"bbox":[942,319,78,47]}
+{"kind":"textbox","id":"sh/14zytsfq","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/0jqx0ne5","slide":7,"bbox":[1020,319,100,47]}
+{"kind":"textbox","id":"sh/je1g3mx4","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/ydszahwj","slide":7,"bbox":[54,366,70,47]}
+{"kind":"shape","id":"sh/v258jm1o","slide":7,"bbox":[60,373,58,33]}
+{"kind":"textbox","id":"sh/u1wrqh03","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/h4nqlwju","slide":7,"bbox":[124,366,216,47]}
+{"kind":"textbox","id":"sh/w3e9sri9","slide":7,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/j6p8nm1k","slide":7,"bbox":[340,366,264,47]}
+{"kind":"textbox","id":"sh/i5wruh0f","slide":7,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/587apwjq","slide":7,"bbox":[604,366,82,47]}
+{"kind":"textbox","id":"sh/47y9wri5","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/zal8b21g","slide":7,"bbox":[686,366,70,47]}
+{"kind":"textbox","id":"sh/y9crix0v","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/ofa5s3yt","slide":7,"bbox":[756,366,94,47]}
+{"kind":"textbox","id":"sh/pgj6l8ze","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/2d8nqtgn","slide":7,"bbox":[850,366,92,47]}
+{"kind":"textbox","id":"sh/nehojyh8","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/0bq5ojyx","slide":7,"bbox":[942,366,78,47]}
+{"kind":"textbox","id":"sh/1cz6hoz2","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/e98nm9gr","slide":7,"bbox":[1020,366,100,47]}
+{"kind":"textbox","id":"sh/fahofehc","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/k7up0ny1","slide":7,"bbox":[54,413,70,47]}
+{"kind":"shape","id":"sh/l836tszm","slide":7,"bbox":[60,420,58,33]}
+{"kind":"textbox","id":"sh/t4z6d8rq","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/83q5knq5","slide":7,"bbox":[124,413,216,47]}
+{"kind":"textbox","id":"sh/72hobi9k","slide":7,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/61onid8z","slide":7,"bbox":[340,413,264,47]}
+{"kind":"textbox","id":"sh/l0f698re","slide":7,"textChars":20,"textLines":1}
+{"kind":"shape","id":"sh/kz65g3q9","slide":7,"bbox":[604,413,82,47]}
+{"kind":"textbox","id":"sh/jyxo7y9o","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/yxonet83","slide":7,"bbox":[686,413,70,47]}
+{"kind":"textbox","id":"sh/xwf65ori","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/wv65c3qx","slide":7,"bbox":[756,413,94,47]}
+{"kind":"textbox","id":"sh/m1k36pov","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/n2dkfupg","slide":7,"bbox":[850,413,92,47]}
+{"kind":"textbox","id":"sh/o3ml8z61","slide":7,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/94v2h476","slide":7,"bbox":[942,413,78,47]}
+{"kind":"textbox","id":"sh/edk32poj","slide":7,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/zetkbup4","slide":7,"bbox":[1020,413,100,47]}
+{"kind":"textbox","id":"sh/0z2l4z6p","slide":7,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/10b2dk7a","slide":7,"bbox":[54,476,352,158]}
+{"kind":"textbox","id":"sh/q903y5on","slide":7,"textChars":24,"textLines":1}
+{"kind":"textbox","id":"sh/ra9k7ap8","slide":7,"textChars":94,"textLines":1}
+{"kind":"shape","id":"sh/jmtgjqto","slide":7,"bbox":[423,476,352,158]}
+{"kind":"textbox","id":"sh/i1kzalsj","slide":7,"textChars":29,"textLines":1}
+{"kind":"textbox","id":"sh/5ovilgru","slide":7,"textChars":117,"textLines":1}
+{"kind":"shape","id":"sh/4n2hcva9","slide":7,"bbox":[792,476,354,158]}
+{"kind":"textbox","id":"sh/vytgf6ts","slide":7,"textChars":25,"textLines":1}
+{"kind":"textbox","id":"sh/uxkz61s7","slide":7,"textChars":112,"textLines":1}
+{"kind":"notes","id":"nt/gnmp4jqx","slide":7,"text":"Metrics are arithmetic means over the final 10% of TensorBoard iteration reco..."}
+{"kind":"slide","id":"sl/fu1gfa1s","slide":8,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":66}
+{"kind":"textbox","id":"sh/wrq587yx","slide":8,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/18byd4zy","slide":8,"textChars":46,"textLines":1}
+{"kind":"textbox","id":"sh/g72x4zyd","slide":8,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/ri9g7uhw","slide":8,"textChars":97,"textLines":1}
+{"kind":"shape","id":"sh/6h0fypgb","slide":8,"bbox":[54,142,70,36]}
+{"kind":"textbox","id":"sh/tkby9kzm","slide":8,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/sjix0zy1","slide":8,"bbox":[124,142,216,36]}
+{"kind":"textbox","id":"sh/je9g3ahk","slide":8,"textChars":13,"textLines":1}
+{"kind":"shape","id":"sh/id0fu50z","slide":8,"bbox":[340,142,468,36]}
+{"kind":"textbox","id":"sh/o7ydoret","slide":8,"textChars":13,"textLines":1}
+{"kind":"shape","id":"sh/98rehwve","slide":8,"bbox":[808,142,90,36]}
+{"kind":"textbox","id":"sh/m5gvmhwn","slide":8,"textChars":10,"textLines":2}
+{"kind":"shape","id":"sh/n6pwfmd8","slide":8,"bbox":[898,142,80,36]}
+{"kind":"textbox","id":"sh/0jydkreh","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/1k7edwv2","slide":8,"bbox":[978,142,112,36]}
+{"kind":"textbox","id":"sh/ehgvihwr","slide":8,"textChars":16,"textLines":2}
+{"kind":"shape","id":"sh/zipwbmdc","slide":8,"bbox":[1090,142,100,36]}
+{"kind":"textbox","id":"sh/kfixwbe1","slide":8,"textChars":12,"textLines":2}
+{"kind":"shape","id":"sh/lgbepgvm","slide":8,"bbox":[54,178,70,42]}
+{"kind":"shape","id":"sh/tw7e9gnq","slide":8,"bbox":[60,185,58,28]}
+{"kind":"textbox","id":"sh/svydgb65","slide":8,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/7u5w765k","slide":8,"bbox":[124,178,216,42]}
+{"kind":"textbox","id":"sh/6twve1oz","slide":8,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/5sne5wne","slide":8,"bbox":[340,178,468,42]}
+{"kind":"textbox","id":"sh/kredcr6t","slide":8,"textChars":28,"textLines":1}
+{"kind":"shape","id":"sh/jq5w365o","slide":8,"bbox":[808,178,90,42]}
+{"kind":"textbox","id":"sh/i5wva1o3","slide":8,"textChars":1,"textLines":1}
+{"kind":"shape","id":"sh/x4ne1wni","slide":8,"bbox":[898,178,80,42]}
+{"kind":"textbox","id":"sh/w3ed8r6x","slide":8,"textChars":1,"textLines":1}
+{"kind":"shape","id":"sh/m9sb2x4v","slide":8,"bbox":[978,178,112,42]}
+{"kind":"textbox","id":"sh/na1sb2lg","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/8bat47ml","slide":8,"bbox":[1090,178,100,42]}
+{"kind":"textbox","id":"sh/9w3uds36","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/y5sbed4j","slide":8,"bbox":[54,220,70,42]}
+{"kind":"shape","id":"sh/z61s7il4","slide":8,"bbox":[60,227,58,28]}
+{"kind":"textbox","id":"sh/07atgnmp","slide":8,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/l8ja9s3a","slide":8,"bbox":[124,220,216,42]}
+{"kind":"textbox","id":"sh/q18bad4n","slide":8,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/b2hs3il8","slide":8,"bbox":[340,220,468,42]}
+{"kind":"textbox","id":"sh/3u18fepo","slide":8,"textChars":24,"textLines":1}
+{"kind":"shape","id":"sh/2ts769o3","slide":8,"bbox":[808,220,90,42]}
+{"kind":"textbox","id":"sh/pwjqho7u","slide":8,"textChars":1,"textLines":1}
+{"kind":"shape","id":"sh/4vap8j69","slide":8,"bbox":[898,220,80,42]}
+{"kind":"textbox","id":"sh/fq1obeps","slide":8,"textChars":1,"textLines":1}
+{"kind":"shape","id":"sh/up872987","slide":8,"bbox":[978,220,112,42]}
+{"kind":"textbox","id":"sh/hsjqd47y","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/grap4zqd","slide":8,"bbox":[1090,220,100,42]}
+{"kind":"textbox","id":"sh/72ho7upg","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/6187yp8b","slide":8,"bbox":[54,262,70,42]}
+{"kind":"shape","id":"sh/cvmdsb2h","slide":8,"bbox":[60,269,58,28]}
+{"kind":"textbox","id":"sh/xwvelwj2","slide":8,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/at4vq1kr","slide":8,"bbox":[124,262,216,42]}
+{"kind":"textbox","id":"sh/budwj61c","slide":8,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/kjmdwbit","slide":8,"bbox":[340,262,468,42]}
+{"kind":"textbox","id":"sh/lkvepgje","slide":8,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/yx4vu10n","slide":8,"bbox":[808,262,90,42]}
+{"kind":"textbox","id":"sh/zidwn618","slide":8,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/0n2dkr2p","slide":8,"bbox":[898,262,80,42]}
+{"kind":"textbox","id":"sh/1obudcju","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/hk3ah8by","slide":8,"bbox":[978,262,112,42]}
+{"kind":"textbox","id":"sh/gjuto3ud","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/filsfyts","slide":8,"bbox":[1090,262,100,42]}
+{"kind":"textbox","id":"sh/uhsbmtc7","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/po3ulsbu","slide":8,"bbox":[54,304,70,42]}
+{"kind":"shape","id":"sh/4nutsnu9","slide":8,"bbox":[60,311,58,28]}
+{"kind":"textbox","id":"sh/3mlcjit4","slide":8,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/2lcbqdcj","slide":8,"bbox":[124,304,216,42]}
+{"kind":"textbox","id":"sh/dcnupsb6","slide":8,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/cbetwnul","slide":8,"bbox":[340,304,468,42]}
+{"kind":"textbox","id":"sh/axo7qps3","slide":8,"textChars":27,"textLines":1}
+{"kind":"shape","id":"sh/vyx8ju9o","slide":8,"bbox":[808,304,90,42]}
+{"kind":"textbox","id":"sh/wzq9szat","slide":8,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/x0zql4re","slide":8,"bbox":[898,304,80,42]}
+{"kind":"textbox","id":"sh/i18ru9sz","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/jmh8nu9k","slide":8,"bbox":[978,304,112,42]}
+{"kind":"textbox","id":"sh/knq9wza5","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/5ozqp4rq","slide":8,"bbox":[1090,304,100,42]}
+{"kind":"textbox","id":"sh/6p8ry9sb","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/7q18re9g","slide":8,"bbox":[54,346,70,42]}
+{"kind":"shape","id":"sh/rix4n6dw","slide":8,"bbox":[60,353,58,28]}
+{"kind":"textbox","id":"sh/qhone1wr","slide":8,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/dkzmpgv2","slide":8,"bbox":[124,346,216,42]}
+{"kind":"textbox","id":"sh/sj65gbeh","slide":8,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/fmh4rqd8","slide":8,"bbox":[340,346,468,42]}
+{"kind":"textbox","id":"sh/el8nilwn","slide":8,"textChars":27,"textLines":1}
+{"kind":"shape","id":"sh/1ozmt0ve","slide":8,"bbox":[808,346,90,42]}
+{"kind":"textbox","id":"sh/0nq5kvet","slide":8,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/nah4vqd4","slide":8,"bbox":[898,346,80,42]}
+{"kind":"textbox","id":"sh/298nm5wj","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/kfalcvax","slide":8,"bbox":[978,346,112,42]}
+{"kind":"textbox","id":"sh/lgjml0bi","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/yds3a5sr","slide":8,"bbox":[1090,346,100,42]}
+{"kind":"textbox","id":"sh/ze14jatc","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/cbal8val","slide":8,"bbox":[54,388,70,42]}
+{"kind":"shape","id":"sh/xcjmh0b6","slide":8,"bbox":[60,395,58,28]}
+{"kind":"textbox","id":"sh/ap836lsv","slide":8,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/bqh4fqtg","slide":8,"bbox":[124,388,216,42]}
+{"kind":"textbox","id":"sh/onql4bap","slide":8,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/pozmdgba","slide":8,"bbox":[340,388,468,42]}
+{"kind":"textbox","id":"sh/idc76l07","slide":8,"textChars":26,"textLines":1}
+{"kind":"shape","id":"sh/3e58fqhs","slide":8,"bbox":[808,388,90,42]}
+{"kind":"textbox","id":"sh/4fep8vid","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/5gnqh0zy","slide":8,"bbox":[898,388,80,42]}
+{"kind":"textbox","id":"sh/u9c72l0b","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/val8bqhw","slide":8,"bbox":[978,388,112,42]}
+{"kind":"textbox","id":"sh/gbup4vih","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/hc3qd0zm","slide":8,"bbox":[1090,388,100,42]}
+{"kind":"textbox","id":"sh/e5g7ep0f","slide":8,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/f6p87ah0","slide":8,"bbox":[54,430,70,42]}
+{"kind":"shape","id":"sh/9cb2t8ne","slide":8,"bbox":[60,437,58,28]}
+{"kind":"textbox","id":"sh/ob21036t","slide":8,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/natkry58","slide":8,"bbox":[124,430,216,42]}
+{"kind":"textbox","id":"sh/m90jyto3","slide":8,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/18r2p8ni","slide":8,"bbox":[340,430,468,42]}
+{"kind":"textbox","id":"sh/07i1w36x","slide":8,"textChars":21,"textLines":1}
+{"kind":"shape","id":"sh/zm90ny5c","slide":8,"bbox":[808,430,90,42]}
+{"kind":"textbox","id":"sh/el0jutor","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/54v21snm","slide":8,"bbox":[898,430,80,42]}
+{"kind":"textbox","id":"sh/k3m1sn61","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/4nul4rud","slide":8,"bbox":[978,430,112,42]}
+{"kind":"textbox","id":"sh/5o3mxwvy","slide":8,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/ils321w7","slide":8,"bbox":[1090,430,100,42]}
+{"kind":"textbox","id":"sh/3ml4v6ds","slide":8,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/gjal0re1","slide":8,"bbox":[54,490,352,144]}
+{"kind":"textbox","id":"sh/hkjmtwvm","slide":8,"textChars":24,"textLines":1}
+{"kind":"textbox","id":"sh/uhs3yhwb","slide":8,"textChars":116,"textLines":1}
+{"kind":"shape","id":"sh/vi14rmdg","slide":8,"bbox":[423,490,352,144]}
+{"kind":"textbox","id":"sh/8falw7e5","slide":8,"textChars":21,"textLines":1}
+{"kind":"textbox","id":"sh/tgjmpcvq","slide":8,"textChars":103,"textLines":1}
+{"kind":"shape","id":"sh/bqh4z2xc","slide":8,"bbox":[792,490,354,144]}
+{"kind":"textbox","id":"sh/ap8n6hgr","slide":8,"textChars":30,"textLines":1}
+{"kind":"textbox","id":"sh/xczm1cfi","slide":8,"textChars":117,"textLines":1}
+{"kind":"notes","id":"nt/fu1gfa1s","slide":8,"text":"Metrics are arithmetic means over the final 10% of TensorBoard iteration reco..."}
+{"kind":"slide","id":"sl/udsvah03","slide":9,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":50}
+{"kind":"textbox","id":"sh/eponml43","slide":9,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/1cfmhgne","slide":9,"textChars":58,"textLines":1}
+{"kind":"textbox","id":"sh/0b65obm9","slide":9,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/nex4jq5k","slide":9,"textChars":107,"textLines":1}
+{"kind":"shape","id":"sh/mdonql4z","slide":9,"bbox":[54,143,70,38]}
+{"kind":"textbox","id":"sh/9gzml0nq","slide":9,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/ofq5svm5","slide":9,"bbox":[124,143,210,38]}
+{"kind":"textbox","id":"sh/bih4na5w","slide":9,"textChars":15,"textLines":1}
+{"kind":"shape","id":"sh/ah8nu54b","slide":9,"bbox":[334,143,250,38]}
+{"kind":"textbox","id":"sh/oza1gfyh","slide":9,"textChars":12,"textLines":1}
+{"kind":"shape","id":"sh/p0ji9kf2","slide":9,"bbox":[584,143,90,38]}
+{"kind":"textbox","id":"sh/2xsjepgb","slide":9,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/3y107axw","slide":9,"bbox":[674,143,86,38]}
+{"kind":"textbox","id":"sh/cnu1kzyd","slide":9,"textChars":10,"textLines":2}
+{"kind":"shape","id":"sh/do3id4fy","slide":9,"bbox":[760,143,108,38]}
+{"kind":"textbox","id":"sh/qlcjipgn","slide":9,"textChars":17,"textLines":2}
+{"kind":"shape","id":"sh/bml0buxs","slide":9,"bbox":[868,143,90,38]}
+{"kind":"textbox","id":"sh/0ru1ozyp","slide":9,"textChars":12,"textLines":2}
+{"kind":"shape","id":"sh/lsn2h4fa","slide":9,"bbox":[958,143,232,38]}
+{"kind":"textbox","id":"sh/98ji147e","slide":9,"textChars":15,"textLines":1}
+{"kind":"shape","id":"sh/87a18zqt","slide":9,"bbox":[54,181,70,67]}
+{"kind":"shape","id":"sh/76h0zup8","slide":9,"bbox":[61,192,56,45]}
+{"kind":"textbox","id":"sh/ml8j6p8n","slide":9,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/hcji5o7a","slide":9,"bbox":[124,181,210,67]}
+{"kind":"textbox","id":"sh/wba1cjqp","slide":9,"textChars":19,"textLines":1}
+{"kind":"shape","id":"sh/va103ep4","slide":9,"bbox":[334,181,250,67]}
+{"kind":"textbox","id":"sh/u9sja98z","slide":9,"textChars":24,"textLines":1}
+{"kind":"shape","id":"sh/xgzitk76","slide":9,"bbox":[584,181,90,67]}
+{"kind":"textbox","id":"sh/cf6h0fql","slide":9,"textChars":7,"textLines":1}
+{"kind":"shape","id":"sh/2l4faloj","slide":9,"bbox":[674,181,86,67]}
+{"kind":"textbox","id":"sh/nmdg3q54","slide":9,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/onmxcv69","slide":9,"bbox":[760,181,108,67]}
+{"kind":"textbox","id":"sh/pofy50nu","slide":9,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/apofe5of","slide":9,"bbox":[868,181,90,67]}
+{"kind":"textbox","id":"sh/bqxg7q50","slide":9,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/cr6xgv6l","slide":9,"bbox":[958,181,232,67]}
+{"kind":"textbox","id":"sh/xcfy90n6","slide":9,"textChars":24,"textLines":1}
+{"kind":"shape","id":"sh/qtkf21ob","slide":9,"bbox":[54,248,70,67]}
+{"kind":"shape","id":"sh/rutwv65w","slide":9,"bbox":[61,259,56,45]}
+{"kind":"textbox","id":"sh/7y14jyd8","slide":9,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/mdsnatcn","slide":9,"bbox":[124,248,210,67]}
+{"kind":"textbox","id":"sh/903ml8be","slide":9,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/8zu5c3ut","slide":9,"bbox":[334,248,250,67]}
+{"kind":"textbox","id":"sh/v2l4nitk","slide":9,"textChars":22,"textLines":1}
+{"kind":"shape","id":"sh/u1cnedcz","slide":9,"bbox":[584,248,90,67]}
+{"kind":"textbox","id":"sh/h43mp8ba","slide":9,"textChars":7,"textLines":1}
+{"kind":"shape","id":"sh/w3u5g3u5","slide":9,"bbox":[674,248,86,67]}
+{"kind":"textbox","id":"sh/j6l4ritg","slide":9,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/i5cnidcv","slide":9,"bbox":[760,248,108,67]}
+{"kind":"textbox","id":"sh/0bel8na9","slide":9,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/1wnm1sru","slide":9,"bbox":[868,248,90,67]}
+{"kind":"textbox","id":"sh/e9w36ds3","slide":9,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/fa54zi9o","slide":9,"bbox":[958,248,232,67]}
+{"kind":"textbox","id":"sh/s7el4nax","slide":9,"textChars":30,"textLines":1}
+{"kind":"shape","id":"sh/t8nmx8ri","slide":9,"bbox":[54,315,70,67]}
+{"kind":"shape","id":"sh/65c32ds7","slide":9,"bbox":[61,326,56,45]}
+{"kind":"textbox","id":"sh/r654vi9c","slide":9,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/43ul03a1","slide":9,"bbox":[124,315,210,67]}
+{"kind":"textbox","id":"sh/5432t8rm","slide":9,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/l0v2x4ja","slide":9,"bbox":[334,315,250,67]}
+{"kind":"textbox","id":"sh/kzm14z2p","slide":9,"textChars":26,"textLines":1}
+{"kind":"shape","id":"sh/jyd0vu14","slide":9,"bbox":[584,315,90,67]}
+{"kind":"textbox","id":"sh/yx4j2pkj","slide":9,"textChars":7,"textLines":1}
+{"kind":"shape","id":"sh/xwvitkje","slide":9,"bbox":[674,315,86,67]}
+{"kind":"textbox","id":"sh/wvm10f2t","slide":9,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/but0ra18","slide":9,"bbox":[760,315,108,67]}
+{"kind":"textbox","id":"sh/atkjypkn","slide":9,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/hsf25oji","slide":9,"bbox":[868,315,90,67]}
+{"kind":"textbox","id":"sh/gr61cj2x","slide":9,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/ed0z6l0f","slide":9,"bbox":[958,315,232,67]}
+{"kind":"textbox","id":"sh/ze9gzqh0","slide":9,"textChars":32,"textLines":1}
+{"kind":"shape","id":"sh/0zih8bil","slide":9,"bbox":[54,382,70,67]}
+{"kind":"shape","id":"sh/10ry1gz6","slide":9,"bbox":[61,393,56,45]}
+{"kind":"textbox","id":"sh/q9gf210j","slide":9,"textChars":3,"textLines":1}
+{"kind":"shape","id":"sh/rapgv61o","slide":9,"bbox":[124,382,210,67]}
+{"kind":"textbox","id":"sh/cbyx4bi9","slide":9,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/dcryxgzu","slide":9,"bbox":[334,382,250,67]}
+{"kind":"textbox","id":"sh/a5kze50n","slide":9,"textChars":34,"textLines":1}
+{"kind":"shape","id":"sh/b6tg7ah8","slide":9,"bbox":[584,382,90,67]}
+{"kind":"textbox","id":"sh/ja58b650","slide":9,"textChars":7,"textLines":1}
+{"kind":"shape","id":"sh/y9w721of","slide":9,"bbox":[674,382,86,67]}
+{"kind":"textbox","id":"sh/lc7qdgn6","slide":9,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/kbep4b6l","slide":9,"bbox":[760,382,108,67]}
+{"kind":"textbox","id":"sh/bm5o7m54","slide":9,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/alw7yhoj","slide":9,"bbox":[868,382,90,67]}
+{"kind":"textbox","id":"sh/x8n69wnu","slide":9,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/wnep0r6p","slide":9,"bbox":[958,382,232,67]}
+{"kind":"textbox","id":"sh/nilo3m5s","slide":9,"textChars":23,"textLines":1}
+{"kind":"shape","id":"sh/mhc7uho7","slide":9,"bbox":[54,470,352,130]}
+{"kind":"textbox","id":"sh/sna54nm5","slide":9,"textChars":27,"textLines":1}
+{"kind":"textbox","id":"sh/dojmxs3q","slide":9,"textChars":134,"textLines":1}
+{"kind":"shape","id":"sh/ql832d4z","slide":9,"bbox":[423,470,352,130]}
+{"kind":"textbox","id":"sh/rm14vilk","slide":9,"textChars":27,"textLines":1}
+{"kind":"textbox","id":"sh/0ra58nmh","slide":9,"textChars":116,"textLines":1}
+{"kind":"shape","id":"sh/1sjm1s3m","slide":9,"bbox":[792,470,354,130]}
+{"kind":"textbox","id":"sh/epsn6x4b","slide":9,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/zq14zilw","slide":9,"textChars":139,"textLines":1}
+{"kind":"notes","id":"nt/udsvah03","slide":9,"text":"Metrics are arithmetic means over the final 10% of TensorBoard iteration reco..."}
+{"kind":"slide","id":"sl/m90b6t0r","slide":10,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":40}
+{"kind":"textbox","id":"sh/q9sn69kb","slide":10,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/xc3mho32","slide":10,"textChars":52,"textLines":1}
+{"kind":"textbox","id":"sh/cbu58j2h","slide":10,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/zelojyl8","slide":10,"textChars":77,"textLines":1}
+{"kind":"textbox","id":"sh/ydcnatkn","slide":10,"textChars":19,"textLines":1}
+{"kind":"textbox","id":"sh/l036l83y","slide":10,"textChars":36,"textLines":1}
+{"kind":"shape","id":"sh/kzu5c32t","slide":10,"bbox":[54,180,520,40]}
+{"kind":"textbox","id":"sh/725onyl4","slide":10,"textChars":16,"textLines":1}
+{"kind":"textbox","id":"sh/m1cnetkj","slide":10,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/s7yt4b21","slide":10,"bbox":[54,220,520,40]}
+{"kind":"textbox","id":"sh/d87uxg3m","slide":10,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/q5gb21kb","slide":10,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/r6pcv6lw","slide":10,"bbox":[54,260,520,40]}
+{"kind":"textbox","id":"sh/0bit8b2d","slide":10,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/1cru1g3y","slide":10,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/e9gb61k7","slide":10,"bbox":[54,300,520,40]}
+{"kind":"textbox","id":"sh/fapcz6ls","slide":10,"textChars":18,"textLines":1}
+{"kind":"textbox","id":"sh/ozitcv29","slide":10,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/p0ru503u","slide":10,"bbox":[54,340,520,40]}
+{"kind":"textbox","id":"sh/xwnupgvy","slide":10,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/wvetgbud","slide":10,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/bu5cnqd8","slide":10,"bbox":[54,380,520,40]}
+{"kind":"textbox","id":"sh/atwbelcn","slide":10,"textChars":16,"textLines":1}
+{"kind":"textbox","id":"sh/lk7ut0va","slide":10,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/kjytkvup","slide":10,"bbox":[54,420,520,40]}
+{"kind":"textbox","id":"sh/jypcrqd4","slide":10,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/yxgbilcj","slide":10,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/1o3ahwvq","slide":10,"bbox":[610,180,536,40]}
+{"kind":"textbox","id":"sh/0nut8rul","slide":10,"textChars":10,"textLines":1}
+{"kind":"textbox","id":"sh/q9srixs3","slide":10,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/ru18r2to","slide":10,"bbox":[610,220,536,40]}
+{"kind":"textbox","id":"sh/cva9k7a9","slide":10,"textChars":16,"textLines":1}
+{"kind":"textbox","id":"sh/dwjqtcbu","slide":10,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/exsrmhsf","slide":10,"bbox":[610,260,536,40]}
+{"kind":"textbox","id":"sh/zyl8vmt0","slide":10,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/0zu9ora5","slide":10,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/103qxcbq","slide":10,"bbox":[610,300,536,40]}
+{"kind":"textbox","id":"sh/u187adsv","slide":10,"textChars":9,"textLines":1}
+{"kind":"textbox","id":"sh/f2h8jitg","slide":10,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/bmpgrah8","slide":10,"bbox":[610,340,536,40]}
+{"kind":"textbox","id":"sh/algfy50n","slide":10,"textChars":19,"textLines":1}
+{"kind":"textbox","id":"sh/xo7ytkzy","slide":10,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/wnyx0fit","slide":10,"bbox":[610,380,536,40]}
+{"kind":"textbox","id":"sh/jq9gvuh4","slide":10,"textChars":18,"textLines":1}
+{"kind":"textbox","id":"sh/ip0f2p0j","slide":10,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/5cryx4za","slide":10,"bbox":[610,420,536,40]}
+{"kind":"textbox","id":"sh/kbix4zyp","slide":10,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/7e9gzuhg","slide":10,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/6d0f6pgv","slide":10,"bbox":[250,553,34,0]}
+{"kind":"shape","id":"sh/4j2xwzet","slide":10,"bbox":[480,553,34,0]}
+{"kind":"shape","id":"sh/pkbep4fe","slide":10,"bbox":[710,553,34,0]}
+{"kind":"shape","id":"sh/2hkfu9w3","slide":10,"bbox":[940,553,34,0]}
+{"kind":"shape","id":"sh/3itwnex8","slide":10,"bbox":[54,510,196,86]}
+{"kind":"textbox","id":"sh/gfixszex","slide":10,"textChars":22,"textLines":2}
+{"kind":"shape","id":"sh/hgrel4fi","slide":10,"bbox":[284,510,196,86]}
+{"kind":"textbox","id":"sh/ud0vqpwr","slide":10,"textChars":28,"textLines":2}
+{"kind":"shape","id":"sh/fe9wjuxc","slide":10,"bbox":[514,510,196,86]}
+{"kind":"textbox","id":"sh/sridofel","slide":10,"textChars":24,"textLines":2}
+{"kind":"shape","id":"sh/tsrehkf6","slide":10,"bbox":[744,510,196,86]}
+{"kind":"textbox","id":"sh/98julg7a","slide":10,"textChars":27,"textLines":2}
+{"kind":"shape","id":"sh/87atcb6p","slide":10,"bbox":[974,510,196,86]}
+{"kind":"textbox","id":"sh/n61cj6p4","slide":10,"textChars":37,"textLines":2}
+{"kind":"textbox","id":"sh/mlsba18j","slide":10,"textChars":135,"textLines":1}
+{"kind":"notes","id":"nt/m90b6t0r","slide":10,"text":"Dense reward terms are logged before multiplication by ctrl_dt; the displayed..."}
+{"kind":"slide","id":"sl/jetc3ut0","slide":11,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":20}
+{"kind":"textbox","id":"sh/j2lgjq5w","slide":11,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/xcryxg7y","slide":11,"textChars":58,"textLines":1}
+{"kind":"textbox","id":"sh/wbih4b6d","slide":11,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/n69grmpw","slide":11,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/250zy18b","slide":11,"name":"矩形: 圓角 4","bbox":[54,192,250,140]}
+{"kind":"textbox","id":"sh/98rytw72","slide":11,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/o7ih0r6h","slide":11,"textChars":18,"textLines":1}
+{"kind":"shape","id":"sh/72t03qp0","slide":11,"name":"矩形: 圓角 7","bbox":[330,192,250,140]}
+{"kind":"textbox","id":"sh/61kzalof","slide":11,"textChars":8,"textLines":1}
+{"kind":"textbox","id":"sh/ofqtgnyt","slide":11,"textChars":17,"textLines":1}
+{"kind":"shape","id":"sh/9gza9sze","slide":11,"name":"矩形: 圓角 10","bbox":[606,192,250,140]}
+{"kind":"textbox","id":"sh/mdobedg3","slide":11,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/nehs7iho","slide":11,"textChars":23,"textLines":1}
+{"kind":"shape","id":"sh/0b6tc3yx","slide":11,"name":"矩形: 圓角 13","bbox":[882,192,250,140]}
+{"kind":"textbox","id":"sh/1cfa58zi","slide":11,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/epobatgr","slide":11,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/zaxs3yhc","slide":11,"name":"矩形 16","bbox":[54,380,8,34]}
+{"kind":"textbox","id":"sh/cn6t83y1","slide":11,"textChars":30,"textLines":1}
+{"kind":"textbox","id":"sh/dofa18z6","slide":11,"textChars":19,"textLines":1}
+{"kind":"textbox","id":"sh/tsnip0ny","slide":11,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/87ehgv6d","slide":11,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/7650nq5s","slide":11,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/65wzelo7","slide":11,"textChars":21,"textLines":1}
+{"kind":"textbox","id":"sh/l43ilgn2","slide":11,"textChars":8,"textLines":1}
+{"kind":"textbox","id":"sh/k3uhcb6h","slide":11,"textChars":122,"textLines":1}
+{"kind":"notes","id":"nt/jetc3ut0","slide":11,"text":"[Sources] | - D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallFingerGaitingRotation/2..."}
+{"kind":"slide","id":"sl/8f2psfyx","slide":12,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":33}
+{"kind":"textbox","id":"sh/36x476ls","slide":12,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/1gbm9s3a","slide":12,"textChars":45,"textLines":1}
+{"kind":"textbox","id":"sh/0f2lgnmp","slide":12,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/ra943il8","slide":12,"textChars":92,"textLines":1}
+{"kind":"shape","id":"sh/q903ad4n","slide":12,"name":"矩形 4","bbox":[54,190,270,48]}
+{"kind":"shape","id":"sh/dcbm583y","slide":12,"name":"矩形 5","bbox":[324,190,230,48]}
+{"kind":"textbox","id":"sh/sb2lcnmd","slide":12,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/b6d4f2lc","slide":12,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/a543mx4r","slide":12,"name":"矩形 8","bbox":[54,238,270,48]}
+{"kind":"shape","id":"sh/wvupgz6t","slide":12,"name":"矩形 9","bbox":[324,238,230,48]}
+{"kind":"textbox","id":"sh/xw3q94ne","slide":12,"textChars":15,"textLines":1}
+{"kind":"textbox","id":"sh/atc7epon","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/bulo7u58","slide":12,"name":"矩形 12","bbox":[54,286,270,48]}
+{"kind":"shape","id":"sh/orapcf6h","slide":12,"name":"矩形 13","bbox":[324,286,230,48]}
+{"kind":"textbox","id":"sh/9sj65kn2","slide":12,"textChars":15,"textLines":1}
+{"kind":"textbox","id":"sh/mps7a5or","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/nq1o3a5w","slide":12,"name":"矩形 16","bbox":[54,334,270,48]}
+{"kind":"shape","id":"sh/0nap8f6l","slide":12,"name":"矩形 17","bbox":[324,334,230,48]}
+{"kind":"textbox","id":"sh/1oj61kn6","slide":12,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/hkbm5wzu","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/gj25cry9","slide":12,"name":"矩形 20","bbox":[54,382,270,48]}
+{"kind":"shape","id":"sh/fit436ho","slide":12,"name":"矩形 21","bbox":[324,382,230,48]}
+{"kind":"textbox","id":"sh/uh0na1g3","slide":12,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/tgrm1wzy","slide":12,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/sfi58ryd","slide":12,"name":"矩形 24","bbox":[54,430,270,48]}
+{"kind":"shape","id":"sh/7u94zmhs","slide":12,"name":"矩形 25","bbox":[324,430,230,48]}
+{"kind":"textbox","id":"sh/6t0n6hg7","slide":12,"textChars":15,"textLines":1}
+{"kind":"textbox","id":"sh/dcv6dgz2","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/cbm5kbyh","slide":12,"name":"矩形 28","bbox":[620,190,291.6,48]}
+{"kind":"shape","id":"sh/alwbitsn","slide":12,"name":"矩形 29","bbox":[911.6,190,248.4,48]}
+{"kind":"textbox","id":"sh/bm5sryt8","slide":12,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/wnetkjat","slide":12,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/xonutobe","slide":12,"name":"矩形 32","bbox":[620,238,291.6,48]}
+{"kind":"shape","id":"sh/mhcbe9sr","slide":12,"name":"矩形 33","bbox":[911.6,238,248.4,48]}
+{"kind":"textbox","id":"sh/nilsnetc","slide":12,"textChars":5,"textLines":1}
+{"kind":"textbox","id":"sh/ojutgjah","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/9k3apob2","slide":12,"name":"矩形 36","bbox":[620,286,291.6,48]}
+{"kind":"shape","id":"sh/6dgbqdsv","slide":12,"name":"矩形 37","bbox":[911.6,286,248.4,48]}
+{"kind":"textbox","id":"sh/7epczitg","slide":12,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/r6l8vaxw","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/q5c7m5wb","slide":12,"name":"矩形 40","bbox":[620,334,291.6,48]}
+{"kind":"shape","id":"sh/d8nqxkf2","slide":12,"name":"矩形 41","bbox":[911.6,334,248.4,48]}
+{"kind":"textbox","id":"sh/s7epofeh","slide":12,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/j2lorqxk","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/i1c7i5wf","slide":12,"name":"矩形 44","bbox":[620,382,291.6,48]}
+{"kind":"shape","id":"sh/5436t0fq","slide":12,"name":"矩形 45","bbox":[911.6,382,248.4,48]}
+{"kind":"textbox","id":"sh/43upkve5","slide":12,"textChars":22,"textLines":1}
+{"kind":"textbox","id":"sh/nyp83ud4","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/2xw7upwj","slide":12,"name":"矩形 48","bbox":[620,430,291.6,48]}
+{"kind":"shape","id":"sh/kjq5oru1","slide":12,"name":"矩形 49","bbox":[911.6,430,248.4,48]}
+{"kind":"textbox","id":"sh/lkzmhwvm","slide":12,"textChars":12,"textLines":1}
+{"kind":"textbox","id":"sh/yh8nmhcv","slide":12,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/zih4fmdg","slide":12,"name":"矩形 52","bbox":[620,478,291.6,48]}
+{"kind":"shape","id":"sh/87q5srux","slide":12,"name":"矩形 53","bbox":[911.6,478,248.4,48]}
+{"kind":"textbox","id":"sh/98jmlwvi","slide":12,"textChars":16,"textLines":1}
+{"kind":"textbox","id":"sh/ml8nq1c7","slide":12,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/7mh4j6dc","slide":12,"name":"矩形 56","bbox":[620,526,291.6,48]}
+{"kind":"shape","id":"sh/wba5wbu9","slide":12,"name":"矩形 57","bbox":[911.6,526,248.4,48]}
+{"kind":"textbox","id":"sh/hcjmpgbu","slide":12,"textChars":7,"textLines":1}
+{"kind":"textbox","id":"sh/5sfm9g3y","slide":12,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/4765gbmd","slide":12,"textChars":107,"textLines":1}
+{"kind":"notes","id":"nt/8f2psfyx","slide":12,"text":"[Sources] | - D:/UniLab/conf/ppo/task/leap_inhand_ball_direct/mujoco.yaml | -..."}
+{"kind":"slide","id":"sl/hgzapcr6","slide":13,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":33}
+{"kind":"textbox","id":"sh/0buxcfil","slide":13,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/q50nydsj","slide":13,"textChars":50,"textLines":1}
+{"kind":"textbox","id":"sh/bq9orito","slide":13,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/o3i5w3ad","slide":13,"textChars":31,"textLines":1}
+{"kind":"textbox","id":"sh/p4r6p8by","slide":13,"textChars":20,"textLines":1}
+{"kind":"shape","id":"sh/21gnuts7","slide":13,"name":"矩形 5","bbox":[54,246,291.6,46]}
+{"kind":"shape","id":"sh/32ponyts","slide":13,"name":"矩形 6","bbox":[345.6,246,248.4,46]}
+{"kind":"textbox","id":"sh/gzy5s3a1","slide":13,"textChars":11,"textLines":1}
+{"kind":"textbox","id":"sh/1076lobm","slide":13,"textChars":11,"textLines":1}
+{"kind":"shape","id":"sh/hcfy9k3u","slide":13,"name":"矩形 9","bbox":[54,292,291.6,46]}
+{"kind":"shape","id":"sh/gb6x0zm9","slide":13,"name":"矩形 10","bbox":[345.6,292,248.4,46]}
+{"kind":"textbox","id":"sh/vaxg7ulo","slide":13,"textChars":15,"textLines":1}
+{"kind":"textbox","id":"sh/u9ofyp43","slide":13,"textChars":11,"textLines":1}
+{"kind":"shape","id":"sh/t8fy5k3i","slide":13,"name":"矩形 13","bbox":[54,338,291.6,46]}
+{"kind":"shape","id":"sh/876xwfmx","slide":13,"name":"矩形 14","bbox":[345.6,338,248.4,46]}
+{"kind":"textbox","id":"sh/7mdg3als","slide":13,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/6l4fu547","slide":13,"textChars":12,"textLines":1}
+{"kind":"shape","id":"sh/lkvy103m","slide":13,"name":"矩形 17","bbox":[54,384,291.6,46]}
+{"kind":"shape","id":"sh/kjmxsfm1","slide":13,"name":"矩形 18","bbox":[345.6,384,248.4,46]}
+{"kind":"textbox","id":"sh/cnqh8fux","slide":13,"textChars":11,"textLines":1}
+{"kind":"textbox","id":"sh/xozyhkbi","slide":13,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/q18f65cr","slide":13,"name":"矩形 21","bbox":[54,430,291.6,46]}
+{"kind":"shape","id":"sh/bmhgfatc","slide":13,"name":"矩形 22","bbox":[345.6,430,248.4,46]}
+{"kind":"textbox","id":"sh/oz6x4vul","slide":13,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/p0zyd0b6","slide":13,"textChars":7,"textLines":1}
+{"kind":"shape","id":"sh/2xof2lcv","slide":13,"name":"矩形 25","bbox":[54,476,291.6,46]}
+{"kind":"shape","id":"sh/3yxgbqdg","slide":13,"name":"矩形 26","bbox":[345.6,476,248.4,46]}
+{"kind":"textbox","id":"sh/8vahgzu5","slide":13,"textChars":23,"textLines":1}
+{"kind":"textbox","id":"sh/9wjyp4bq","slide":13,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/jqlkfyds","slide":13,"name":"矩形 29","bbox":[54,522,291.6,46]}
+{"kind":"shape","id":"sh/ipcjmtw7","slide":13,"name":"矩形 30","bbox":[345.6,522,248.4,46]}
+{"kind":"textbox","id":"sh/5cn2h8vy","slide":13,"textChars":17,"textLines":1}
+{"kind":"textbox","id":"sh/4re1o3ed","slide":13,"textChars":4,"textLines":1}
+{"kind":"textbox","id":"sh/re5kjydo","slide":13,"textChars":20,"textLines":1}
+{"kind":"shape","id":"sh/6dwjqtw3","slide":13,"name":"矩形 34","bbox":[650,246,270,46]}
+{"kind":"shape","id":"sh/tgn2l8vu","slide":13,"name":"矩形 35","bbox":[920,246,230,46]}
+{"kind":"textbox","id":"sh/sfe1s3e9","slide":13,"textChars":12,"textLines":1}
+{"kind":"textbox","id":"sh/7i107edk","slide":13,"textChars":17,"textLines":1}
+{"kind":"shape","id":"sh/mhsje9wz","slide":13,"name":"矩形 38","bbox":[650,292,270,46]}
+{"kind":"shape","id":"sh/y1wju94v","slide":13,"name":"矩形 39","bbox":[920,292,230,46]}
+{"kind":"textbox","id":"sh/z25kne5g","slide":13,"textChars":21,"textLines":1}
+{"kind":"textbox","id":"sh/03e1wjm1","slide":13,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/l4n2po3m","slide":13,"name":"矩形 42","bbox":[650,338,270,46]}
+{"kind":"shape","id":"sh/m5gjyt4r","slide":13,"name":"矩形 43","bbox":[920,338,230,46]}
+{"kind":"textbox","id":"sh/n6pkrelc","slide":13,"textChars":21,"textLines":1}
+{"kind":"textbox","id":"sh/8ry10jmx","slide":13,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/9s72to3i","slide":13,"name":"矩形 46","bbox":[650,384,270,46]}
+{"kind":"shape","id":"sh/atgj2t43","slide":13,"name":"矩形 47","bbox":[920,384,230,46]}
+{"kind":"textbox","id":"sh/vupkvylo","slide":13,"textChars":22,"textLines":1}
+{"kind":"textbox","id":"sh/50behwr2","slide":13,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/4z2d8rah","slide":13,"name":"矩形 50","bbox":[650,430,270,46]}
+{"kind":"shape","id":"sh/jytcfmtw","slide":13,"name":"矩形 51","bbox":[920,430,230,46]}
+{"kind":"textbox","id":"sh/ixkv6hsb","slide":13,"textChars":20,"textLines":1}
+{"kind":"textbox","id":"sh/t4velwry","slide":13,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/s3mdcrad","slide":13,"name":"矩形 54","bbox":[650,476,270,46]}
+{"kind":"shape","id":"sh/r2dwjm98","slide":13,"name":"矩形 55","bbox":[920,476,230,46]}
+{"kind":"textbox","id":"sh/614va1sn","slide":13,"textChars":22,"textLines":1}
+{"kind":"textbox","id":"sh/1svepgra","slide":13,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/g7mdgbap","slide":13,"textChars":137,"textLines":1}
+{"kind":"notes","id":"nt/hgzapcr6","slide":13,"text":"[Sources] | - D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallDirectRotation/2026-07-..."}
+{"kind":"slide","id":"sl/6lsnupw7","slide":14,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":25}
+{"kind":"textbox","id":"sh/h4nm5sba","slide":14,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/xc7eds76","slide":14,"textChars":55,"textLines":1}
+{"kind":"textbox","id":"sh/wbydknq1","slide":14,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/jepwf2pc","slide":14,"name":"矩形: 圓角 3","bbox":[54,150,500,280]}
+{"kind":"textbox","id":"sh/idgvmx8r","slide":14,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/5grehs7i","slide":14,"textChars":188,"textLines":3}
+{"kind":"textbox","id":"sh/kfidonqx","slide":14,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/zi5c3y98","slide":14,"name":"矩形: 圓角 7","bbox":[626,150,520,280]}
+{"kind":"textbox","id":"sh/ehwvat8n","slide":14,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/c3e1gjyd","slide":14,"textChars":198,"textLines":3}
+{"kind":"textbox","id":"sh/x4ni9ofy","slide":14,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/a1wze9g7","slide":14,"name":"矩形 11","bbox":[54,470,399.6,30]}
+{"kind":"shape","id":"sh/b2507exs","slide":14,"name":"矩形 12","bbox":[453.6,470,340.4,30]}
+{"kind":"textbox","id":"sh/kre1k3y9","slide":14,"textChars":18,"textLines":1}
+{"kind":"textbox","id":"sh/ls7idofu","slide":14,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/y5wjitgj","slide":14,"name":"矩形 15","bbox":[54,500,399.6,30]}
+{"kind":"shape","id":"sh/z650byxo","slide":14,"name":"矩形 16","bbox":[453.6,500,340.4,30]}
+{"kind":"textbox","id":"sh/0buh8zy5","slide":14,"textChars":13,"textLines":1}
+{"kind":"textbox","id":"sh/1w3i14fq","slide":14,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/hsvy50re","slide":14,"name":"矩形 19","bbox":[54,530,399.6,30]}
+{"kind":"shape","id":"sh/grmxwvqt","slide":14,"name":"矩形 20","bbox":[453.6,530,340.4,30]}
+{"kind":"textbox","id":"sh/fqdg3q98","slide":14,"textChars":11,"textLines":1}
+{"kind":"textbox","id":"sh/up4fal83","slide":14,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/pwvy90rq","slide":14,"name":"矩形 23","bbox":[54,560,399.6,30]}
+{"kind":"shape","id":"sh/4vmh0vq5","slide":14,"name":"矩形 24","bbox":[453.6,560,340.4,30]}
+{"kind":"textbox","id":"sh/3udg7q9k","slide":14,"textChars":10,"textLines":1}
+{"kind":"textbox","id":"sh/2t4fyl8z","slide":14,"textChars":12,"textLines":1}
+{"kind":"shape","id":"sh/d0fydk7m","slide":14,"name":"矩形 27","bbox":[54,590,399.6,30]}
+{"kind":"shape","id":"sh/cz6h4fq1","slide":14,"name":"矩形 28","bbox":[453.6,590,340.4,30]}
+{"kind":"textbox","id":"sh/atg3idk7","slide":14,"textChars":19,"textLines":1}
+{"kind":"textbox","id":"sh/bup4rils","slide":14,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/cvylkn2d","slide":14,"name":"矩形 31","bbox":[54,620,399.6,30]}
+{"kind":"shape","id":"sh/xw7mts3y","slide":14,"name":"矩形 32","bbox":[453.6,620,340.4,30]}
+{"kind":"textbox","id":"sh/yxgnmxkj","slide":14,"textChars":18,"textLines":1}
+{"kind":"textbox","id":"sh/jyp4fil4","slide":14,"textChars":5,"textLines":1}
+{"kind":"shape","id":"sh/kzy5on2p","slide":14,"name":"矩形 35","bbox":[54,650,399.6,30]}
+{"kind":"shape","id":"sh/lkrmhsju","slide":14,"name":"矩形 36","bbox":[453.6,650,340.4,30]}
+{"kind":"textbox","id":"sh/6l0nqxkf","slide":14,"textChars":22,"textLines":1}
+{"kind":"textbox","id":"sh/7m94j210","slide":14,"textChars":6,"textLines":1}
+{"kind":"textbox","id":"sh/fi5432t4","slide":14,"textChars":14,"textLines":1}
+{"kind":"textbox","id":"sh/uhw3axcj","slide":14,"textChars":160,"textLines":3}
+{"kind":"notes","id":"nt/6lsnupw7","slide":14,"text":"[Sources] | - D:/UniLab/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.y..."}
+{"kind":"slide","id":"sl/vaxsvy10","slide":15,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":44}
+{"kind":"textbox","id":"sh/ql8rq1sz","slide":15,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/547mhg3m","slide":15,"textChars":49,"textLines":1}
+{"kind":"textbox","id":"sh/k3y5ov21","slide":15,"textChars":2,"textLines":1}
+{"kind":"shape","id":"sh/76p4jqls","slide":15,"name":"矩形 3","bbox":[54,150,230,48]}
+{"kind":"textbox","id":"sh/65gnqlk7","slide":15,"textChars":4,"textLines":1}
+{"kind":"shape","id":"sh/t87ml0ji","slide":15,"name":"矩形 5","bbox":[284,150,261,48]}
+{"kind":"textbox","id":"sh/s7y5sv2x","slide":15,"textChars":20,"textLines":1}
+{"kind":"shape","id":"sh/na5476l8","slide":15,"name":"矩形 7","bbox":[545,150,265,48]}
+{"kind":"textbox","id":"sh/m9c3e1kn","slide":15,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/wrm9kvep","slide":15,"name":"矩形 9","bbox":[810,150,230,48]}
+{"kind":"textbox","id":"sh/hsvat0fa","slide":15,"textChars":20,"textLines":1}
+{"kind":"shape","id":"sh/upkrilwj","slide":15,"name":"矩形 11","bbox":[1040,150,170,48]}
+{"kind":"textbox","id":"sh/vqdsrqx4","slide":15,"textChars":8,"textLines":1}
+{"kind":"shape","id":"sh/4vm9ovel","slide":15,"name":"矩形 13","bbox":[54,198,230,58]}
+{"kind":"textbox","id":"sh/5wvax0f6","slide":15,"textChars":10,"textLines":1}
+{"kind":"shape","id":"sh/it4rm5wv","slide":15,"name":"矩形 15","bbox":[284,198,261,58]}
+{"kind":"textbox","id":"sh/judsvqxg","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/0z29cbyh","slide":15,"name":"矩形 17","bbox":[545,198,265,58]}
+{"kind":"textbox","id":"sh/l0bqlgf2","slide":15,"textChars":22,"textLines":1}
+{"kind":"shape","id":"sh/1kjyt83e","slide":15,"name":"矩形 19","bbox":[810,198,230,58]}
+{"kind":"textbox","id":"sh/gjax03m9","slide":15,"textChars":25,"textLines":1}
+{"kind":"shape","id":"sh/fi1grylo","slide":15,"name":"矩形 21","bbox":[1040,198,170,58]}
+{"kind":"textbox","id":"sh/ehsfyt43","slide":15,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/p8jyx83q","slide":15,"name":"矩形 23","bbox":[54,256,230,58]}
+{"kind":"textbox","id":"sh/o7ah4nm5","slide":15,"textChars":15,"textLines":1}
+{"kind":"shape","id":"sh/361gvilk","slide":15,"name":"矩形 25","bbox":[284,256,261,58]}
+{"kind":"textbox","id":"sh/25sf2d4z","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/dc3y1s3m","slide":15,"name":"矩形 27","bbox":[545,256,265,58]}
+{"kind":"textbox","id":"sh/cbuh8nmh","slide":15,"textChars":23,"textLines":1}
+{"kind":"shape","id":"sh/uh4v2pkj","slide":15,"name":"矩形 29","bbox":[810,256,230,58]}
+{"kind":"textbox","id":"sh/vixcvu14","slide":15,"textChars":27,"textLines":1}
+{"kind":"shape","id":"sh/wj6d4z2p","slide":15,"name":"矩形 31","bbox":[1040,256,170,58]}
+{"kind":"textbox","id":"sh/hkfexkja","slide":15,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/ilov6pkv","slide":15,"name":"矩形 33","bbox":[54,314,230,58]}
+{"kind":"textbox","id":"sh/jmxwzu1g","slide":15,"textChars":19,"textLines":1}
+{"kind":"shape","id":"sh/4n6d8z21","slide":15,"name":"矩形 35","bbox":[284,314,261,58]}
+{"kind":"textbox","id":"sh/5ofe14j6","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/6p8va9kr","slide":15,"name":"矩形 37","bbox":[545,314,265,58]}
+{"kind":"textbox","id":"sh/rqhw3e1c","slide":15,"textChars":23,"textLines":1}
+{"kind":"shape","id":"sh/f6dcnetg","slide":15,"name":"矩形 39","bbox":[810,314,230,58]}
+{"kind":"textbox","id":"sh/e54ve9cv","slide":15,"textChars":32,"textLines":1}
+{"kind":"shape","id":"sh/18vup4bm","slide":15,"name":"矩形 41","bbox":[1040,314,170,58]}
+{"kind":"textbox","id":"sh/07mdgzu1","slide":15,"textChars":13,"textLines":1}
+{"kind":"shape","id":"sh/nadwrets","slide":15,"name":"矩形 43","bbox":[54,372,230,58]}
+{"kind":"textbox","id":"sh/294vi9c7","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/pwfetobi","slide":15,"name":"矩形 45","bbox":[284,372,261,58]}
+{"kind":"textbox","id":"sh/ovmdkjud","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/3etcfut8","slide":15,"name":"矩形 47","bbox":[545,372,265,58]}
+{"kind":"textbox","id":"sh/idkv6pc3","slide":15,"textChars":29,"textLines":1}
+{"kind":"shape","id":"sh/87e10r6p","slide":15,"name":"矩形 49","bbox":[810,372,230,58]}
+{"kind":"textbox","id":"sh/987itwnu","slide":15,"textChars":38,"textLines":1}
+{"kind":"shape","id":"sh/m5wjyhoj","slide":15,"name":"矩形 51","bbox":[1040,372,170,58]}
+{"kind":"textbox","id":"sh/n650rm54","slide":15,"textChars":12,"textLines":1}
+{"kind":"shape","id":"sh/03e1w76d","slide":15,"name":"矩形 53","bbox":[54,430,230,58]}
+{"kind":"textbox","id":"sh/l4nipcny","slide":15,"textChars":6,"textLines":1}
+{"kind":"shape","id":"sh/y1wjuho7","slide":15,"name":"矩形 55","bbox":[284,430,261,58]}
+{"kind":"textbox","id":"sh/z250nm5s","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/4zi18b6h","slide":15,"name":"矩形 57","bbox":[545,430,265,58]}
+{"kind":"textbox","id":"sh/50r21gn2","slide":15,"textChars":29,"textLines":1}
+{"kind":"shape","id":"sh/dgnilgf6","slide":15,"name":"矩形 59","bbox":[810,430,230,58]}
+{"kind":"textbox","id":"sh/sfe1sbe1","slide":15,"textChars":33,"textLines":1}
+{"kind":"shape","id":"sh/ru50j6xg","slide":15,"name":"矩形 61","bbox":[1040,430,170,58]}
+{"kind":"textbox","id":"sh/qtcjq1gv","slide":15,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/5s3ihwfa","slide":15,"name":"矩形 63","bbox":[54,488,230,58]}
+{"kind":"textbox","id":"sh/4ru1oryp","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/3ql0fmx4","slide":15,"name":"矩形 65","bbox":[284,488,261,58]}
+{"kind":"textbox","id":"sh/ipcjm1gj","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/ho3idwfy","slide":15,"name":"矩形 67","bbox":[545,488,265,58]}
+{"kind":"textbox","id":"sh/wnu1kryt","slide":15,"textChars":25,"textLines":1}
+{"kind":"shape","id":"sh/mt8fuxwb","slide":15,"name":"矩形 69","bbox":[810,488,230,58]}
+{"kind":"textbox","id":"sh/7uhgnidw","slide":15,"textChars":28,"textLines":1}
+{"kind":"shape","id":"sh/8vaxwneh","slide":15,"name":"矩形 71","bbox":[1040,488,170,58]}
+{"kind":"textbox","id":"sh/9wjypsv2","slide":15,"textChars":15,"textLines":1}
+{"kind":"shape","id":"sh/yp8fqdwf","slide":15,"name":"矩形 73","bbox":[54,546,230,58]}
+{"kind":"textbox","id":"sh/zqhgjid0","slide":15,"textChars":16,"textLines":1}
+{"kind":"shape","id":"sh/krqxsnel","slide":15,"name":"矩形 75","bbox":[284,546,261,58]}
+{"kind":"textbox","id":"sh/lszylsvq","slide":15,"textChars":14,"textLines":1}
+{"kind":"shape","id":"sh/a1ofmdw3","slide":15,"name":"矩形 77","bbox":[545,546,265,58]}
+{"kind":"textbox","id":"sh/b2xgfydo","slide":15,"textChars":31,"textLines":1}
+{"kind":"shape","id":"sh/fq183qtw","slide":15,"name":"矩形 79","bbox":[810,546,230,58]}
+{"kind":"textbox","id":"sh/epsrulsb","slide":15,"textChars":40,"textLines":1}
+{"kind":"shape","id":"sh/1sjq5gbm","slide":15,"name":"矩形 81","bbox":[1040,546,170,58]}
+{"kind":"textbox","id":"sh/0ra9wbah","slide":15,"textChars":12,"textLines":1}
+{"kind":"textbox","id":"sh/rmh8z6tk","slide":15,"textChars":105,"textLines":1}
+{"kind":"notes","id":"nt/vaxsvy10","slide":15,"text":"[Sources] | - D:/UniLab/logs/rsl_rl_ppo/LeapInhandBallCacheRotation/*/run_con..."}
+{"kind":"slide","id":"sl/gny5sjyp","slide":16,"title":"LEAP HAND MONTHLY PROGRESS","textShapes":9}
+{"kind":"textbox","id":"sh/e1sf65o3","slide":16,"textChars":26,"textLines":1}
+{"kind":"textbox","id":"sh/8z2h8bq1","slide":16,"textChars":53,"textLines":1}
+{"kind":"textbox","id":"sh/9kby1g7m","slide":16,"textChars":2,"textLines":1}
+{"kind":"textbox","id":"sh/ytkf2h8j","slide":16,"textChars":28,"textLines":1}
+{"kind":"textbox","id":"sh/zutgvm94","slide":16,"textChars":304,"textLines":5}
+{"kind":"shape","id":"sh/kv2h4rqp","slide":16,"name":"矩形: 圓角 5","bbox":[690,145,455,380]}
+{"kind":"textbox","id":"sh/lwbyxwra","slide":16,"textChars":16,"textLines":1}
+{"kind":"textbox","id":"sh/ip4zel83","slide":16,"textChars":283,"textLines":6}
+{"kind":"textbox","id":"sh/3qdg7qpo","slide":16,"textChars":16,"textLines":1}
+{"kind":"textbox","id":"sh/fm1gzq5o","slide":16,"textChars":124,"textLines":1}
+{"kind":"notes","id":"nt/gny5sjyp","slide":16,"text":"Maintain a conservative conclusion: the bottleneck is localized, but sustaine..."}
+{"kind":"notice","message":"Truncated: omitted 0 lines. Increase maxChars or narrow target."}
