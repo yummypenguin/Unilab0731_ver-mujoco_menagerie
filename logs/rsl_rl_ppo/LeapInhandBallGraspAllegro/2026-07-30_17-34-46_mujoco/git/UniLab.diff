@@ -1,0 +1,135 @@
+--- git commit ---
+dfd7c64ad49c8123dcf4aa53784776f30df107e9
+
+
+--- git status ---
+On branch codex/leap-state-cycle-pose-065
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml
+	modified:   src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py
+	modified:   src/unilab/envs/manipulation/leap_inhand/__init__.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	conf/ppo/task/leap_inhand_ball_grasp_allegro/
+	docs/leap_allegro_cache_generation.md
+	scripts/check_leap_allegro_grasp_seed.py
+	scripts/inspect_leap_allegro_grasp_cache.py
+	src/unilab/envs/manipulation/leap_inhand/ball_grasp_allegro.py
+	tests/envs/test_leap_allegro_grasp_gen.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml
+index cc617cb6..331b8b8e 100644
+--- a/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml
+@@ -32,32 +32,32 @@ env:
+   grasp_quality_check: true
+   grasp_min_contacts: 2
+   grasp_require_thumb_contact: true
+-  # Selected LEAP ball canonical seed: passes the strict 2.5 s settling diagnostic
+-  # without termination, retaining index/ring/thumb contact and <1 mm penetration.
++  # LEAP 67 mm ball nominal seed selected in the interactive pose editor.
++  # Generator proposals use the first 16 qpos values as their actuator targets.
+   grasp_seed_qpos:
+-    - 1.03410442949809
+-    - 0.15679991228963497
+-    - 0.25610135637493514
+-    - 0.045668025549832805
+-    - 0.771828792737894
+-    - 0.009351868838524551
+-    - 0.6275431550313586
+-    - 0.13213983678334723
+-    - 0.8995371304303955
+-    - -0.12547198738935086
+-    - 0.7401180634800134
+-    - 0.17855020221211734
+-    - 1.4648204389828898
+-    - 0.4525430081690111
+-    - 0.6321388427548723
+-    - -0.5916553393951335
+-    - -0.012619446773068123
+-    - 0.02770136438817874
+-    - 0.6337514939469586
+-    - 0.9949214781878678
+-    - -0.07395348612537869
+-    - 0.025469120495700256
+-    - -0.0633518589431043
++    - 1.615086902652708
++    - 0.05592890833161862
++    - 0.287868545519634
++    - 0.05789584343082383
++    - 1.385416217870236
++    - 0.019181783056566676
++    - -0.020953303695846966
++    - 0.16266530072328944
++    - 1.6940339396072988
++    - -0.042944887708793206
++    - 0.08608101675297872
++    - 0.04204787407706335
++    - 1.6353669902981327
++    - 0.5618974997807215
++    - -0.1469763717278566
++    - 0.520989074906656
++    - -0.03218510819218568
++    - 0.03676290825215784
++    - 0.6626576150346267
++    - 0.92598793755222
++    - -0.010678814768592742
++    - -0.06800823346343168
++    - 0.37122389821253027
+   # LEAP ablation: ±0.10 rad preserves variation while improving strict acceptance.
+   grasp_joint_offset_lower: []
+   grasp_joint_offset_upper: []
+diff --git a/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py b/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py
+index 2ade123d..815fdb96 100644
+--- a/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py
++++ b/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py
+@@ -100,6 +100,10 @@ class AllegroRotationGrasp(AllegroRotationPPO):
+             return 0
+         return int(sum(states.shape[0] for states in self._saved_grasping_states))
+ 
++    def _filter_grasp_rows(self, states: np.ndarray) -> np.ndarray:
++        """Extension hook for cache-dataset filtering after physical acceptance."""
++        return states
++
+     def _stop_collection(self) -> None:
+         if self._grasp_target_reached_notified:
+             return
+@@ -179,6 +183,10 @@ class AllegroRotationGrasp(AllegroRotationPPO):
+         ball_quat = curr_ball_quat[success_env_ids]
+         states = np.concatenate([hand_qpos, ball_pos, ball_quat], axis=1).astype(np.float32)
+ 
++        states = self._filter_grasp_rows(states)
++        if states.shape[0] == 0:
++            return
++
+         self._saved_grasping_states.append(states)
+         self._save_grasp_cache()
+         self._stop_collection()
+diff --git a/src/unilab/envs/manipulation/leap_inhand/__init__.py b/src/unilab/envs/manipulation/leap_inhand/__init__.py
+index 5661945e..078bde49 100644
+--- a/src/unilab/envs/manipulation/leap_inhand/__init__.py
++++ b/src/unilab/envs/manipulation/leap_inhand/__init__.py
+@@ -1,5 +1,6 @@
+ from . import (  # registers tasks via decorators
+     allegro_faithful_rotation,
++    ball_grasp_allegro,
+     ball_grasp_gen,
+     ball_rotation,
+     cache_rotation,
+@@ -16,6 +17,7 @@ from . import (  # registers tasks via decorators
+ 
+ __all__ = [
+     "allegro_faithful_rotation",
++    "ball_grasp_allegro",
+     "ball_grasp_gen",
+     "ball_rotation",
+     "cache_rotation",

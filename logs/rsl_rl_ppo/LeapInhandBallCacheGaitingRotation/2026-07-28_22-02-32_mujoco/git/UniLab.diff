@@ -1,0 +1,145 @@
+--- git commit ---
+d13ad38ea859c8bfd3eed36d64852ec0408429de
+
+
+--- git status ---
+On branch codex/leap-state-cycle-pose-065
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .codex_tmp/leap_monthly_progress_update/validate_final.mjs
+	modified:   DEVELOPMENT_LOG.md
+	modified:   conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml
+	modified:   src/unilab/envs/manipulation/leap_inhand/sustained_cache_gaiting_rotation.py
+	modified:   tests/envs/test_leap_inhand.py
+	deleted:    ~$LEAP_Hand_Monthly_Progress_Report_English.pptx
+	deleted:    ~$LEAP_Hand_Monthly_Progress_Report_English_14pt.pptx
+	deleted:    ~$LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_Performance_Updated.pptx
+	deleted:    ~$LEAP_Hand_Monthly_Progress_Report_Revised.pptx
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.codex_tmp/leap_monthly_progress_update/edit_slides_9_10_finger_gaiting.mjs
+	.codex_tmp/leap_monthly_progress_update/final_check_finger_gaiting/
+	.codex_tmp/leap_monthly_progress_update/finger_gaiting_update/
+	LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_FingerGaiting_Updated.pptx
+	LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_FingerGaiting_Updated.pptx.inspect.ndjson
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/.codex_tmp/leap_monthly_progress_update/validate_final.mjs b/.codex_tmp/leap_monthly_progress_update/validate_final.mjs
+index 0ff62291..79263302 100644
+--- a/.codex_tmp/leap_monthly_progress_update/validate_final.mjs
++++ b/.codex_tmp/leap_monthly_progress_update/validate_final.mjs
+@@ -1,8 +1,8 @@
+ import fs from "node:fs/promises";
+ import { FileBlob, PresentationFile } from "@oai/artifact-tool";
+ 
+-const INPUT = "D:/UniLab/LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_Performance_Updated.pptx";
+-const OUT = "D:/UniLab/.codex_tmp/leap_monthly_progress_update/final_check";
++const INPUT = "D:/UniLab/LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_FingerGaiting_Updated.pptx";
++const OUT = "D:/UniLab/.codex_tmp/leap_monthly_progress_update/final_check_finger_gaiting";
+ const W = 1280;
+ const H = 720;
+ 
+diff --git a/DEVELOPMENT_LOG.md b/DEVELOPMENT_LOG.md
+index d33700b9..ef0bf373 100644
+--- a/DEVELOPMENT_LOG.md
++++ b/DEVELOPMENT_LOG.md
+@@ -2697,3 +2697,32 @@ validation output from the development session.
+   PowerPoint points. The revised `_14pt` deck clamps editable text to 19 px,
+   which exports as a verified minimum of 14.25 pt, and uses a wider footer
+   frame for two-digit page numbers.
++
++## 2026-07-28: CacheGaiting V2 Position-Error Ablation
++
++### Evidence
++
++- Completed V2 run `2026-07-27_12-26-57_mujoco` used a `-6.0` position-error
++  scale. Over its final 10% of iterations, mean anchor error was 5.82 mm and
++  the mean position gate was 0.989, while target-axis speed remained only
++  0.00066 rad/s and qualified handoffs remained effectively absent.
++- At that operating point, the position-error cost was the largest dense
++  negative term and exceeded the stall cost, despite the object already being
++  close to the cache anchor. This can over-prioritize static centering over
++  exploratory motion needed for rotation and handoff acquisition.
++
++### Scope
++
++- Reduced only `LeapInhandBallCacheGaitingRotation` position-error scale from
++  `-6.0` to `-3.0` in its Hydra owner config and Python default.
++- Kept the shared `AllegroStyleRotationRewardConfig` at `-6.0`; sustained-cache
++  and other LEAP tasks are unchanged.
++- Added a regression test that verifies both sides of this task boundary.
++- The comparison run retains V2's fresh-training setup: 8,192 environments,
++  8 steps per environment, 300 iterations, checkpoint interval 25, seed 1,
++  and initial policy standard deviation 0.3.
++
++### Validation
++
++- Pending focused Ruff, pytest, Hydra composition, and the V2-scale MuJoCo
++  comparison run.
+diff --git a/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml
+index e6dd6c6b..4926f950 100644
+--- a/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_cache_gaiting/mujoco.yaml
+@@ -11,7 +11,7 @@ reward:
+   scales:
+     rotate: 1.25
+     obj_linvel: -0.3
+-    position_error: -6.0
++    position_error: -3.0
+     spin_progress: 0.0
+ 
+     # Metadata mirror only.
+diff --git a/src/unilab/envs/manipulation/leap_inhand/sustained_cache_gaiting_rotation.py b/src/unilab/envs/manipulation/leap_inhand/sustained_cache_gaiting_rotation.py
+index f9364878..697a20af 100644
+--- a/src/unilab/envs/manipulation/leap_inhand/sustained_cache_gaiting_rotation.py
++++ b/src/unilab/envs/manipulation/leap_inhand/sustained_cache_gaiting_rotation.py
+@@ -40,7 +40,7 @@ class CacheGaitingRewardConfig(AllegroStyleRotationRewardConfig):
+         default_factory=lambda: {
+             "rotate": 1.25,
+             "obj_linvel": -0.3,
+-            "position_error": -6.0,
++            "position_error": -3.0,
+             "spin_progress": 0.0,
+             "spin_continuity": -0.05,
+             "retention": 0.0,
+diff --git a/tests/envs/test_leap_inhand.py b/tests/envs/test_leap_inhand.py
+index fe24eea4..cadda77e 100644
+--- a/tests/envs/test_leap_inhand.py
++++ b/tests/envs/test_leap_inhand.py
+@@ -2352,6 +2352,13 @@ def test_stall_penalty_is_scaled_by_ctrl_dt() -> None:
+     np.testing.assert_allclose(step_penalty, [-0.0025])
+ 
+ 
++def test_cache_gaiting_uses_reduced_position_error_scale() -> None:
++    cfg = CacheGaitingRewardConfig()
++
++    assert cfg.scales["position_error"] == -3.0
++    assert AllegroStyleRotationRewardConfig().scales["position_error"] == -6.0
++
++
+ @pytest.mark.parametrize("backend", ["mujoco", "motrix"])
+ def test_leap_cache_gaiting_rotation_reset_and_step(backend: str) -> None:
+     if backend == "mujoco":
+diff --git a/~$LEAP_Hand_Monthly_Progress_Report_English.pptx b/~$LEAP_Hand_Monthly_Progress_Report_English.pptx
+deleted file mode 100644
+index a0f50a4a..00000000
+Binary files a/~$LEAP_Hand_Monthly_Progress_Report_English.pptx and /dev/null differ
+diff --git a/~$LEAP_Hand_Monthly_Progress_Report_English_14pt.pptx b/~$LEAP_Hand_Monthly_Progress_Report_English_14pt.pptx
+deleted file mode 100644
+index a0f50a4a..00000000
+Binary files a/~$LEAP_Hand_Monthly_Progress_Report_English_14pt.pptx and /dev/null differ
+diff --git a/~$LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_Performance_Updated.pptx b/~$LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_Performance_Updated.pptx
+deleted file mode 100644
+index a0f50a4a..00000000
+Binary files a/~$LEAP_Hand_Monthly_Progress_Report_English_14pt_CacheFlow_Performance_Updated.pptx and /dev/null differ
+diff --git a/~$LEAP_Hand_Monthly_Progress_Report_Revised.pptx b/~$LEAP_Hand_Monthly_Progress_Report_Revised.pptx
+deleted file mode 100644
+index a0f50a4a..00000000
+Binary files a/~$LEAP_Hand_Monthly_Progress_Report_Revised.pptx and /dev/null differ

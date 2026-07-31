@@ -1,0 +1,13 @@
+{
+  "algo": "ppo",
+  "task": "LeapInhandBallGraspAllegro",
+  "sim_backend": "mujoco",
+  "log_dir": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallGraspAllegro\\2026-07-30_17-34-46_mujoco",
+  "start_time_utc": "2026-07-31T00:34:46.807655+00:00",
+  "end_time_utc": "2026-07-31T00:34:54.822223+00:00",
+  "wall_time_sec": 8.014560500043444,
+  "wandb_run_url": null,
+  "configured_seed": 1,
+  "configured_seed_source": "algo.seed",
+  "effective_seed": 1
+}

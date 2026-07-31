@@ -1,0 +1,5949 @@
+{
+  "batch_size": 100,
+  "cache_save_called": false,
+  "contact_count_distribution_final": {
+    "0": 8,
+    "1": 4,
+    "2": 60,
+    "3": 28
+  },
+  "contact_count_distribution_initial": {
+    "2": 65,
+    "3": 35
+  },
+  "failed_row_indices": {
+    "ever_terminated": [
+      5,
+      7,
+      9,
+      18,
+      21,
+      24,
+      26,
+      32,
+      35,
+      36,
+      38,
+      41,
+      43,
+      48,
+      50,
+      52,
+      53,
+      55,
+      56,
+      58,
+      59,
+      61,
+      70,
+      85,
+      86,
+      87,
+      88,
+      90,
+      91,
+      98,
+      99
+    ],
+    "final_invalid": [
+      7,
+      9,
+      24,
+      36,
+      38,
+      41,
+      48,
+      50,
+      53,
+      55,
+      56,
+      58,
+      70,
+      85,
+      86,
+      88
+    ],
+    "initial_invalid": [],
+    "timeout_failure": [
+      5,
+      7,
+      9,
+      18,
+      21,
+      24,
+      26,
+      32,
+      35,
+      36,
+      38,
+      41,
+      43,
+      48,
+      50,
+      52,
+      53,
+      55,
+      56,
+      58,
+      59,
+      61,
+      70,
+      85,
+      86,
+      87,
+      88,
+      90,
+      91,
+      98,
+      99
+    ]
+  },
+  "final": {
+    "contact_failure_count": 12,
+    "fingertip_distance_failure_count": 4,
+    "height_failure_count": 13,
+    "row_count": 100,
+    "valid_count": 84,
+    "valid_rate": 0.84
+  },
+  "fingertip_distance_margin": {
+    "final_mean": 0.0061171123599502945,
+    "final_min": -0.2936336259450689,
+    "initial_mean": 0.011624340184075387,
+    "initial_min": 0.0031412857948596995
+  },
+  "height_margin": {
+    "final_mean": -0.0030427120018470255,
+    "final_min": -0.3245248115945327,
+    "initial_mean": 0.01068188122029424,
+    "initial_min": 0.003439792306376699
+  },
+  "initial": {
+    "contact_failure_count": 0,
+    "fingertip_distance_failure_count": 0,
+    "height_failure_count": 0,
+    "row_count": 100,
+    "valid_count": 100,
+    "valid_rate": 1.0
+  },
+  "near_height_threshold": {
+    "below_0_1_mm_count": 13,
+    "below_0_5_mm_count": 13,
+    "below_1_0_mm_count": 13
+  },
+  "path": "src\\unilab\\assets\\robots\\leap_hand\\caches\\ball_grasp_allegro_dedup_smoke_physics_v2_100.npy",
+  "replay": {
+    "ever_contact_failure_count": 31,
+    "ever_fingertip_failure_count": 5,
+    "ever_height_failure_count": 13,
+    "ever_terminated_count": 31,
+    "ever_terminated_rate": 0.31
+  },
+  "row_count": 100,
+  "rows": [
+    {
+      "final": {
+        "ball_center_z": 0.672283411026001,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08490109237955769,
+          0.067676419184189,
+          0.08630836249133031,
+          0.09080077024806814
+        ],
+        "fingertip_distance_margin": 0.015299229751931862,
+        "height_margin": 0.014625795991374257,
+        "max_fingertip_distance": 0.09080077024806814,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 0,
+      "initial": {
+        "ball_center_z": 0.6714136004447937,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08438314776486633,
+          0.06641773235260687,
+          0.08422026497977675,
+          0.09066546775768052
+        ],
+        "fingertip_distance_margin": 0.015434532242319485,
+        "height_margin": 0.013755985410166982,
+        "max_fingertip_distance": 0.09066546775768052,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6687712669372559,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08327447387120068,
+          0.08626987155925153,
+          0.07309467311180427,
+          0.09194257925067757
+        ],
+        "fingertip_distance_margin": 0.014157420749322427,
+        "height_margin": 0.01111365190262914,
+        "max_fingertip_distance": 0.09194257925067757,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 1,
+      "initial": {
+        "ball_center_z": 0.668314516544342,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0827328058401508,
+          0.08513251767709891,
+          0.07230276698668574,
+          0.09183310411361609
+        ],
+        "fingertip_distance_margin": 0.014266895886383912,
+        "height_margin": 0.010656901509715322,
+        "max_fingertip_distance": 0.09183310411361609,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.669375479221344,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09287786455373595,
+          0.06859309901649092,
+          0.07851659675233105,
+          0.09650593807919534
+        ],
+        "fingertip_distance_margin": 0.009594061920804656,
+        "height_margin": 0.011717864186717275,
+        "max_fingertip_distance": 0.09650593807919534,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 2,
+      "initial": {
+        "ball_center_z": 0.6690981388092041,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0929121768586022,
+          0.06831830269553663,
+          0.07813460932016494,
+          0.09613215052378066
+        ],
+        "fingertip_distance_margin": 0.009967849476219343,
+        "height_margin": 0.011440523774577382,
+        "max_fingertip_distance": 0.09613215052378066,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6645889282226562,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08195181830701677,
+          0.08451033570927528,
+          0.06715308642489104,
+          0.09438261342641582
+        ],
+        "fingertip_distance_margin": 0.011717386573584176,
+        "height_margin": 0.006931313188029531,
+        "max_fingertip_distance": 0.09438261342641582,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 3,
+      "initial": {
+        "ball_center_z": 0.6646605134010315,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08229978910939985,
+          0.08521148459810468,
+          0.06708119431435736,
+          0.09420185356294507
+        ],
+        "fingertip_distance_margin": 0.011898146437054932,
+        "height_margin": 0.007002898366404775,
+        "max_fingertip_distance": 0.09420185356294507,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6667073965072632,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08241695563194905,
+          0.07977608174710472,
+          0.06900538900587089,
+          0.09425863394865802
+        ],
+        "fingertip_distance_margin": 0.011841366051341978,
+        "height_margin": 0.009049781472636464,
+        "max_fingertip_distance": 0.09425863394865802,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 4,
+      "initial": {
+        "ball_center_z": 0.66648268699646,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0818520288178574,
+          0.07961391895687715,
+          0.06895175350370573,
+          0.09362615855403464
+        ],
+        "fingertip_distance_margin": 0.012473841445965361,
+        "height_margin": 0.008825071961833242,
+        "max_fingertip_distance": 0.09362615855403464,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6653393507003784,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08500745315506276,
+          0.08679501568904668,
+          0.07118843912174097,
+          0.0944966594701659
+        ],
+        "fingertip_distance_margin": 0.011603340529834097,
+        "height_margin": 0.007681735665751699,
+        "max_fingertip_distance": 0.0944966594701659,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 5,
+      "initial": {
+        "ball_center_z": 0.666541576385498,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08198477124945472,
+          0.08149322377593761,
+          0.06900008768454148,
+          0.09741294736417004
+        ],
+        "fingertip_distance_margin": 0.008687052635829959,
+        "height_margin": 0.008883961350871328,
+        "max_fingertip_distance": 0.09741294736417004,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6712372303009033,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07890723997099765,
+          0.06692805396314429,
+          0.0839985622660329,
+          0.08516057622053766
+        ],
+        "fingertip_distance_margin": 0.02093942377946234,
+        "height_margin": 0.013579615266276601,
+        "max_fingertip_distance": 0.08516057622053766,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 6,
+      "initial": {
+        "ball_center_z": 0.6709247827529907,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07831910147662058,
+          0.06683812095048289,
+          0.08439303863295289,
+          0.08497958146044077
+        ],
+        "fingertip_distance_margin": 0.021120418539559233,
+        "height_margin": 0.013267167718364004,
+        "max_fingertip_distance": 0.08497958146044077,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.3331328332424164,
+        "cond1": false,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 0,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.3647933444535883,
+          0.3357014014850186,
+          0.3407596615667412,
+          0.3997336259450689
+        ],
+        "fingertip_distance_margin": -0.2936336259450689,
+        "height_margin": -0.32452478179221034,
+        "max_fingertip_distance": 0.3997336259450689,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 7,
+      "initial": {
+        "ball_center_z": 0.6694183945655823,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08421174848403716,
+          0.08107161731846504,
+          0.07402098753339886,
+          0.08979227084511687
+        ],
+        "fingertip_distance_margin": 0.016307729154883127,
+        "height_margin": 0.011760779530955556,
+        "max_fingertip_distance": 0.08979227084511687,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": true,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6682590246200562,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08137847547807195,
+          0.07258683256123556,
+          0.07582952362535662,
+          0.09544150849388296
+        ],
+        "fingertip_distance_margin": 0.010658491506117043,
+        "height_margin": 0.010601409585429433,
+        "max_fingertip_distance": 0.09544150849388296,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 8,
+      "initial": {
+        "ball_center_z": 0.6682311296463013,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08170894371305887,
+          0.07257628963222605,
+          0.0755291019273547,
+          0.09532456554826733
+        ],
+        "fingertip_distance_margin": 0.010775434451732666,
+        "height_margin": 0.01057351461167455,
+        "max_fingertip_distance": 0.09532456554826733,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.5678552389144897,
+        "cond1": true,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 0,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.10210242578895025,
+          0.10396062104720183,
+          0.0783846391389279,
+          0.08540903470785416
+        ],
+        "fingertip_distance_margin": 0.002139378952798171,
+        "height_margin": -0.08980237612013697,
+        "max_fingertip_distance": 0.10396062104720183,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 9,
+      "initial": {
+        "ball_center_z": 0.6686755418777466,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08423126528406084,
+          0.0822488983335007,
+          0.06976428558368562,
+          0.10166911673248932
+        ],
+        "fingertip_distance_margin": 0.004430883267510677,
+        "height_margin": 0.011017926843119863,
+        "max_fingertip_distance": 0.10166911673248932,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": true,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6664105653762817,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08605795184630344,
+          0.09091919489589183,
+          0.07357430937780346,
+          0.0942853805777703
+        ],
+        "fingertip_distance_margin": 0.011814619422229694,
+        "height_margin": 0.00875295034165502,
+        "max_fingertip_distance": 0.0942853805777703,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 10,
+      "initial": {
+        "ball_center_z": 0.6661779880523682,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08572648399491894,
+          0.09008627997289387,
+          0.07319792297487468,
+          0.09407353488535657
+        ],
+        "fingertip_distance_margin": 0.012026465114643434,
+        "height_margin": 0.008520373017741445,
+        "max_fingertip_distance": 0.09407353488535657,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6743696331977844,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0848228900236853,
+          0.09521839007576653,
+          0.07519615452331097,
+          0.09428410568456505
+        ],
+        "fingertip_distance_margin": 0.010881609924233468,
+        "height_margin": 0.016712018163157705,
+        "max_fingertip_distance": 0.09521839007576653,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 11,
+      "initial": {
+        "ball_center_z": 0.6739833354949951,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0842928394787,
+          0.0951212003300048,
+          0.07504247475943603,
+          0.09337038630991681
+        ],
+        "fingertip_distance_margin": 0.010978799669995196,
+        "height_margin": 0.016325720460368398,
+        "max_fingertip_distance": 0.0951212003300048,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6753052473068237,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08093700187714997,
+          0.07093319348510367,
+          0.08877764134951593,
+          0.09362484310317244
+        ],
+        "fingertip_distance_margin": 0.012475156896827558,
+        "height_margin": 0.01764763227219701,
+        "max_fingertip_distance": 0.09362484310317244,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 12,
+      "initial": {
+        "ball_center_z": 0.6744672060012817,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08042916125173251,
+          0.06964254488642016,
+          0.08628850396261441,
+          0.0934593002012161
+        ],
+        "fingertip_distance_margin": 0.012640699798783905,
+        "height_margin": 0.01680959096665502,
+        "max_fingertip_distance": 0.0934593002012161,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6638008952140808,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08467113470004196,
+          0.0857171496519369,
+          0.06599417822507521,
+          0.09785426676704148
+        ],
+        "fingertip_distance_margin": 0.008245733232958519,
+        "height_margin": 0.0061432801794540914,
+        "max_fingertip_distance": 0.09785426676704148,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 13,
+      "initial": {
+        "ball_center_z": 0.6641615033149719,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08486625172257191,
+          0.08612152683870476,
+          0.06627197249560333,
+          0.09778892236740631
+        ],
+        "fingertip_distance_margin": 0.008311077632593686,
+        "height_margin": 0.006503888280345205,
+        "max_fingertip_distance": 0.09778892236740631,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6704817414283752,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09462417117363763,
+          0.06673704093013216,
+          0.07932473306302695,
+          0.09008968333667323
+        ],
+        "fingertip_distance_margin": 0.011475828826362375,
+        "height_margin": 0.012824126393748525,
+        "max_fingertip_distance": 0.09462417117363763,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 14,
+      "initial": {
+        "ball_center_z": 0.6701630353927612,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09526703515994536,
+          0.0655282803648599,
+          0.07838293042327875,
+          0.0903226481314482
+        ],
+        "fingertip_distance_margin": 0.010832964840054637,
+        "height_margin": 0.012505420358134511,
+        "max_fingertip_distance": 0.09526703515994536,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6646459102630615,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0809732010454119,
+          0.0823213757066233,
+          0.06837570331465687,
+          0.09534824747495277
+        ],
+        "fingertip_distance_margin": 0.010751752525047231,
+        "height_margin": 0.006988295228434804,
+        "max_fingertip_distance": 0.09534824747495277,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 15,
+      "initial": {
+        "ball_center_z": 0.6644940972328186,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.080768985163863,
+          0.08157286071637719,
+          0.06802029014426589,
+          0.09533543545297996
+        ],
+        "fingertip_distance_margin": 0.010764564547020045,
+        "height_margin": 0.006836482198191884,
+        "max_fingertip_distance": 0.09533543545297996,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6601855754852295,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0753725572810293,
+          0.06732167341196704,
+          0.074761280961102,
+          0.08477216071027661
+        ],
+        "fingertip_distance_margin": 0.021327839289723385,
+        "height_margin": 0.002527960450602773,
+        "max_fingertip_distance": 0.08477216071027661,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 16,
+      "initial": {
+        "ball_center_z": 0.6612318754196167,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07578830007008815,
+          0.0680353305839715,
+          0.0756273771889419,
+          0.08451787199686187
+        ],
+        "fingertip_distance_margin": 0.021582128003138135,
+        "height_margin": 0.00357426038498998,
+        "max_fingertip_distance": 0.08451787199686187,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6660873889923096,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08353492688754734,
+          0.08441093035917105,
+          0.06623254148756115,
+          0.0975511519291686
+        ],
+        "fingertip_distance_margin": 0.008548848070831394,
+        "height_margin": 0.008429773957682851,
+        "max_fingertip_distance": 0.0975511519291686,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 17,
+      "initial": {
+        "ball_center_z": 0.6659278273582458,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08330799251723978,
+          0.08387084775426491,
+          0.06595854762272921,
+          0.09734459562589337
+        ],
+        "fingertip_distance_margin": 0.008755404374106629,
+        "height_margin": 0.00827021232361913,
+        "max_fingertip_distance": 0.09734459562589337,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6608400940895081,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08217716805441767,
+          0.07007479733684685,
+          0.06637510444053912,
+          0.09012010656856079
+        ],
+        "fingertip_distance_margin": 0.015979893431439213,
+        "height_margin": 0.0031824790548813375,
+        "max_fingertip_distance": 0.09012010656856079,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 18,
+      "initial": {
+        "ball_center_z": 0.6656354665756226,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08274424481330567,
+          0.07300646868663477,
+          0.0712749377526288,
+          0.09160497582390631
+        ],
+        "fingertip_distance_margin": 0.01449502417609369,
+        "height_margin": 0.00797785154099584,
+        "max_fingertip_distance": 0.09160497582390631,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6714881658554077,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08774619198223679,
+          0.08144811816515321,
+          0.07654493475772661,
+          0.09627050602240556
+        ],
+        "fingertip_distance_margin": 0.009829493977594445,
+        "height_margin": 0.013830550820780996,
+        "max_fingertip_distance": 0.09627050602240556,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 19,
+      "initial": {
+        "ball_center_z": 0.6712251305580139,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08793986869065737,
+          0.0817487448827791,
+          0.07613285368603395,
+          0.09583162156435246
+        ],
+        "fingertip_distance_margin": 0.01026837843564754,
+        "height_margin": 0.013567515523387197,
+        "max_fingertip_distance": 0.09583162156435246,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6668407320976257,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08030059460158277,
+          0.08511154501231584,
+          0.07023548306352523,
+          0.09725958957565357
+        ],
+        "fingertip_distance_margin": 0.008840410424346426,
+        "height_margin": 0.009183117062999013,
+        "max_fingertip_distance": 0.09725958957565357,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 20,
+      "initial": {
+        "ball_center_z": 0.667320728302002,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08050033478457921,
+          0.08538890147773347,
+          0.07065243855783879,
+          0.09716500686869625
+        ],
+        "fingertip_distance_margin": 0.008934993131303748,
+        "height_margin": 0.009663113267375234,
+        "max_fingertip_distance": 0.09716500686869625,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6631031036376953,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08139211660898459,
+          0.08013944883342888,
+          0.06673796111911817,
+          0.09402341599108027
+        ],
+        "fingertip_distance_margin": 0.012076584008919727,
+        "height_margin": 0.005445488603068593,
+        "max_fingertip_distance": 0.09402341599108027,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 21,
+      "initial": {
+        "ball_center_z": 0.6654387712478638,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08231622915521876,
+          0.08136963922119933,
+          0.06937573568696509,
+          0.09461475861954949
+        ],
+        "fingertip_distance_margin": 0.011485241380450512,
+        "height_margin": 0.00778115621323705,
+        "max_fingertip_distance": 0.09461475861954949,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6647374629974365,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08549213973501821,
+          0.07183397667690916,
+          0.0696149471235186,
+          0.09051999422825138
+        ],
+        "fingertip_distance_margin": 0.015580005771748617,
+        "height_margin": 0.007079847962809804,
+        "max_fingertip_distance": 0.09051999422825138,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 22,
+      "initial": {
+        "ball_center_z": 0.6662052273750305,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08682562368212755,
+          0.07293034017978778,
+          0.07050175666189143,
+          0.0915145500483414
+        ],
+        "fingertip_distance_margin": 0.0145854499516586,
+        "height_margin": 0.008547612340403798,
+        "max_fingertip_distance": 0.0915145500483414,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6608101725578308,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08080762908866022,
+          0.08521692006845094,
+          0.06804285884705487,
+          0.10265951627960232
+        ],
+        "fingertip_distance_margin": 0.00344048372039768,
+        "height_margin": 0.0031525575232040914,
+        "max_fingertip_distance": 0.10265951627960232,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 23,
+      "initial": {
+        "ball_center_z": 0.6610974073410034,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08080873345405497,
+          0.08552473538355798,
+          0.0679998983915364,
+          0.1029587142051403
+        ],
+        "fingertip_distance_margin": 0.0031412857948596995,
+        "height_margin": 0.003439792306376699,
+        "max_fingertip_distance": 0.1029587142051403,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6370859742164612,
+        "cond1": true,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 1,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.07245286251580008,
+          0.0594934547118809,
+          0.04994765848216232,
+          0.09304795117554461
+        ],
+        "fingertip_distance_margin": 0.01305204882445539,
+        "height_margin": -0.020571640818165537,
+        "max_fingertip_distance": 0.09304795117554461,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 24,
+      "initial": {
+        "ball_center_z": 0.6706628799438477,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08167360508036427,
+          0.09133033743234727,
+          0.0822696130221302,
+          0.08765992247320514
+        ],
+        "fingertip_distance_margin": 0.014769662567652733,
+        "height_margin": 0.013005264909220937,
+        "max_fingertip_distance": 0.09133033743234727,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6671627163887024,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09383318144357053,
+          0.09018067621343866,
+          0.07202513177695961,
+          0.09602928671960394
+        ],
+        "fingertip_distance_margin": 0.010070713280396063,
+        "height_margin": 0.009505101354075673,
+        "max_fingertip_distance": 0.09602928671960394,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 25,
+      "initial": {
+        "ball_center_z": 0.6663937568664551,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09315824480374243,
+          0.08873658907214531,
+          0.0712625904791043,
+          0.09564297556710827
+        ],
+        "fingertip_distance_margin": 0.010457024432891732,
+        "height_margin": 0.008736141831828359,
+        "max_fingertip_distance": 0.09564297556710827,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.665366530418396,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.10099096901841118,
+          0.07854559947310122,
+          0.06392870518810102,
+          0.09731134991326801
+        ],
+        "fingertip_distance_margin": 0.005109030981588825,
+        "height_margin": 0.007708915383769277,
+        "max_fingertip_distance": 0.10099096901841118,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 26,
+      "initial": {
+        "ball_center_z": 0.6677350997924805,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.10220151230246315,
+          0.08165809254467808,
+          0.06619003715394053,
+          0.09733960500819687
+        ],
+        "fingertip_distance_margin": 0.0038984876975368538,
+        "height_margin": 0.01007748475785375,
+        "max_fingertip_distance": 0.10220151230246315,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6677669882774353,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08357655358948617,
+          0.08295509031872889,
+          0.0739909755242627,
+          0.09811735301350065
+        ],
+        "fingertip_distance_margin": 0.00798264698649935,
+        "height_margin": 0.010109373242808584,
+        "max_fingertip_distance": 0.09811735301350065,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 27,
+      "initial": {
+        "ball_center_z": 0.6672465801239014,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08297499706640728,
+          0.08249662621668921,
+          0.07345741371587276,
+          0.09785587201341357
+        ],
+        "fingertip_distance_margin": 0.008244127986586428,
+        "height_margin": 0.009588965089274648,
+        "max_fingertip_distance": 0.09785587201341357,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6710634231567383,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09221581918395554,
+          0.09113230903796493,
+          0.07428292922522976,
+          0.09772212334637519
+        ],
+        "fingertip_distance_margin": 0.008377876653624813,
+        "height_margin": 0.013405808122111562,
+        "max_fingertip_distance": 0.09772212334637519,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 28,
+      "initial": {
+        "ball_center_z": 0.6709402799606323,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09211449933991327,
+          0.09054260425671579,
+          0.07418941134408574,
+          0.09753777213897034
+        ],
+        "fingertip_distance_margin": 0.008562227861029656,
+        "height_margin": 0.013282664926005605,
+        "max_fingertip_distance": 0.09753777213897034,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6711586713790894,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08343118947740161,
+          0.07612492709919455,
+          0.0776656934735025,
+          0.09117798074422134
+        ],
+        "fingertip_distance_margin": 0.014922019255778657,
+        "height_margin": 0.013501056344462636,
+        "max_fingertip_distance": 0.09117798074422134,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 29,
+      "initial": {
+        "ball_center_z": 0.6703260540962219,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08276128204316334,
+          0.07433402692915565,
+          0.07657004336916351,
+          0.0909857173798992
+        ],
+        "fingertip_distance_margin": 0.015114282620100797,
+        "height_margin": 0.012668439061595205,
+        "max_fingertip_distance": 0.0909857173798992,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.667094886302948,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08908970339802301,
+          0.0715977605106432,
+          0.07914698225940292,
+          0.09236264315661924
+        ],
+        "fingertip_distance_margin": 0.01373735684338076,
+        "height_margin": 0.009437271268321279,
+        "max_fingertip_distance": 0.09236264315661924,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 30,
+      "initial": {
+        "ball_center_z": 0.6668691635131836,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08945581143857002,
+          0.07133643156055687,
+          0.07866379211379673,
+          0.09208424826218724
+        ],
+        "fingertip_distance_margin": 0.014015751737812762,
+        "height_margin": 0.009211548478556875,
+        "max_fingertip_distance": 0.09208424826218724,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6691737174987793,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08675851086817497,
+          0.09520760191481618,
+          0.0666674665255981,
+          0.09790906336700106
+        ],
+        "fingertip_distance_margin": 0.00819093663299894,
+        "height_margin": 0.011516102464152578,
+        "max_fingertip_distance": 0.09790906336700106,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 31,
+      "initial": {
+        "ball_center_z": 0.6692282557487488,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08649657334158153,
+          0.09479392380875598,
+          0.066733838779925,
+          0.09788176077764184
+        ],
+        "fingertip_distance_margin": 0.008218239222358162,
+        "height_margin": 0.01157064071412206,
+        "max_fingertip_distance": 0.09788176077764184,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6691866517066956,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08017223149639141,
+          0.07261152946138714,
+          0.08851797431059628,
+          0.09365348459432227
+        ],
+        "fingertip_distance_margin": 0.012446515405677733,
+        "height_margin": 0.011529036672068838,
+        "max_fingertip_distance": 0.09365348459432227,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 32,
+      "initial": {
+        "ball_center_z": 0.6695429086685181,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08131166213796354,
+          0.07309616371391504,
+          0.08720183001252103,
+          0.09400117238846498
+        ],
+        "fingertip_distance_margin": 0.012098827611535024,
+        "height_margin": 0.011885293633891347,
+        "max_fingertip_distance": 0.09400117238846498,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.666739821434021,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08978034937863817,
+          0.06822522839742894,
+          0.07815363108158405,
+          0.0973682445168283
+        ],
+        "fingertip_distance_margin": 0.008731755483171705,
+        "height_margin": 0.009082206399394277,
+        "max_fingertip_distance": 0.0973682445168283,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 33,
+      "initial": {
+        "ball_center_z": 0.6665189266204834,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09007206368296788,
+          0.06791958237521475,
+          0.07761415894603148,
+          0.09703012799839066
+        ],
+        "fingertip_distance_margin": 0.009069872001609344,
+        "height_margin": 0.00886131158585668,
+        "max_fingertip_distance": 0.09703012799839066,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6665809154510498,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08388891975547774,
+          0.08352065842702151,
+          0.07429155272335705,
+          0.09428755371249126
+        ],
+        "fingertip_distance_margin": 0.011812446287508743,
+        "height_margin": 0.008923300416423086,
+        "max_fingertip_distance": 0.09428755371249126,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 34,
+      "initial": {
+        "ball_center_z": 0.665835976600647,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08101624888540072,
+          0.0799141450536513,
+          0.07276015003173877,
+          0.09327899464756816
+        ],
+        "fingertip_distance_margin": 0.012821005352431844,
+        "height_margin": 0.008178361566020254,
+        "max_fingertip_distance": 0.09327899464756816,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6639092564582825,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08694142817119246,
+          0.0801803367338393,
+          0.06953695565689043,
+          0.0921317980287832
+        ],
+        "fingertip_distance_margin": 0.013968201971216801,
+        "height_margin": 0.006251641423655752,
+        "max_fingertip_distance": 0.0921317980287832,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 35,
+      "initial": {
+        "ball_center_z": 0.6661726236343384,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08737730664983642,
+          0.0810251557791585,
+          0.07209959904955365,
+          0.09266242307818738
+        ],
+        "fingertip_distance_margin": 0.013437576921812619,
+        "height_margin": 0.00851500859971166,
+        "max_fingertip_distance": 0.09266242307818738,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.5678457617759705,
+        "cond1": true,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 0,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.10019191977004822,
+          0.07867688965503236,
+          0.04206565146835903,
+          0.07244368862232016
+        ],
+        "fingertip_distance_margin": 0.005908080229951776,
+        "height_margin": -0.08981185325865626,
+        "max_fingertip_distance": 0.10019191977004822,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 36,
+      "initial": {
+        "ball_center_z": 0.6699721217155457,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08119296478629275,
+          0.06576149953393053,
+          0.07390668959683266,
+          0.09992605455719723
+        ],
+        "fingertip_distance_margin": 0.006173945442802767,
+        "height_margin": 0.012314506680918935,
+        "max_fingertip_distance": 0.09992605455719723,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.673829972743988,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08466255049876059,
+          0.07079619497488623,
+          0.0842445207694274,
+          0.09501003007730381
+        ],
+        "fingertip_distance_margin": 0.011089969922696188,
+        "height_margin": 0.016172357709361318,
+        "max_fingertip_distance": 0.09501003007730381,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 37,
+      "initial": {
+        "ball_center_z": 0.673210084438324,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08385510874461757,
+          0.0699644732098982,
+          0.08327321568531708,
+          0.09408491796357442
+        ],
+        "fingertip_distance_margin": 0.012015082036425581,
+        "height_margin": 0.015552469403697256,
+        "max_fingertip_distance": 0.09408491796357442,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6744272112846375,
+        "cond1": true,
+        "cond2": false,
+        "cond3": true,
+        "contact_count": 1,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08303991273339599,
+          0.09554366933488466,
+          0.0769488759136756,
+          0.09008406616128395
+        ],
+        "fingertip_distance_margin": 0.01055633066511534,
+        "height_margin": 0.016769596250010732,
+        "max_fingertip_distance": 0.09554366933488466,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 38,
+      "initial": {
+        "ball_center_z": 0.6698886752128601,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08049633994520376,
+          0.09019539485208625,
+          0.0711319955878078,
+          0.09307059066681975
+        ],
+        "fingertip_distance_margin": 0.013029409333180253,
+        "height_margin": 0.012231060178233388,
+        "max_fingertip_distance": 0.09307059066681975,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6676610112190247,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09127209072786131,
+          0.08773204778386512,
+          0.07433875457794135,
+          0.09547907187821691
+        ],
+        "fingertip_distance_margin": 0.010620928121783085,
+        "height_margin": 0.010003396184397939,
+        "max_fingertip_distance": 0.09547907187821691,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 39,
+      "initial": {
+        "ball_center_z": 0.6676713824272156,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09174452965871933,
+          0.08840966140090167,
+          0.0745655579973648,
+          0.09559284323157471
+        ],
+        "fingertip_distance_margin": 0.010507156768425285,
+        "height_margin": 0.010013767392588857,
+        "max_fingertip_distance": 0.09559284323157471,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6712243556976318,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08542406346101544,
+          0.07455543908844255,
+          0.08255834907454314,
+          0.09066558481442107
+        ],
+        "fingertip_distance_margin": 0.015434415185578934,
+        "height_margin": 0.013566740663005117,
+        "max_fingertip_distance": 0.09066558481442107,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 40,
+      "initial": {
+        "ball_center_z": 0.6710303425788879,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08515102849218523,
+          0.07442911097249877,
+          0.08243212339595121,
+          0.09015062722245333
+        ],
+        "fingertip_distance_margin": 0.01594937277754667,
+        "height_margin": 0.01337272754426122,
+        "max_fingertip_distance": 0.09015062722245333,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6641310453414917,
+        "cond1": true,
+        "cond2": false,
+        "cond3": true,
+        "contact_count": 1,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.0940618502688014,
+          0.08398644762111208,
+          0.07610858786117361,
+          0.09537328010948047
+        ],
+        "fingertip_distance_margin": 0.010726719890519529,
+        "height_margin": 0.00647343030686498,
+        "max_fingertip_distance": 0.09537328010948047,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 41,
+      "initial": {
+        "ball_center_z": 0.6659877300262451,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09283186695505742,
+          0.08551891939823468,
+          0.07805813561249826,
+          0.09538081348053183
+        ],
+        "fingertip_distance_margin": 0.010719186519468168,
+        "height_margin": 0.008330114991618398,
+        "max_fingertip_distance": 0.09538081348053183,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6676745414733887,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08754767064740647,
+          0.08158937851384211,
+          0.07338327635391052,
+          0.09776332275449418
+        ],
+        "fingertip_distance_margin": 0.008336677245505825,
+        "height_margin": 0.010016926438761953,
+        "max_fingertip_distance": 0.09776332275449418,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 42,
+      "initial": {
+        "ball_center_z": 0.6672984957695007,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08581916308841413,
+          0.08041069478871248,
+          0.07311992415882362,
+          0.0978737344369171
+        ],
+        "fingertip_distance_margin": 0.008226265563082896,
+        "height_margin": 0.009640880734874013,
+        "max_fingertip_distance": 0.0978737344369171,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6708949208259583,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08461795883820585,
+          0.06882551035659089,
+          0.08386957243223395,
+          0.08965669278814437
+        ],
+        "fingertip_distance_margin": 0.016443307211855634,
+        "height_margin": 0.013237305791331533,
+        "max_fingertip_distance": 0.08965669278814437,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 43,
+      "initial": {
+        "ball_center_z": 0.6715484261512756,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.0835251006305002,
+          0.06685683667974925,
+          0.08298569526444079,
+          0.09306280128096377
+        ],
+        "fingertip_distance_margin": 0.013037198719036233,
+        "height_margin": 0.013890811116648916,
+        "max_fingertip_distance": 0.09306280128096377,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6717531681060791,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08596906907147481,
+          0.09264449314335758,
+          0.07076820941098315,
+          0.09603384000235272
+        ],
+        "fingertip_distance_margin": 0.010066159997647275,
+        "height_margin": 0.014095553071452382,
+        "max_fingertip_distance": 0.09603384000235272,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 44,
+      "initial": {
+        "ball_center_z": 0.6711950302124023,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08523084510819072,
+          0.09241487783388673,
+          0.07055243699310534,
+          0.09493234850438156
+        ],
+        "fingertip_distance_margin": 0.011167651495618436,
+        "height_margin": 0.013537415177775625,
+        "max_fingertip_distance": 0.09493234850438156,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.669715166091919,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09082590615162456,
+          0.09403088581499328,
+          0.07564691208410967,
+          0.09821592354043056
+        ],
+        "fingertip_distance_margin": 0.007884076459569442,
+        "height_margin": 0.012057551057292226,
+        "max_fingertip_distance": 0.09821592354043056,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 45,
+      "initial": {
+        "ball_center_z": 0.669562578201294,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09141228264853198,
+          0.0945372897193509,
+          0.07533839278769935,
+          0.09790314911949148
+        ],
+        "fingertip_distance_margin": 0.008196850880508519,
+        "height_margin": 0.011904963166667226,
+        "max_fingertip_distance": 0.09790314911949148,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6689044833183289,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08276198425523544,
+          0.08489295007403921,
+          0.07121655557357699,
+          0.09168947141716156
+        ],
+        "fingertip_distance_margin": 0.014410528582838436,
+        "height_margin": 0.011246868283702138,
+        "max_fingertip_distance": 0.09168947141716156,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 46,
+      "initial": {
+        "ball_center_z": 0.6684792637825012,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08203742540166173,
+          0.0837411520306189,
+          0.07090743407139427,
+          0.09119752144799602
+        ],
+        "fingertip_distance_margin": 0.014902478552003981,
+        "height_margin": 0.010821648747874502,
+        "max_fingertip_distance": 0.09119752144799602,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.670455813407898,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08298337209877238,
+          0.08427756612970637,
+          0.07358614786918156,
+          0.09386481787984373
+        ],
+        "fingertip_distance_margin": 0.012235182120156271,
+        "height_margin": 0.01279819837327123,
+        "max_fingertip_distance": 0.09386481787984373,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 47,
+      "initial": {
+        "ball_center_z": 0.6702741980552673,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08299394947557684,
+          0.08479906079735178,
+          0.07330568274396108,
+          0.09349570915547689
+        ],
+        "fingertip_distance_margin": 0.012604290844523108,
+        "height_margin": 0.012616583020640615,
+        "max_fingertip_distance": 0.09349570915547689,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6520945429801941,
+        "cond1": true,
+        "cond2": true,
+        "cond3": false,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07366136486027768,
+          0.0725163212339199,
+          0.05915391833701839,
+          0.088954916183173
+        ],
+        "fingertip_distance_margin": 0.017145083816827,
+        "height_margin": -0.005563072054432627,
+        "max_fingertip_distance": 0.088954916183173,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 48,
+      "initial": {
+        "ball_center_z": 0.6631059646606445,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08523058240403808,
+          0.08498371586751782,
+          0.06733976552835208,
+          0.09410666272426106
+        ],
+        "fingertip_distance_margin": 0.011993337275738938,
+        "height_margin": 0.005448349626017812,
+        "max_fingertip_distance": 0.09410666272426106,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.665161669254303,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08392875843209675,
+          0.08139311994552714,
+          0.0751915111863589,
+          0.09316847991222081
+        ],
+        "fingertip_distance_margin": 0.012931520087779189,
+        "height_margin": 0.007504054219676259,
+        "max_fingertip_distance": 0.09316847991222081,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 49,
+      "initial": {
+        "ball_center_z": 0.6659170389175415,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08395650443835415,
+          0.08143746895158378,
+          0.07592745987699794,
+          0.09320132306899116
+        ],
+        "fingertip_distance_margin": 0.012898676931008837,
+        "height_margin": 0.008259423882914785,
+        "max_fingertip_distance": 0.09320132306899116,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.5678552389144897,
+        "cond1": true,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 0,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08635254687178823,
+          0.07604605724765984,
+          0.07059446952894678,
+          0.0632600622374419
+        ],
+        "fingertip_distance_margin": 0.019747453128211773,
+        "height_margin": -0.08980237612013697,
+        "max_fingertip_distance": 0.08635254687178823,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 50,
+      "initial": {
+        "ball_center_z": 0.6627383232116699,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09322463293985211,
+          0.07729769500067869,
+          0.06978981583476179,
+          0.09387906485700064
+        ],
+        "fingertip_distance_margin": 0.012220935142999365,
+        "height_margin": 0.005080708177043203,
+        "max_fingertip_distance": 0.09387906485700064,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.671838104724884,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0851535637660111,
+          0.07010472792819915,
+          0.08211037232834362,
+          0.09840343833221989
+        ],
+        "fingertip_distance_margin": 0.0076965616677801135,
+        "height_margin": 0.014180489690257314,
+        "max_fingertip_distance": 0.09840343833221989,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 51,
+      "initial": {
+        "ball_center_z": 0.6711146831512451,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08434941559411363,
+          0.06907661352502847,
+          0.08080124114224549,
+          0.09868761093432003
+        ],
+        "fingertip_distance_margin": 0.007412389065679967,
+        "height_margin": 0.013457068116618398,
+        "max_fingertip_distance": 0.09868761093432003,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.660571277141571,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07839300025527432,
+          0.07798609643909679,
+          0.06788560515621732,
+          0.08570491815583885
+        ],
+        "fingertip_distance_margin": 0.020395081844161153,
+        "height_margin": 0.002913662106944326,
+        "max_fingertip_distance": 0.08570491815583885,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 52,
+      "initial": {
+        "ball_center_z": 0.6634445786476135,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08039371407522293,
+          0.07786585801300032,
+          0.06929139381674815,
+          0.09088760438560044
+        ],
+        "fingertip_distance_margin": 0.015212395614399563,
+        "height_margin": 0.005786963612986806,
+        "max_fingertip_distance": 0.09088760438560044,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.67181396484375,
+        "cond1": false,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09548051474880667,
+          0.10937867937026126,
+          0.07378075683125103,
+          0.09565490971290203
+        ],
+        "fingertip_distance_margin": -0.0032786793702612588,
+        "height_margin": 0.014156349809123281,
+        "max_fingertip_distance": 0.10937867937026126,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 53,
+      "initial": {
+        "ball_center_z": 0.6693317294120789,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08376040297760645,
+          0.09277623721826873,
+          0.06865063450336033,
+          0.09690440449911947
+        ],
+        "fingertip_distance_margin": 0.009195595500880532,
+        "height_margin": 0.011674114377452138,
+        "max_fingertip_distance": 0.09690440449911947,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": true,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6669896841049194,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0918868045024907,
+          0.08612331945178062,
+          0.07458257157057639,
+          0.09290712950318687
+        ],
+        "fingertip_distance_margin": 0.013192870496813128,
+        "height_margin": 0.009332069070292714,
+        "max_fingertip_distance": 0.09290712950318687,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 54,
+      "initial": {
+        "ball_center_z": 0.6671673059463501,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09151908198314146,
+          0.08520829855165597,
+          0.07457250201418876,
+          0.09290870922545631
+        ],
+        "fingertip_distance_margin": 0.013191290774543687,
+        "height_margin": 0.009509690911723379,
+        "max_fingertip_distance": 0.09290870922545631,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.5678552389144897,
+        "cond1": true,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 0,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08271205310278973,
+          0.08134316129495382,
+          0.0629716859306922,
+          0.06090401345665232
+        ],
+        "fingertip_distance_margin": 0.02338794689721027,
+        "height_margin": -0.08980237612013697,
+        "max_fingertip_distance": 0.08271205310278973,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 55,
+      "initial": {
+        "ball_center_z": 0.6635547876358032,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08099092348782366,
+          0.08342333131041466,
+          0.07020237894618171,
+          0.08972957669742306
+        ],
+        "fingertip_distance_margin": 0.016370423302576945,
+        "height_margin": 0.0058971726011765035,
+        "max_fingertip_distance": 0.08972957669742306,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6470863223075867,
+        "cond1": true,
+        "cond2": true,
+        "cond3": false,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0830939530042216,
+          0.059541872837329424,
+          0.05341271538908952,
+          0.08288340478957447
+        ],
+        "fingertip_distance_margin": 0.023006046995778406,
+        "height_margin": -0.01057129272704005,
+        "max_fingertip_distance": 0.0830939530042216,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 56,
+      "initial": {
+        "ball_center_z": 0.6654884219169617,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08953849519163991,
+          0.07106865818600958,
+          0.07037864185661624,
+          0.09213276030588483
+        ],
+        "fingertip_distance_margin": 0.013967239694115174,
+        "height_margin": 0.00783080688233495,
+        "max_fingertip_distance": 0.09213276030588483,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.672572135925293,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08418695647749075,
+          0.06647061871542338,
+          0.08516971058269604,
+          0.09575968889717953
+        ],
+        "fingertip_distance_margin": 0.010340311102820465,
+        "height_margin": 0.01491452089066625,
+        "max_fingertip_distance": 0.09575968889717953,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 57,
+      "initial": {
+        "ball_center_z": 0.6717198491096497,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08373975597132716,
+          0.06533944420090235,
+          0.08314175712456967,
+          0.09523551664305609
+        ],
+        "fingertip_distance_margin": 0.010864483356943913,
+        "height_margin": 0.014062234075022939,
+        "max_fingertip_distance": 0.09523551664305609,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.5675618648529053,
+        "cond1": false,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 0,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.1434110383113596,
+          0.07292848484504252,
+          0.11379441722647549,
+          0.11005920878712575
+        ],
+        "fingertip_distance_margin": -0.037311038311359596,
+        "height_margin": -0.09009575018172145,
+        "max_fingertip_distance": 0.1434110383113596,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 58,
+      "initial": {
+        "ball_center_z": 0.6710919737815857,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09045936374746695,
+          0.0701262272963683,
+          0.08336100432372401,
+          0.09721063713257552
+        ],
+        "fingertip_distance_margin": 0.008889362867424477,
+        "height_margin": 0.013434358746958974,
+        "max_fingertip_distance": 0.09721063713257552,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": true,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6617890000343323,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07559310562858913,
+          0.06972346084558538,
+          0.06949195070266283,
+          0.08857917120813662
+        ],
+        "fingertip_distance_margin": 0.017520828791863383,
+        "height_margin": 0.004131384999705556,
+        "max_fingertip_distance": 0.08857917120813662,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 59,
+      "initial": {
+        "ball_center_z": 0.6642558574676514,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07826849318722193,
+          0.07265694223702618,
+          0.07105374847127947,
+          0.09018359817535451
+        ],
+        "fingertip_distance_margin": 0.015916401824645487,
+        "height_margin": 0.006598242433024648,
+        "max_fingertip_distance": 0.09018359817535451,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6639049649238586,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09450255361214646,
+          0.07423670551257137,
+          0.06799312267748468,
+          0.097841828962386
+        ],
+        "fingertip_distance_margin": 0.008258171037614004,
+        "height_margin": 0.0062473498892319235,
+        "max_fingertip_distance": 0.097841828962386,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 60,
+      "initial": {
+        "ball_center_z": 0.664200484752655,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09530719173431922,
+          0.07429362250186859,
+          0.0678445559279912,
+          0.09777908781159343
+        ],
+        "fingertip_distance_margin": 0.008320912188406568,
+        "height_margin": 0.00654286971802831,
+        "max_fingertip_distance": 0.09777908781159343,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6710652709007263,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08304896087782442,
+          0.07484037039132459,
+          0.08171181803796906,
+          0.09643977294021336
+        ],
+        "fingertip_distance_margin": 0.009660227059786641,
+        "height_margin": 0.0134076558660996,
+        "max_fingertip_distance": 0.09643977294021336,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 61,
+      "initial": {
+        "ball_center_z": 0.6714701652526855,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08033973932629795,
+          0.0744262999695299,
+          0.08442301757395045,
+          0.09549449520738518
+        ],
+        "fingertip_distance_margin": 0.010605504792614823,
+        "height_margin": 0.013812550218058828,
+        "max_fingertip_distance": 0.09549449520738518,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6645323634147644,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08649850237573721,
+          0.06966771795970012,
+          0.07012752349426574,
+          0.09701808559734464
+        ],
+        "fingertip_distance_margin": 0.009081914402655364,
+        "height_margin": 0.006874748380137685,
+        "max_fingertip_distance": 0.09701808559734464,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 62,
+      "initial": {
+        "ball_center_z": 0.6646493077278137,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08661396672891818,
+          0.06969829159618011,
+          0.07016120044162191,
+          0.09685969953832253
+        ],
+        "fingertip_distance_margin": 0.009240300461677467,
+        "height_margin": 0.006991692693187002,
+        "max_fingertip_distance": 0.09685969953832253,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6692529320716858,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08607493827335297,
+          0.08694982595952792,
+          0.07594309438789118,
+          0.09478597948386806
+        ],
+        "fingertip_distance_margin": 0.011314020516131937,
+        "height_margin": 0.011595317037059072,
+        "max_fingertip_distance": 0.09478597948386806,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 63,
+      "initial": {
+        "ball_center_z": 0.6692931056022644,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08605936651809121,
+          0.08658216527938598,
+          0.07592072158212236,
+          0.0946318785337948
+        ],
+        "fingertip_distance_margin": 0.011468121466205197,
+        "height_margin": 0.011635490567637685,
+        "max_fingertip_distance": 0.0946318785337948,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6803023219108582,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0861062865388676,
+          0.07742832235652371,
+          0.09474925864610102,
+          0.09219303538076852
+        ],
+        "fingertip_distance_margin": 0.011350741353898977,
+        "height_margin": 0.022644706876231435,
+        "max_fingertip_distance": 0.09474925864610102,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 64,
+      "initial": {
+        "ball_center_z": 0.6792575716972351,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0851506711120517,
+          0.07545552804025606,
+          0.0922572354565595,
+          0.0927257150622753
+        ],
+        "fingertip_distance_margin": 0.013374284937724704,
+        "height_margin": 0.02159995666260839,
+        "max_fingertip_distance": 0.0927257150622753,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.674595832824707,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09676236312862609,
+          0.07965680210116059,
+          0.08028963066231845,
+          0.09630020622245745
+        ],
+        "fingertip_distance_margin": 0.009337636871373914,
+        "height_margin": 0.016938217790080312,
+        "max_fingertip_distance": 0.09676236312862609,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 65,
+      "initial": {
+        "ball_center_z": 0.6746199727058411,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0959757065713185,
+          0.07949995820151852,
+          0.08048342342017768,
+          0.0962322576456251
+        ],
+        "fingertip_distance_margin": 0.009867742354374903,
+        "height_margin": 0.016962357671214345,
+        "max_fingertip_distance": 0.0962322576456251,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6744095683097839,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08351322102998089,
+          0.08901391809055637,
+          0.07926327033932758,
+          0.09180767854282539
+        ],
+        "fingertip_distance_margin": 0.014292321457174614,
+        "height_margin": 0.016751953275157216,
+        "max_fingertip_distance": 0.09180767854282539,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 66,
+      "initial": {
+        "ball_center_z": 0.6737462878227234,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0828463749892682,
+          0.08752968937808445,
+          0.07848922628192863,
+          0.0913905331341464
+        ],
+        "fingertip_distance_margin": 0.014709466865853602,
+        "height_margin": 0.01608867278809667,
+        "max_fingertip_distance": 0.0913905331341464,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.669532835483551,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08524180888178175,
+          0.08922457844169288,
+          0.06805589041589567,
+          0.09794388303173496
+        ],
+        "fingertip_distance_margin": 0.008156116968265043,
+        "height_margin": 0.011875220448924306,
+        "max_fingertip_distance": 0.09794388303173496,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 67,
+      "initial": {
+        "ball_center_z": 0.6690930724143982,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08418785726736133,
+          0.08839399523601896,
+          0.06780054627565306,
+          0.09576629969723391
+        ],
+        "fingertip_distance_margin": 0.010333700302766091,
+        "height_margin": 0.011435457379771474,
+        "max_fingertip_distance": 0.09576629969723391,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6667618155479431,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08458401884412538,
+          0.08313656129458068,
+          0.07631147776321359,
+          0.09350855142526407
+        ],
+        "fingertip_distance_margin": 0.01259144857473593,
+        "height_margin": 0.009104200513316396,
+        "max_fingertip_distance": 0.09350855142526407,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 68,
+      "initial": {
+        "ball_center_z": 0.6695771813392639,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08274324126763197,
+          0.08010216867784688,
+          0.07650765366923858,
+          0.09925341084311266
+        ],
+        "fingertip_distance_margin": 0.006846589156887337,
+        "height_margin": 0.011919566304637197,
+        "max_fingertip_distance": 0.09925341084311266,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6703848242759705,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07940328919427145,
+          0.09119081019812045,
+          0.07671189672928852,
+          0.08671102977239098
+        ],
+        "fingertip_distance_margin": 0.014909189801879552,
+        "height_margin": 0.01272720924134374,
+        "max_fingertip_distance": 0.09119081019812045,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 69,
+      "initial": {
+        "ball_center_z": 0.6699698567390442,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.07899202018163726,
+          0.09048215662926773,
+          0.07615700002416818,
+          0.08617670021975797
+        ],
+        "fingertip_distance_margin": 0.01561784337073227,
+        "height_margin": 0.01231224170441747,
+        "max_fingertip_distance": 0.09048215662926773,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6399065852165222,
+        "cond1": true,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 1,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08095816398674151,
+          0.08006328097779658,
+          0.04818198443743602,
+          0.08041321238279903
+        ],
+        "fingertip_distance_margin": 0.025141836013258492,
+        "height_margin": -0.017751029818104502,
+        "max_fingertip_distance": 0.08095816398674151,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 70,
+      "initial": {
+        "ball_center_z": 0.6618073582649231,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.07541361842057348,
+          0.07329726839299296,
+          0.07093042413488464,
+          0.09438107491690702
+        ],
+        "fingertip_distance_margin": 0.011718925083092982,
+        "height_margin": 0.004149743230296377,
+        "max_fingertip_distance": 0.09438107491690702,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6648067235946655,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08840421901257707,
+          0.06992831400873234,
+          0.06847637613480613,
+          0.09695554475407016
+        ],
+        "fingertip_distance_margin": 0.009144455245929842,
+        "height_margin": 0.007149108560038808,
+        "max_fingertip_distance": 0.09695554475407016,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 71,
+      "initial": {
+        "ball_center_z": 0.6646358966827393,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08824327574853826,
+          0.07020495303250066,
+          0.06833805385729204,
+          0.09672513932979693
+        ],
+        "fingertip_distance_margin": 0.009374860670203072,
+        "height_margin": 0.006978281648112539,
+        "max_fingertip_distance": 0.09672513932979693,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6770638823509216,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08559771915223797,
+          0.08268577010283816,
+          0.09540441102634539,
+          0.08726017559496287
+        ],
+        "fingertip_distance_margin": 0.010695588973654607,
+        "height_margin": 0.019406267316294912,
+        "max_fingertip_distance": 0.09540441102634539,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 72,
+      "initial": {
+        "ball_center_z": 0.6768441796302795,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08526999741725907,
+          0.08264358180196671,
+          0.0954081470228474,
+          0.08672120325079119
+        ],
+        "fingertip_distance_margin": 0.010691852977152597,
+        "height_margin": 0.019186564595652822,
+        "max_fingertip_distance": 0.0954081470228474,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.666871964931488,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08765837121731199,
+          0.0755839441937232,
+          0.07190234164805745,
+          0.09204517861713951
+        ],
+        "fingertip_distance_margin": 0.014054821382860488,
+        "height_margin": 0.009214349896861318,
+        "max_fingertip_distance": 0.09204517861713951,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 73,
+      "initial": {
+        "ball_center_z": 0.6666431427001953,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08733372954288345,
+          0.0750076705465727,
+          0.07169958748281002,
+          0.09170482515757189
+        ],
+        "fingertip_distance_margin": 0.01439517484242811,
+        "height_margin": 0.008985527665568593,
+        "max_fingertip_distance": 0.09170482515757189,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6746543049812317,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08598865036656976,
+          0.07553992141294566,
+          0.08886674865212979,
+          0.09789062828797572
+        ],
+        "fingertip_distance_margin": 0.00820937171202428,
+        "height_margin": 0.01699668994660497,
+        "max_fingertip_distance": 0.09789062828797572,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 74,
+      "initial": {
+        "ball_center_z": 0.6744944453239441,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08581429111199662,
+          0.07526152818143314,
+          0.08869340056000385,
+          0.09770165230713387
+        ],
+        "fingertip_distance_margin": 0.008398347692866126,
+        "height_margin": 0.016836830289317373,
+        "max_fingertip_distance": 0.09770165230713387,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6670061945915222,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08173525487374057,
+          0.08595849165636466,
+          0.07513850617511195,
+          0.09285614408172294
+        ],
+        "fingertip_distance_margin": 0.013243855918277064,
+        "height_margin": 0.009348579556895498,
+        "max_fingertip_distance": 0.09285614408172294,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 75,
+      "initial": {
+        "ball_center_z": 0.6670292019844055,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08161526623767376,
+          0.08586100135149924,
+          0.0750953155209232,
+          0.09268611945324165
+        ],
+        "fingertip_distance_margin": 0.01341388054675835,
+        "height_margin": 0.009371586949778798,
+        "max_fingertip_distance": 0.09268611945324165,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6653410792350769,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08121067645324867,
+          0.08981746586329412,
+          0.0696388269486022,
+          0.09091239079726457
+        ],
+        "fingertip_distance_margin": 0.01518760920273543,
+        "height_margin": 0.007683464200450185,
+        "max_fingertip_distance": 0.09091239079726457,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 76,
+      "initial": {
+        "ball_center_z": 0.6651608943939209,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08116535883559496,
+          0.0896046900966801,
+          0.06919417729675663,
+          0.09075066560407717
+        ],
+        "fingertip_distance_margin": 0.015349334395922828,
+        "height_margin": 0.007503279359294179,
+        "max_fingertip_distance": 0.09075066560407717,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6678690314292908,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0939656885450993,
+          0.07134081892401513,
+          0.0766957081723004,
+          0.09417414036302336
+        ],
+        "fingertip_distance_margin": 0.011925859636976635,
+        "height_margin": 0.010211416394664052,
+        "max_fingertip_distance": 0.09417414036302336,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 77,
+      "initial": {
+        "ball_center_z": 0.6677025556564331,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0939316726717227,
+          0.07113812353531222,
+          0.07619040489115177,
+          0.09377823080350416
+        ],
+        "fingertip_distance_margin": 0.0121683273282773,
+        "height_margin": 0.010044940621806386,
+        "max_fingertip_distance": 0.0939316726717227,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.666553258895874,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08561966164321247,
+          0.08889176743311981,
+          0.06538411666106887,
+          0.09565509425443942
+        ],
+        "fingertip_distance_margin": 0.010444905745560576,
+        "height_margin": 0.008895643861247304,
+        "max_fingertip_distance": 0.09565509425443942,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 78,
+      "initial": {
+        "ball_center_z": 0.6662659645080566,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08502646780458295,
+          0.08794198509348217,
+          0.065398737767274,
+          0.09501041612472325
+        ],
+        "fingertip_distance_margin": 0.011089583875276754,
+        "height_margin": 0.008608349473429922,
+        "max_fingertip_distance": 0.09501041612472325,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6762345433235168,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.10310183706751642,
+          0.09753983152297507,
+          0.07998910650634616,
+          0.09838101260097437
+        ],
+        "fingertip_distance_margin": 0.002998162932483575,
+        "height_margin": 0.018576928288890127,
+        "max_fingertip_distance": 0.10310183706751642,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 79,
+      "initial": {
+        "ball_center_z": 0.6754656434059143,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.10221165361132697,
+          0.09619107695301166,
+          0.0795180121220352,
+          0.09803445110223352
+        ],
+        "fingertip_distance_margin": 0.003888346388673025,
+        "height_margin": 0.017808028371287588,
+        "max_fingertip_distance": 0.10221165361132697,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6687827110290527,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0806279527316928,
+          0.06487481237064155,
+          0.0790251826126156,
+          0.08934987626942037
+        ],
+        "fingertip_distance_margin": 0.01675012373057963,
+        "height_margin": 0.011125095994426015,
+        "max_fingertip_distance": 0.08934987626942037,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 80,
+      "initial": {
+        "ball_center_z": 0.6683553457260132,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08005697151771118,
+          0.064433047507827,
+          0.07833859001243632,
+          0.08864594212894067
+        ],
+        "fingertip_distance_margin": 0.01745405787105933,
+        "height_margin": 0.010697730691386464,
+        "max_fingertip_distance": 0.08864594212894067,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6644204258918762,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0810634614998313,
+          0.07925403181680131,
+          0.07177768061022491,
+          0.09430395877533003
+        ],
+        "fingertip_distance_margin": 0.01179604122466997,
+        "height_margin": 0.006762810857249502,
+        "max_fingertip_distance": 0.09430395877533003,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 81,
+      "initial": {
+        "ball_center_z": 0.664372444152832,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08106081542637873,
+          0.07914015991874203,
+          0.07152099545425228,
+          0.09420963450704949
+        ],
+        "fingertip_distance_margin": 0.011890365492950514,
+        "height_margin": 0.006714829118205312,
+        "max_fingertip_distance": 0.09420963450704949,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6642451286315918,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08486934411229473,
+          0.08610962650969999,
+          0.06850454329296407,
+          0.09624520570183594
+        ],
+        "fingertip_distance_margin": 0.009854794298164063,
+        "height_margin": 0.006587513596965078,
+        "max_fingertip_distance": 0.09624520570183594,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 82,
+      "initial": {
+        "ball_center_z": 0.6639597415924072,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08386139386841897,
+          0.08503024756788187,
+          0.06837714231801424,
+          0.096108061302122
+        ],
+        "fingertip_distance_margin": 0.009991938697877997,
+        "height_margin": 0.0063021265577805075,
+        "max_fingertip_distance": 0.096108061302122,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6716734766960144,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.0853849119966333,
+          0.08223389130339777,
+          0.06915862066597257,
+          0.09749904161982362
+        ],
+        "fingertip_distance_margin": 0.008600958380176382,
+        "height_margin": 0.014015861661387685,
+        "max_fingertip_distance": 0.09749904161982362,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 83,
+      "initial": {
+        "ball_center_z": 0.6713181734085083,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08448723257888606,
+          0.0817897370854401,
+          0.06900111961157443,
+          0.09637746791491282
+        ],
+        "fingertip_distance_margin": 0.00972253208508718,
+        "height_margin": 0.013660558373881582,
+        "max_fingertip_distance": 0.09637746791491282,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6711470484733582,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09037588906496577,
+          0.07620179340511331,
+          0.07981679941330731,
+          0.0897228050197521
+        ],
+        "fingertip_distance_margin": 0.01572411093503423,
+        "height_margin": 0.013489433438731435,
+        "max_fingertip_distance": 0.09037588906496577,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 84,
+      "initial": {
+        "ball_center_z": 0.6709535717964172,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0907174373415936,
+          0.07584759712263853,
+          0.07944045383217196,
+          0.08945975727215504
+        ],
+        "fingertip_distance_margin": 0.015382562658406401,
+        "height_margin": 0.013295956761790517,
+        "max_fingertip_distance": 0.0907174373415936,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.5677402019500732,
+        "cond1": true,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 0,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.07528635260395926,
+          0.05950654630274155,
+          0.05041831490666606,
+          0.06577604218034681
+        ],
+        "fingertip_distance_margin": 0.03081364739604074,
+        "height_margin": -0.08991741308455348,
+        "max_fingertip_distance": 0.07528635260395926,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 85,
+      "initial": {
+        "ball_center_z": 0.6704912185668945,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.08267217449098302,
+          0.06911212717041489,
+          0.07924014977725496,
+          0.0951257181143755
+        ],
+        "fingertip_distance_margin": 0.010974281885624507,
+        "height_margin": 0.012833603532267812,
+        "max_fingertip_distance": 0.0951257181143755,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6498391032218933,
+        "cond1": true,
+        "cond2": true,
+        "cond3": false,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.07274573392135038,
+          0.06353204678120883,
+          0.05644786166664318,
+          0.08894289411167303
+        ],
+        "fingertip_distance_margin": 0.017157105888326973,
+        "height_margin": -0.007818511812733409,
+        "max_fingertip_distance": 0.08894289411167303,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 86,
+      "initial": {
+        "ball_center_z": 0.6634548902511597,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08484057601019675,
+          0.07802606798422668,
+          0.06654544051948029,
+          0.09568629977733766
+        ],
+        "fingertip_distance_margin": 0.010413700222662345,
+        "height_margin": 0.005797275216532949,
+        "max_fingertip_distance": 0.09568629977733766,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6745290160179138,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08632309903094229,
+          0.09477010320732862,
+          0.07694555283587967,
+          0.09787235724164631
+        ],
+        "fingertip_distance_margin": 0.008227642758353693,
+        "height_margin": 0.0168714009832871,
+        "max_fingertip_distance": 0.09787235724164631,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 87,
+      "initial": {
+        "ball_center_z": 0.6744015216827393,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08416479895011272,
+          0.09168234915996076,
+          0.07553293912785705,
+          0.09648343682486933
+        ],
+        "fingertip_distance_margin": 0.009616563175130668,
+        "height_margin": 0.01674390664811254,
+        "max_fingertip_distance": 0.09648343682486933,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.333132803440094,
+        "cond1": false,
+        "cond2": false,
+        "cond3": false,
+        "contact_count": 0,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": false,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.33106848028783076,
+          0.33945994076403446,
+          0.3054928991261045,
+          0.29135650655089407
+        ],
+        "fingertip_distance_margin": -0.23335994076403446,
+        "height_margin": -0.3245248115945327,
+        "max_fingertip_distance": 0.33945994076403446,
+        "terminated": true,
+        "truncated": true,
+        "valid": false
+      },
+      "index": 88,
+      "initial": {
+        "ball_center_z": 0.6628793478012085,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08633287938914334,
+          0.08960237619166396,
+          0.06490912250170977,
+          0.09482957680902003
+        ],
+        "fingertip_distance_margin": 0.01127042319097997,
+        "height_margin": 0.005221732766581777,
+        "max_fingertip_distance": 0.09482957680902003,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": true,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": true,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6723625659942627,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08294797391478517,
+          0.06514963803669449,
+          0.08588118959280884,
+          0.09085473793348814
+        ],
+        "fingertip_distance_margin": 0.015245262066511861,
+        "height_margin": 0.014704950959635976,
+        "max_fingertip_distance": 0.09085473793348814,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 89,
+      "initial": {
+        "ball_center_z": 0.6724690198898315,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08285450705584244,
+          0.06537066611506846,
+          0.08548730626548272,
+          0.0902813951456906
+        ],
+        "fingertip_distance_margin": 0.0158186048543094,
+        "height_margin": 0.014811404855204824,
+        "max_fingertip_distance": 0.0902813951456906,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6748132109642029,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08626255957448388,
+          0.07539717430660949,
+          0.0764591135370003,
+          0.0916659895815609
+        ],
+        "fingertip_distance_margin": 0.0144340104184391,
+        "height_margin": 0.017155595929576162,
+        "max_fingertip_distance": 0.0916659895815609,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 90,
+      "initial": {
+        "ball_center_z": 0.6755488514900208,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08627895004737035,
+          0.07612078854283928,
+          0.0777292817790403,
+          0.09155581491974499
+        ],
+        "fingertip_distance_margin": 0.014544185080255012,
+        "height_margin": 0.017891236455394033,
+        "max_fingertip_distance": 0.09155581491974499,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6617162823677063,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09123967268248205,
+          0.07204463845322812,
+          0.07510057726017245,
+          0.09127715280421847
+        ],
+        "fingertip_distance_margin": 0.01482284719578153,
+        "height_margin": 0.00405866733307958,
+        "max_fingertip_distance": 0.09127715280421847,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 91,
+      "initial": {
+        "ball_center_z": 0.6627026796340942,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.0908517968678446,
+          0.07236053409701355,
+          0.07702672311599082,
+          0.0915664818468823
+        ],
+        "fingertip_distance_margin": 0.014533518153117694,
+        "height_margin": 0.005045064599467519,
+        "max_fingertip_distance": 0.0915664818468823,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6688330769538879,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08521613933684427,
+          0.07359448707371441,
+          0.07683797848208683,
+          0.0978408457875449
+        ],
+        "fingertip_distance_margin": 0.0082591542124551,
+        "height_margin": 0.01117546191926122,
+        "max_fingertip_distance": 0.0978408457875449,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 92,
+      "initial": {
+        "ball_center_z": 0.6686677932739258,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08504645759551119,
+          0.07332018810974421,
+          0.07637317460152254,
+          0.09777264138590228
+        ],
+        "fingertip_distance_margin": 0.008327358614097724,
+        "height_margin": 0.011010178239299062,
+        "max_fingertip_distance": 0.09777264138590228,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6671313643455505,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.081307522852354,
+          0.08073152026804876,
+          0.07251954565970839,
+          0.0896320270642779
+        ],
+        "fingertip_distance_margin": 0.016467972935722094,
+        "height_margin": 0.009473749310923818,
+        "max_fingertip_distance": 0.0896320270642779,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 93,
+      "initial": {
+        "ball_center_z": 0.6669773459434509,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08114249856024905,
+          0.08019026064490084,
+          0.07223080903076384,
+          0.08947716995793321
+        ],
+        "fingertip_distance_margin": 0.016622830042066786,
+        "height_margin": 0.009319730908824209,
+        "max_fingertip_distance": 0.08947716995793321,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6715325713157654,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09552162194052943,
+          0.0728821418637949,
+          0.07411754205932881,
+          0.09090364042685248
+        ],
+        "fingertip_distance_margin": 0.010578378059470567,
+        "height_margin": 0.013874956281138662,
+        "max_fingertip_distance": 0.09552162194052943,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 94,
+      "initial": {
+        "ball_center_z": 0.6717060208320618,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09554843528111424,
+          0.0730057090384732,
+          0.07434427340955929,
+          0.09093602936861456
+        ],
+        "fingertip_distance_margin": 0.010551564718885756,
+        "height_margin": 0.014048405797435048,
+        "max_fingertip_distance": 0.09554843528111424,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6691551804542542,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08154654732528395,
+          0.07305773986377516,
+          0.07353890445964135,
+          0.09149424709618215
+        ],
+        "fingertip_distance_margin": 0.014605752903817854,
+        "height_margin": 0.011497565419627431,
+        "max_fingertip_distance": 0.09149424709618215,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 95,
+      "initial": {
+        "ball_center_z": 0.6691849827766418,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08144619112915821,
+          0.07302529455731184,
+          0.0736745792422502,
+          0.0911928506945769
+        ],
+        "fingertip_distance_margin": 0.014907149305423098,
+        "height_margin": 0.011527367742015127,
+        "max_fingertip_distance": 0.0911928506945769,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6690791249275208,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09425439458454331,
+          0.074149082536227,
+          0.07425559903069409,
+          0.09719884021947865
+        ],
+        "fingertip_distance_margin": 0.008901159780521348,
+        "height_margin": 0.011421509892894033,
+        "max_fingertip_distance": 0.09719884021947865,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 96,
+      "initial": {
+        "ball_center_z": 0.6688879132270813,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": false,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.09391471014284235,
+          0.0737674382410444,
+          0.07395410134374672,
+          0.09676046293560137
+        ],
+        "fingertip_distance_margin": 0.009339537064398634,
+        "height_margin": 0.01123029819245458,
+        "max_fingertip_distance": 0.09676046293560137,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6641011238098145,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.07829418886626333,
+          0.0813606318912188,
+          0.07006317405791117,
+          0.1015426576758515
+        ],
+        "fingertip_distance_margin": 0.004557342324148506,
+        "height_margin": 0.006443508775187734,
+        "max_fingertip_distance": 0.1015426576758515,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 97,
+      "initial": {
+        "ball_center_z": 0.6642126441001892,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": true,
+          "thumb": false
+        },
+        "fingertip_body_origin_distances": [
+          0.07834434001484579,
+          0.08060789757437747,
+          0.06994767756718867,
+          0.10222989335985762
+        ],
+        "fingertip_distance_margin": 0.0038701066401423817,
+        "height_margin": 0.00655502906556249,
+        "max_fingertip_distance": 0.10222989335985762,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": false,
+        "ever_failed_cond3": false,
+        "ever_terminated": false
+      },
+      "timeout_success": true
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6689103245735168,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08223181697049357,
+          0.06480159459636367,
+          0.07647803365964369,
+          0.09564010971581438
+        ],
+        "fingertip_distance_margin": 0.010459890284185619,
+        "height_margin": 0.011252709538890127,
+        "max_fingertip_distance": 0.09564010971581438,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 98,
+      "initial": {
+        "ball_center_z": 0.6698898077011108,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 2,
+        "contact_flags": {
+          "index": true,
+          "middle": false,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08267950730128652,
+          0.06637522363675737,
+          0.07732734395119516,
+          0.09503416344174488
+        ],
+        "fingertip_distance_margin": 0.011065836558255118,
+        "height_margin": 0.01223219266648412,
+        "max_fingertip_distance": 0.09503416344174488,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    },
+    {
+      "final": {
+        "ball_center_z": 0.6666423678398132,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08082578760899138,
+          0.07604051803070794,
+          0.07168027642393027,
+          0.0907559176205393
+        ],
+        "fingertip_distance_margin": 0.015344082379460694,
+        "height_margin": 0.008984752805186513,
+        "max_fingertip_distance": 0.0907559176205393,
+        "terminated": false,
+        "truncated": true,
+        "valid": true
+      },
+      "index": 99,
+      "initial": {
+        "ball_center_z": 0.6677781939506531,
+        "cond1": true,
+        "cond2": true,
+        "cond3": true,
+        "contact_count": 3,
+        "contact_flags": {
+          "index": true,
+          "middle": true,
+          "ring": false,
+          "thumb": true
+        },
+        "fingertip_body_origin_distances": [
+          0.08092304909080582,
+          0.07660102820804758,
+          0.07326459355968426,
+          0.09036996428583077
+        ],
+        "fingertip_distance_margin": 0.015730035714169227,
+        "height_margin": 0.010120578916026357,
+        "max_fingertip_distance": 0.09036996428583077,
+        "valid": true
+      },
+      "replay": {
+        "ever_failed_cond1": false,
+        "ever_failed_cond2": true,
+        "ever_failed_cond3": false,
+        "ever_terminated": true
+      },
+      "timeout_success": false
+    }
+  ],
+  "settle_seconds": 3.0,
+  "settle_steps": 60,
+  "timeout_success_count": 69,
+  "timeout_success_rate": 0.69
+}

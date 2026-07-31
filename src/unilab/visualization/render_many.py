@@ -11,6 +11,7 @@ import subprocess
 import sys
 import textwrap
 from collections.abc import Sequence
+from concurrent.futures import BrokenExecutor, ProcessPoolExecutor
 from typing import Any
 
 import imageio
@@ -159,6 +160,69 @@ def _warn_render_unavailable() -> None:
     )
 
 
+def _platform_render_process_default() -> int:
+    """Return the conservative renderer worker default for this platform."""
+    return 1 if sys.platform == "win32" else 8
+
+
+def _render_process_override() -> int | None:
+    """Parse the renderer-only process override, warning on invalid values."""
+    raw_value = os.environ.get("UNILAB_RENDER_PROCESSES")
+    if raw_value is None:
+        return None
+
+    try:
+        value = int(raw_value)
+    except ValueError:
+        value = 0
+
+    if value <= 0 or str(value) != raw_value.strip():
+        print(
+            "[render] Ignoring invalid UNILAB_RENDER_PROCESSES="
+            f"{raw_value!r}; expected a positive integer.",
+            file=sys.stderr,
+        )
+        return None
+    return value
+
+
+def _resolve_render_process_count(
+    requested: int | None,
+    *,
+    frame_count: int,
+) -> int:
+    """Resolve and clamp the number of renderer processes.
+
+    Windows defaults to serial rendering even when a legacy caller explicitly
+    requests multiple workers. ``UNILAB_RENDER_PROCESSES`` is the opt-in escape
+    hatch for users who have verified that their WGL driver supports parallel
+    off-screen contexts.
+    """
+    platform_default = _platform_render_process_default()
+    override_configured = "UNILAB_RENDER_PROCESSES" in os.environ
+    override = _render_process_override()
+
+    if override is not None:
+        process_count = override
+    elif override_configured:
+        process_count = platform_default
+    elif sys.platform == "win32":
+        process_count = platform_default
+    elif requested is None:
+        process_count = platform_default
+    elif isinstance(requested, int) and not isinstance(requested, bool) and requested > 0:
+        process_count = requested
+    else:
+        print(
+            f"[render] Ignoring invalid requested process count {requested!r}; "
+            f"using platform default {platform_default}.",
+            file=sys.stderr,
+        )
+        process_count = platform_default
+
+    return max(1, min(process_count, max(1, int(frame_count))))
+
+
 def get_grid_offsets(num_envs, spacing=1.0):
     rows = int(math.ceil(math.sqrt(num_envs)))
     cols = int(math.ceil(num_envs / rows))
@@ -176,9 +240,18 @@ _worker_ctx: dict[str, Any] = {}
 
 
 def _close_worker():
-    """Explicitly close the renderer in the worker context."""
-    if "renderer" in _worker_ctx:
-        _worker_ctx["renderer"].close()
+    """Idempotently release every resource held by the worker context."""
+    renderer = _worker_ctx.pop("renderer", None)
+    if renderer is not None:
+        try:
+            renderer.close()
+        except Exception:
+            pass
+
+    _worker_ctx.pop("data_list", None)
+    _worker_ctx.pop("models", None)
+    _worker_ctx.pop("terrain_geom_indices", None)
+    _worker_ctx.clear()
 
 
 def _offset_freejoint_object_qpos(model, data, offset) -> set[int]:
@@ -235,20 +308,54 @@ def init_worker(model_path, shape):
         )
         return loader(path)
 
-    if isinstance(model_path, Sequence) and not isinstance(model_path, (str, bytes, os.PathLike)):
-        models = [_load_model(path) for path in model_path]
-    else:
-        models = [_load_model(model_path)]
+    _close_worker()
+    render_width = max(1, int(shape[0]))
+    render_height = max(1, int(shape[1]))
+    paths = (
+        list(model_path)
+        if isinstance(model_path, Sequence)
+        and not isinstance(model_path, (str, bytes, os.PathLike))
+        else [model_path]
+    )
 
-    for model in models:
-        model.vis.global_.offwidth = 3840
-        model.vis.global_.offheight = 2160
+    models: list[Any] = []
+    data_list: list[Any] = []
+    renderer = None
+    try:
+        for path in paths:
+            model = _load_model(path)
+            model.vis.global_.offwidth = render_width
+            model.vis.global_.offheight = render_height
+            models.append(model)
 
-    _worker_ctx["models"] = models
-    _worker_ctx["data_list"] = [mujoco.MjData(model) for model in models]
-    _worker_ctx["terrain_geom_indices"] = [_replicable_terrain_geom_indices(m) for m in models]
-    _worker_ctx["renderer"] = mujoco.Renderer(models[0], height=shape[1], width=shape[0])
-    atexit.register(_close_worker)
+        for model in models:
+            data_list.append(mujoco.MjData(model))
+
+        terrain_geom_indices = [_replicable_terrain_geom_indices(model) for model in models]
+        renderer = mujoco.Renderer(
+            models[0],
+            height=render_height,
+            width=render_width,
+        )
+        _worker_ctx.update(
+            {
+                "models": models,
+                "data_list": data_list,
+                "terrain_geom_indices": terrain_geom_indices,
+                "renderer": renderer,
+            }
+        )
+        atexit.register(_close_worker)
+    except Exception:
+        if renderer is not None:
+            try:
+                renderer.close()
+            except Exception:
+                pass
+        data_list.clear()
+        models.clear()
+        _worker_ctx.clear()
+        raise
 
 
 def render_frame_job(args):
@@ -438,12 +545,68 @@ def render_frame_job(args):
     return renderer.render()
 
 
+def _render_tasks_serial(model_path, shape, tasks, render_job):
+    """Render tasks in this process and always release the MuJoCo context."""
+    frames: list[Any] = []
+    try:
+        init_worker(model_path, shape)
+        for task in tasks:
+            frames.append(render_job(task))
+    finally:
+        _close_worker()
+    return frames
+
+
+def _warn_serial_render_failure(exc: Exception) -> None:
+    print(
+        f"[render] Serial MuJoCo rendering failed:\n"
+        f"{type(exc).__name__}: {exc}",
+        file=sys.stderr,
+    )
+    if sys.platform == "win32":
+        print(
+            "[render] On Windows verify that MUJOCO_GL=glfw and that the GPU driver "
+            "supports desktop OpenGL.",
+            file=sys.stderr,
+        )
+    else:
+        print(
+            "[render] Verify that the selected MUJOCO_GL backend is available "
+            "and supports off-screen rendering.",
+            file=sys.stderr,
+        )
+
+
+def _try_render_tasks_serial(model_path, shape, tasks, render_job):
+    """Run one guarded serial rendering attempt."""
+    try:
+        return _render_tasks_serial(model_path, shape, tasks, render_job)
+    except Exception as exc:
+        _warn_serial_render_failure(exc)
+        return []
+
+
+def _render_tasks_parallel(model_path, shape, tasks, render_job, num_processes):
+    """Render tasks in a spawn pool; callers own fallback policy."""
+    import multiprocessing
+
+    ctx = multiprocessing.get_context("spawn")
+    chunksize = max(1, len(tasks) // (num_processes * 4))
+    with ProcessPoolExecutor(
+        max_workers=num_processes,
+        mp_context=ctx,
+        initializer=init_worker,
+        initargs=(model_path, shape),
+    ) as pool:
+        return list(pool.map(render_job, tasks, chunksize=chunksize))
+
+
 def render_states_get_frames(
     state_list,
     model_path,
     width=1280,
     height=720,
-    num_processes=8,
+    num_processes: int | None = None,
     camera_id=-1,
     cam_distance=2.0,
     cam_elevation=-20,
@@ -460,7 +623,7 @@ def render_states_get_frames(
         model_path: Path to the mujoco XML model file.
         width: Width of the video.
         height: Height of the video.
-        num_processes: Number of parallel processes to use.
+        num_processes: Requested parallel processes. Windows defaults to one.
         camera_id: Camera ID to render from.
         cam_distance: Camera distance from lookat point.
         cam_elevation: Camera elevation angle in degrees.
@@ -482,10 +645,25 @@ def render_states_get_frames(
     num_envs = state_list[0].shape[0]
     offsets = get_grid_offsets(num_envs, spacing=render_spacing)
     shape = (width, height)
+    effective_processes = _resolve_render_process_count(
+        num_processes,
+        frame_count=len(state_list),
+    )
 
     print(
-        f"Rendering {len(state_list)} frames for {num_envs} envs with {num_processes} processes..."
+        f"Rendering {len(state_list)} frames for {num_envs} envs "
+        f"(requested_processes={num_processes}, "
+        f"effective_processes={effective_processes})..."
     )
+    if (
+        sys.platform == "win32"
+        and "UNILAB_RENDER_PROCESSES" not in os.environ
+        and effective_processes == 1
+    ):
+        print(
+            "[render] Windows/GLFW detected; using serial rendering "
+            f"(requested={num_processes}, effective=1)."
+        )
 
     # Prepare arguments for each frame
     tasks = [
@@ -498,50 +676,42 @@ def render_states_get_frames(
         )
     ]
 
-    frames: list[Any] = []
+    if effective_processes <= 1:
+        return _try_render_tasks_serial(model_path, shape, tasks, render_frame_job)
 
-    if num_processes <= 1:
-        # Serial execution
-        # Initialize context manually
-        init_worker(model_path, shape)
-        try:
-            for task in tasks:
-                res = render_frame_job(task)
-                frames.append(res)
-        finally:
-            _close_worker()
-    else:
+    try:
         # Use a process pool. ProcessPoolExecutor (unlike multiprocessing.Pool)
         # fails fast with BrokenProcessPool when a worker dies during init or a
         # task, instead of silently respawning the dead worker forever — which
         # would turn a single render failure into an unbounded error-log flood
         # (see issue #605). spawn avoids forking OpenGL/MuJoCo contexts.
-        import multiprocessing
-        from concurrent.futures import BrokenExecutor, ProcessPoolExecutor
-
-        ctx = multiprocessing.get_context("spawn")
-        chunksize = max(1, len(tasks) // (num_processes * 4))
-        try:
-            with ProcessPoolExecutor(
-                max_workers=num_processes,
-                mp_context=ctx,
-                initializer=init_worker,
-                initargs=(model_path, shape),
-            ) as pool:
-                frames = list(pool.map(render_frame_job, tasks, chunksize=chunksize))
-        except BrokenExecutor as exc:
-            # A worker died during init or a task (bad model, OOM, or an
-            # unusable GL backend). Fail fast instead of respawning forever.
-            print(
-                f"[render] A render worker terminated before completing "
-                f"({type(exc).__name__}: {exc}); skipping video recording. "
-                "If this host is headless, ensure a usable MUJOCO_GL backend "
-                "(egl on a GPU, or install OSMesa for software rendering).",
-                file=sys.stderr,
-            )
-            return []
-
-    return frames
+        return _render_tasks_parallel(
+            model_path,
+            shape,
+            tasks,
+            render_frame_job,
+            effective_processes,
+        )
+    except Exception as exc:
+        # BrokenExecutor includes BrokenProcessPool. Other ordinary exceptions
+        # cover pool construction, transported MuJoCo failures, and OOM errors
+        # without swallowing KeyboardInterrupt or SystemExit.
+        failure_kind = (
+            "render worker terminated"
+            if isinstance(exc, BrokenExecutor)
+            else "parallel rendering failed"
+        )
+        print(
+            f"[render] Parallel MuJoCo {failure_kind} "
+            f"({type(exc).__name__}: {exc}).",
+            file=sys.stderr,
+        )
+        print(
+            "[render] Parallel rendering failed; retrying once with one process.",
+            file=sys.stderr,
+        )
+        _close_worker()
+        return _try_render_tasks_serial(model_path, shape, tasks, render_frame_job)
 
 
 def _get_nearest_env_indices(offsets, primary_idx, max_extra):
@@ -771,15 +941,12 @@ def render_states_get_frames_tracking(
 
     # Camera tracking changes each frame so multiprocessing gives inconsistent
     # results when workers don't share state. Default to serial.
-    frames = []
-    init_worker(model_path, shape)
-    try:
-        for task in tasks:
-            frames.append(render_frame_tracking_job(task))
-    finally:
-        _close_worker()
-
-    return frames
+    return _try_render_tasks_serial(
+        model_path,
+        shape,
+        tasks,
+        render_frame_tracking_job,
+    )
 
 
 def render_states_to_video(
@@ -789,7 +956,7 @@ def render_states_to_video(
     fps=30,
     width=1280,
     height=720,
-    num_processes=8,
+    num_processes: int | None = None,
     cam_distance=2.0,
     cam_elevation=-20,
     cam_azimuth=90,

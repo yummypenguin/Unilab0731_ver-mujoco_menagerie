@@ -1,0 +1,13 @@
+{
+  "algo": "ppo",
+  "task": "LeapInhandBallCacheGaitingRotation",
+  "sim_backend": "mujoco",
+  "log_dir": "D:\\UniLab\\logs\\rsl_rl_ppo\\LeapInhandBallCacheGaitingRotation\\2026-07-29_00-01-08_mujoco",
+  "start_time_utc": "2026-07-29T07:01:08.038314+00:00",
+  "end_time_utc": "2026-07-29T09:03:31.274767+00:00",
+  "wall_time_sec": 7342.963059800037,
+  "wandb_run_url": null,
+  "configured_seed": 1,
+  "configured_seed_source": "algo.seed",
+  "effective_seed": 1
+}

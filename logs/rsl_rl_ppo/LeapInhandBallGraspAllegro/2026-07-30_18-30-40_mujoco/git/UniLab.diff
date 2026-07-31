@@ -1,0 +1,795 @@
+--- git commit ---
+dfd7c64ad49c8123dcf4aa53784776f30df107e9
+
+
+--- git status ---
+On branch codex/leap-state-cycle-pose-065
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conf/ppo/task/leap_inhand/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_allegro/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_cache/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_cache_gaiting/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_direct/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_finger_gaiting/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_grasp/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_rotation_v2/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_state_cycle/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_sustained/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_sustained_cache/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_toss/motrix.yaml
+	modified:   conf/ppo/task/leap_inhand_toss/mujoco.yaml
+	modified:   src/unilab/base/backend/mujoco/backend.py
+	modified:   src/unilab/base/scene.py
+	modified:   src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py
+	modified:   src/unilab/envs/manipulation/leap_inhand/__init__.py
+	modified:   tests/config/test_config_system.py
+	modified:   tests/envs/test_leap_inhand.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	conf/ppo/task/leap_inhand_ball_grasp_allegro/
+	docs/leap_allegro_cache_generation.md
+	scripts/check_leap_allegro_grasp_seed.py
+	scripts/inspect_leap_allegro_grasp_cache.py
+	src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_dedup_50k_before_physics_change.npy
+	src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_dedup_smoke_100.npy
+	src/unilab/envs/manipulation/leap_inhand/ball_grasp_allegro.py
+	tests/envs/test_leap_allegro_grasp_gen.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/conf/ppo/task/leap_inhand/motrix.yaml b/conf/ppo/task/leap_inhand/motrix.yaml
+index 10f77185..7bbb4469 100644
+--- a/conf/ppo/task/leap_inhand/motrix.yaml
++++ b/conf/ppo/task/leap_inhand/motrix.yaml
+@@ -12,6 +12,10 @@ algo:
+   num_envs: 1024
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   # Motrix hand profiles use a larger stable physics step than this task's
+   # MuJoCo owner while preserving the policy-facing control interval.
+   sim_dt: 0.01
+diff --git a/conf/ppo/task/leap_inhand/mujoco.yaml b/conf/ppo/task/leap_inhand/mujoco.yaml
+index b0c68020..0ccbc372 100644
+--- a/conf/ppo/task/leap_inhand/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand/mujoco.yaml
+@@ -42,6 +42,12 @@ reward:
+   angvel_clip_max: 0.25
+   reset_z_threshold: 0.4
+ env:
++  scene:
++    joint_dynamics:
++      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
++      damping: 0.03
++      frictionloss: 0.001
++      armature: 0.0
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   max_episode_seconds: 20.0
+@@ -53,7 +59,7 @@ env:
+   control_config:
+     action_scale: 0.041666666666666664
+     kp: 3.0
+-    kd: 0.1
++    kd: 0.01
+   domain_rand:
+     randomize_base_mass: false
+     random_com: false
+diff --git a/conf/ppo/task/leap_inhand_ball/motrix.yaml b/conf/ppo/task/leap_inhand_ball/motrix.yaml
+index 3856ab7e..9223b1a7 100644
+--- a/conf/ppo/task/leap_inhand_ball/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball/motrix.yaml
+@@ -8,6 +8,10 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+   reset_source: home
+   grasp_cache_path: robots/leap_hand/caches/ball_grasp_s10_5k.npy
+diff --git a/conf/ppo/task/leap_inhand_ball/mujoco.yaml b/conf/ppo/task/leap_inhand_ball/mujoco.yaml
+index 17259791..a58f69ca 100644
+--- a/conf/ppo/task/leap_inhand_ball/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball/mujoco.yaml
+@@ -43,6 +43,12 @@ reward:
+   # LEAP is mounted 0.5 m above Allegro; preserve the same drop semantics.
+   reset_z_threshold: 0.4
+ env:
++  scene:
++    joint_dynamics:
++      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
++      damping: 0.03
++      frictionloss: 0.001
++      armature: 0.0
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   gen_grasp: false
+@@ -55,7 +61,7 @@ env:
+   control_config:
+     action_scale: 0.041666666666666664
+     kp: 3.0
+-    kd: 0.1
++    kd: 0.01
+   domain_rand:
+     randomize_base_mass: false
+     random_com: false
+diff --git a/conf/ppo/task/leap_inhand_ball_allegro/motrix.yaml b/conf/ppo/task/leap_inhand_ball_allegro/motrix.yaml
+index dc89e831..3b6c479d 100644
+--- a/conf/ppo/task/leap_inhand_ball_allegro/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_allegro/motrix.yaml
+@@ -8,5 +8,9 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   # Keep the established Motrix integration rate; reward/control semantics match MuJoCo.
+   sim_dt: 0.01
+diff --git a/conf/ppo/task/leap_inhand_ball_cache/motrix.yaml b/conf/ppo/task/leap_inhand_ball_cache/motrix.yaml
+index 17abdcc7..ef8ea3ee 100644
+--- a/conf/ppo/task/leap_inhand_ball_cache/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_cache/motrix.yaml
+@@ -8,4 +8,8 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+diff --git a/conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml
+index 5102514a..64c3691e 100644
+--- a/conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml
+@@ -42,6 +42,12 @@ reward:
+   angvel_clip_max: 0.5
+   reset_z_threshold: 0.4
+ env:
++  scene:
++    joint_dynamics:
++      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
++      damping: 0.03
++      frictionloss: 0.001
++      armature: 0.0
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   gen_grasp: false
+@@ -56,7 +62,7 @@ env:
+   control_config:
+     action_scale: 0.041666666666666664
+     kp: 3.0
+-    kd: 0.1
++    kd: 0.01
+   domain_rand:
+     randomize_base_mass: false
+     random_com: false
+diff --git a/conf/ppo/task/leap_inhand_ball_cache_gaiting/motrix.yaml b/conf/ppo/task/leap_inhand_ball_cache_gaiting/motrix.yaml
+index c544227f..99a130c1 100644
+--- a/conf/ppo/task/leap_inhand_ball_cache_gaiting/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_cache_gaiting/motrix.yaml
+@@ -6,3 +6,9 @@ defaults:
+ training:
+   task_name: LeapInhandBallCacheGaitingRotation
+   sim_backend: motrix
++
++env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+diff --git a/conf/ppo/task/leap_inhand_ball_direct/motrix.yaml b/conf/ppo/task/leap_inhand_ball_direct/motrix.yaml
+index 4bd9043f..aa455dd2 100644
+--- a/conf/ppo/task/leap_inhand_ball_direct/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_direct/motrix.yaml
+@@ -8,5 +8,8 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+-
+diff --git a/conf/ppo/task/leap_inhand_ball_finger_gaiting/motrix.yaml b/conf/ppo/task/leap_inhand_ball_finger_gaiting/motrix.yaml
+index 97a63b02..54f91ff8 100644
+--- a/conf/ppo/task/leap_inhand_ball_finger_gaiting/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_finger_gaiting/motrix.yaml
+@@ -8,5 +8,8 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+-
+diff --git a/conf/ppo/task/leap_inhand_ball_grasp/motrix.yaml b/conf/ppo/task/leap_inhand_ball_grasp/motrix.yaml
+index c47369ed..a14ead9e 100644
+--- a/conf/ppo/task/leap_inhand_ball_grasp/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_grasp/motrix.yaml
+@@ -8,6 +8,10 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+   # Keep Motrix output separate until the two backend caches are cross-validated.
+   grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k_motrix.npy
+diff --git a/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml
+index cc617cb6..331b8b8e 100644
+--- a/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_grasp/mujoco.yaml
+@@ -32,32 +32,32 @@ env:
+   grasp_quality_check: true
+   grasp_min_contacts: 2
+   grasp_require_thumb_contact: true
+-  # Selected LEAP ball canonical seed: passes the strict 2.5 s settling diagnostic
+-  # without termination, retaining index/ring/thumb contact and <1 mm penetration.
++  # LEAP 67 mm ball nominal seed selected in the interactive pose editor.
++  # Generator proposals use the first 16 qpos values as their actuator targets.
+   grasp_seed_qpos:
+-    - 1.03410442949809
+-    - 0.15679991228963497
+-    - 0.25610135637493514
+-    - 0.045668025549832805
+-    - 0.771828792737894
+-    - 0.009351868838524551
+-    - 0.6275431550313586
+-    - 0.13213983678334723
+-    - 0.8995371304303955
+-    - -0.12547198738935086
+-    - 0.7401180634800134
+-    - 0.17855020221211734
+-    - 1.4648204389828898
+-    - 0.4525430081690111
+-    - 0.6321388427548723
+-    - -0.5916553393951335
+-    - -0.012619446773068123
+-    - 0.02770136438817874
+-    - 0.6337514939469586
+-    - 0.9949214781878678
+-    - -0.07395348612537869
+-    - 0.025469120495700256
+-    - -0.0633518589431043
++    - 1.615086902652708
++    - 0.05592890833161862
++    - 0.287868545519634
++    - 0.05789584343082383
++    - 1.385416217870236
++    - 0.019181783056566676
++    - -0.020953303695846966
++    - 0.16266530072328944
++    - 1.6940339396072988
++    - -0.042944887708793206
++    - 0.08608101675297872
++    - 0.04204787407706335
++    - 1.6353669902981327
++    - 0.5618974997807215
++    - -0.1469763717278566
++    - 0.520989074906656
++    - -0.03218510819218568
++    - 0.03676290825215784
++    - 0.6626576150346267
++    - 0.92598793755222
++    - -0.010678814768592742
++    - -0.06800823346343168
++    - 0.37122389821253027
+   # LEAP ablation: ±0.10 rad preserves variation while improving strict acceptance.
+   grasp_joint_offset_lower: []
+   grasp_joint_offset_upper: []
+diff --git a/conf/ppo/task/leap_inhand_ball_rotation_v2/motrix.yaml b/conf/ppo/task/leap_inhand_ball_rotation_v2/motrix.yaml
+index 756def26..3218b123 100644
+--- a/conf/ppo/task/leap_inhand_ball_rotation_v2/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_rotation_v2/motrix.yaml
+@@ -8,5 +8,9 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+   grasp_cache_path: robots/leap_hand/caches/ball_grasp_s10_5k.npy
+diff --git a/conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml
+index 934d55e1..76b25d0b 100644
+--- a/conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml
+@@ -46,6 +46,12 @@ reward:
+   reset_z_threshold: 0.40
+   workspace_radius: 0.12
+ env:
++  scene:
++    joint_dynamics:
++      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
++      damping: 0.03
++      frictionloss: 0.001
++      armature: 0.0
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   gen_grasp: false
+@@ -65,7 +71,7 @@ env:
+   control_config:
+     action_scale: 0.041666666666666664
+     kp: 3.0
+-    kd: 0.1
++    kd: 0.01
+   domain_rand:
+     randomize_base_mass: false
+     random_com: false
+diff --git a/conf/ppo/task/leap_inhand_ball_state_cycle/motrix.yaml b/conf/ppo/task/leap_inhand_ball_state_cycle/motrix.yaml
+index 070a18b2..cf088e97 100644
+--- a/conf/ppo/task/leap_inhand_ball_state_cycle/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_state_cycle/motrix.yaml
+@@ -7,3 +7,8 @@ training:
+   task_name: LeapInhandBallStateCycleRotation
+   sim_backend: motrix
+ 
++env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+diff --git a/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+index 1b132ed9..9fdb5298 100644
+--- a/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+@@ -54,6 +54,12 @@ reward:
+   failure_rotation_clawback_cap: 5.0
+ 
+ env:
++  scene:
++    joint_dynamics:
++      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
++      damping: 0.03
++      frictionloss: 0.001
++      armature: 0.0
+   sim_dt: 0.005
+   ctrl_dt: 0.05
+   max_episode_seconds: 30.0
+@@ -66,7 +72,7 @@ env:
+   control_config:
+     action_scale: 0.041666666666666664
+     kp: 3.0
+-    kd: 0.1
++    kd: 0.01
+   domain_rand:
+     randomize_base_mass: false
+     random_com: false
+diff --git a/conf/ppo/task/leap_inhand_ball_sustained/motrix.yaml b/conf/ppo/task/leap_inhand_ball_sustained/motrix.yaml
+index 198ebd20..18500d76 100644
+--- a/conf/ppo/task/leap_inhand_ball_sustained/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_sustained/motrix.yaml
+@@ -8,4 +8,8 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+diff --git a/conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml
+index 78c17a01..0d6c3870 100644
+--- a/conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml
+@@ -59,6 +59,12 @@ reward:
+   failure_debounce_steps: 3
+   speed_tracking_tolerance_ratio: 0.25
+ env:
++  scene:
++    joint_dynamics:
++      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
++      damping: 0.03
++      frictionloss: 0.001
++      armature: 0.0
+   sim_dt: 0.005
+   ctrl_dt: 0.05
+   gen_grasp: false
+@@ -82,7 +88,7 @@ env:
+   control_config:
+     action_scale: 0.041666666666666664
+     kp: 3.0
+-    kd: 0.1
++    kd: 0.01
+   domain_rand:
+     randomize_base_mass: false
+     random_com: false
+diff --git a/conf/ppo/task/leap_inhand_ball_sustained_cache/motrix.yaml b/conf/ppo/task/leap_inhand_ball_sustained_cache/motrix.yaml
+index 3ec5f02e..d6a88c57 100644
+--- a/conf/ppo/task/leap_inhand_ball_sustained_cache/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_ball_sustained_cache/motrix.yaml
+@@ -8,4 +8,8 @@ training:
+   sim_backend: motrix
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+diff --git a/conf/ppo/task/leap_inhand_toss/motrix.yaml b/conf/ppo/task/leap_inhand_toss/motrix.yaml
+index d2e6df73..223d520a 100644
+--- a/conf/ppo/task/leap_inhand_toss/motrix.yaml
++++ b/conf/ppo/task/leap_inhand_toss/motrix.yaml
+@@ -11,6 +11,10 @@ algo:
+   num_envs: 1024
+ 
+ env:
++  scene:
++    joint_dynamics: null
++  control_config:
++    kd: 0.1
+   sim_dt: 0.01
+ 
+ play_profile:
+diff --git a/conf/ppo/task/leap_inhand_toss/mujoco.yaml b/conf/ppo/task/leap_inhand_toss/mujoco.yaml
+index 4b615396..e667807b 100644
+--- a/conf/ppo/task/leap_inhand_toss/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_toss/mujoco.yaml
+@@ -56,6 +56,12 @@ reward:
+   thumb_lateral_sigma: 0.04
+   reset_z_threshold: 0.4
+ env:
++  scene:
++    joint_dynamics:
++      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
++      damping: 0.03
++      frictionloss: 0.001
++      armature: 0.0
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   max_episode_seconds: 15.0
+@@ -89,7 +95,7 @@ env:
+   control_config:
+     action_scale: 0.041666666666666664
+     kp: 3.0
+-    kd: 0.1
++    kd: 0.01
+   domain_rand:
+     randomize_base_mass: false
+     random_com: false
+diff --git a/src/unilab/base/backend/mujoco/backend.py b/src/unilab/base/backend/mujoco/backend.py
+index 650eea39..8d56e425 100644
+--- a/src/unilab/base/backend/mujoco/backend.py
++++ b/src/unilab/base/backend/mujoco/backend.py
+@@ -12,7 +12,7 @@ import mujoco
+ import numpy as np
+ from mujoco.batch_env import BatchEnvPool
+ 
+-from unilab.base.scene import SceneCfg
++from unilab.base.scene import JointDynamicsCfg, SceneCfg
+ from unilab.dr.types import (
+     RESET_TERM_BASE_COM,
+     RESET_TERM_BASE_MASS,
+@@ -105,6 +105,7 @@ def _compile_model_variant_chunk_to_mjb(
+     sim_dt: float,
+     iterations: int | None,
+     position_actuator_gains: dict | None,
++    joint_dynamics: JointDynamicsCfg | None,
+     variants: tuple[ModelVariantSpec, ...],
+ ) -> tuple[str, ...]:
+     model_path, tmp_paths = _prepare_variant_model_xml(
+@@ -131,6 +132,8 @@ def _compile_model_variant_chunk_to_mjb(
+                 model.opt.iterations = int(iterations)
+             if position_actuator_gains is not None:
+                 _apply_position_actuator_gains_to_mj_model(model, **position_actuator_gains)
++            if joint_dynamics is not None:
++                _apply_joint_dynamics_to_mj_model(model, joint_dynamics)
+             output_path = os.path.join(output_dir, f"variant_{idx}.mjb")
+             mujoco.mj_saveModel(model, output_path)
+             output_paths.append(output_path)
+@@ -179,6 +182,47 @@ def _apply_position_actuator_gains_to_mj_model(
+     model.actuator_biasprm[actuator_ids, 2] = -kd_arr
+ 
+ 
++def _apply_joint_dynamics_to_mj_model(
++    model: mujoco.MjModel,
++    cfg: JointDynamicsCfg,
++) -> None:
++    """Apply named joint dynamics without affecting object or root joints."""
++    if not cfg.joint_names:
++        raise ValueError("joint_dynamics.joint_names must not be empty")
++    if cfg.damping is None and cfg.frictionloss is None and cfg.armature is None:
++        raise ValueError(
++            "joint_dynamics must provide at least one of damping, frictionloss, or armature"
++        )
++    values = {
++        "damping": cfg.damping,
++        "frictionloss": cfg.frictionloss,
++        "armature": cfg.armature,
++    }
++    for name, value in values.items():
++        if value is not None and (not np.isfinite(value) or value < 0.0):
++            raise ValueError(f"joint_dynamics.{name} must be finite and non-negative")
++
++    for joint_name in cfg.joint_names:
++        joint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
++        if joint_id < 0:
++            raise ValueError(f"Joint dynamics target '{joint_name}' not found in MuJoCo model")
++        joint_type = int(model.jnt_type[joint_id])
++        if joint_type not in {
++            int(mujoco.mjtJoint.mjJNT_HINGE),
++            int(mujoco.mjtJoint.mjJNT_SLIDE),
++        }:
++            raise ValueError(
++                f"Joint dynamics target '{joint_name}' must be a hinge or slide joint"
++            )
++        dof_id = int(model.jnt_dofadr[joint_id])
++        if cfg.damping is not None:
++            model.dof_damping[dof_id] = float(cfg.damping)
++        if cfg.frictionloss is not None:
++            model.dof_frictionloss[dof_id] = float(cfg.frictionloss)
++        if cfg.armature is not None:
++            model.dof_armature[dof_id] = float(cfg.armature)
++
++
+ def _remove_temp_xml(path: str) -> None:
+     if os.path.exists(path):
+         os.remove(path)
+@@ -305,6 +349,7 @@ class MuJoCoBackend(SimBackend):
+         self._position_actuator_gains = (
+             None if position_actuator_gains is None else dict(position_actuator_gains)
+         )
++        self._joint_dynamics = scene.joint_dynamics
+         self._pre_step_control_fn = None
+         self._model = self._load_base_model()
+         self._base_body_id = (
+@@ -461,6 +506,8 @@ class MuJoCoBackend(SimBackend):
+             model.opt.iterations = self._iterations
+         if self._position_actuator_gains is not None:
+             self._apply_position_actuator_gains_to_model(model, **self._position_actuator_gains)
++        if self._joint_dynamics is not None:
++            _apply_joint_dynamics_to_mj_model(model, self._joint_dynamics)
+ 
+     def _resolve_push_body_id(self, model: mujoco.MjModel) -> int:
+         body_name = self._push_body_name if self._push_body_name is not None else self._base_name
+@@ -525,6 +572,7 @@ class MuJoCoBackend(SimBackend):
+                 sim_dt=self._sim_dt,
+                 iterations=self._iterations,
+                 position_actuator_gains=self._position_actuator_gains,
++                joint_dynamics=self._joint_dynamics,
+                 variants=variants,
+             )
+             return _load_compiled_models_and_cleanup(mjb_paths)
+@@ -548,6 +596,7 @@ class MuJoCoBackend(SimBackend):
+                         sim_dt=self._sim_dt,
+                         iterations=self._iterations,
+                         position_actuator_gains=self._position_actuator_gains,
++                        joint_dynamics=self._joint_dynamics,
+                         variants=chunk,
+                     )
+                     for chunk in chunks
+@@ -562,6 +611,7 @@ class MuJoCoBackend(SimBackend):
+                     sim_dt=self._sim_dt,
+                     iterations=self._iterations,
+                     position_actuator_gains=self._position_actuator_gains,
++                    joint_dynamics=self._joint_dynamics,
+                     variants=chunk,
+                 )
+                 for chunk in chunks
+diff --git a/src/unilab/base/scene.py b/src/unilab/base/scene.py
+index 384c1ae5..45563024 100644
+--- a/src/unilab/base/scene.py
++++ b/src/unilab/base/scene.py
+@@ -5,6 +5,16 @@ from dataclasses import dataclass, field
+ from unilab.terrains.terrain_generator import TerrainGeneratorCfg
+ 
+ 
++@dataclass
++class JointDynamicsCfg:
++    """Cold-path joint dynamics overrides selected by joint name."""
++
++    joint_names: list[str] = field(default_factory=list)
++    damping: float | None = None
++    frictionloss: float | None = None
++    armature: float | None = None
++
++
+ @dataclass
+ class TerrainSceneCfg:
+     """Backend-agnostic terrain slot declaration for a scene."""
+@@ -21,6 +31,7 @@ class SceneCfg:
+     model_file: str
+     fragment_files: list[str] = field(default_factory=list)
+     terrain: TerrainSceneCfg | None = None
++    joint_dynamics: JointDynamicsCfg | None = None
+     # Optional render-only model override. When set, offline playback/video
+     # export renders this XML instead of ``model_file`` while physics keeps
+     # using ``model_file``. Used to give the renderer a visual twin of the
+diff --git a/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py b/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py
+index 2ade123d..815fdb96 100644
+--- a/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py
++++ b/src/unilab/envs/manipulation/allegro_inhand/grasp_gen.py
+@@ -100,6 +100,10 @@ class AllegroRotationGrasp(AllegroRotationPPO):
+             return 0
+         return int(sum(states.shape[0] for states in self._saved_grasping_states))
+ 
++    def _filter_grasp_rows(self, states: np.ndarray) -> np.ndarray:
++        """Extension hook for cache-dataset filtering after physical acceptance."""
++        return states
++
+     def _stop_collection(self) -> None:
+         if self._grasp_target_reached_notified:
+             return
+@@ -179,6 +183,10 @@ class AllegroRotationGrasp(AllegroRotationPPO):
+         ball_quat = curr_ball_quat[success_env_ids]
+         states = np.concatenate([hand_qpos, ball_pos, ball_quat], axis=1).astype(np.float32)
+ 
++        states = self._filter_grasp_rows(states)
++        if states.shape[0] == 0:
++            return
++
+         self._saved_grasping_states.append(states)
+         self._save_grasp_cache()
+         self._stop_collection()
+diff --git a/src/unilab/envs/manipulation/leap_inhand/__init__.py b/src/unilab/envs/manipulation/leap_inhand/__init__.py
+index 5661945e..078bde49 100644
+--- a/src/unilab/envs/manipulation/leap_inhand/__init__.py
++++ b/src/unilab/envs/manipulation/leap_inhand/__init__.py
+@@ -1,5 +1,6 @@
+ from . import (  # registers tasks via decorators
+     allegro_faithful_rotation,
++    ball_grasp_allegro,
+     ball_grasp_gen,
+     ball_rotation,
+     cache_rotation,
+@@ -16,6 +17,7 @@ from . import (  # registers tasks via decorators
+ 
+ __all__ = [
+     "allegro_faithful_rotation",
++    "ball_grasp_allegro",
+     "ball_grasp_gen",
+     "ball_rotation",
+     "cache_rotation",
+diff --git a/tests/config/test_config_system.py b/tests/config/test_config_system.py
+index 46799140..e61bd5b4 100644
+--- a/tests/config/test_config_system.py
++++ b/tests/config/test_config_system.py
+@@ -25,6 +25,25 @@ _NUMBA_ACCEL_SUPPORTED_TASK_NAMES = {
+     "G1WalkFlat",
+     "G1WalkRough",
+ }
++_LEAP_MUJOCO_DYNAMICS_TASKS = (
++    "leap_inhand",
++    "leap_inhand_ball",
++    "leap_inhand_ball_allegro",
++    "leap_inhand_ball_cache",
++    "leap_inhand_ball_cache_gaiting",
++    "leap_inhand_ball_direct",
++    "leap_inhand_ball_finger_gaiting",
++    "leap_inhand_ball_grasp",
++    "leap_inhand_ball_grasp_allegro",
++    "leap_inhand_ball_rotation_v2",
++    "leap_inhand_ball_state_cycle",
++    "leap_inhand_ball_sustained",
++    "leap_inhand_ball_sustained_cache",
++    "leap_inhand_toss",
++)
++_LEAP_MOTRIX_DYNAMICS_TASKS = tuple(
++    task for task in _LEAP_MUJOCO_DYNAMICS_TASKS if task != "leap_inhand_ball_grasp_allegro"
++)
+ 
+ 
+ def _expected_backend_from_variant(name: str) -> str | None:
+@@ -79,6 +98,29 @@ def _assert_reward_populated(cfg, label: str):
+         assert len(reward_dict) > 0, f"{label} reward config must be non-empty"
+ 
+ 
++@pytest.mark.parametrize("task", _LEAP_MUJOCO_DYNAMICS_TASKS)
++def test_ppo_leap_mujoco_owners_use_menagerie_dynamics(task: str) -> None:
++    cfg = _compose("ppo", overrides=[f"task={task}/mujoco"])
++
++    assert list(cfg.env.scene.joint_dynamics.joint_names) == [
++        str(index) for index in range(16)
++    ]
++    assert cfg.env.scene.joint_dynamics.damping == pytest.approx(0.03)
++    assert cfg.env.scene.joint_dynamics.frictionloss == pytest.approx(0.001)
++    assert cfg.env.scene.joint_dynamics.armature == pytest.approx(0.0)
++    assert cfg.env.control_config.kp == pytest.approx(3.0)
++    assert cfg.env.control_config.kd == pytest.approx(0.01)
++
++
++@pytest.mark.parametrize("task", _LEAP_MOTRIX_DYNAMICS_TASKS)
++def test_ppo_leap_motrix_owners_keep_isaac_style_dynamics(task: str) -> None:
++    cfg = _compose("ppo", overrides=[f"task={task}/motrix"])
++
++    assert cfg.env.scene.joint_dynamics is None
++    assert cfg.env.control_config.kp == pytest.approx(3.0)
++    assert cfg.env.control_config.kd == pytest.approx(0.1)
++
++
+ def _supported_task_cases() -> list[tuple[str, str, str, str, str, list[str]]]:
+     cases: list[tuple[str, str, str, str, str, list[str]]] = []
+ 
+diff --git a/tests/envs/test_leap_inhand.py b/tests/envs/test_leap_inhand.py
+index 297c2baf..d1cb90e4 100644
+--- a/tests/envs/test_leap_inhand.py
++++ b/tests/envs/test_leap_inhand.py
+@@ -13,7 +13,9 @@ import pytest
+ 
+ from unilab.assets import ASSETS_ROOT_PATH
+ from unilab.base import registry
++from unilab.base.backend.mujoco.backend import MuJoCoBackend
+ from unilab.base.registry import ensure_registries
++from unilab.base.scene import JointDynamicsCfg, SceneCfg
+ from unilab.envs.manipulation.leap_inhand.allegro_faithful_rotation import (
+     LeapInhandBallAllegroRotationCfg,
+ )
+@@ -184,6 +186,47 @@ def test_leap_scene_compiles_with_aligned_joint_and_actuator_order(scene_name: s
+         } <= sensor_names
+ 
+ 
++def test_leap_mujoco_profile_matches_menagerie_joint_and_actuator_dynamics() -> None:
++    mujoco = pytest.importorskip("mujoco")
++    backend = MuJoCoBackend(
++        SceneCfg(
++            model_file=str(LEAP_ASSET_DIR / "scene_ball.xml"),
++            joint_dynamics=JointDynamicsCfg(
++                joint_names=[str(index) for index in UNILAB_SIM_JOINT_ORDER],
++                damping=0.03,
++                frictionloss=0.001,
++                armature=0.0,
++            ),
++        ),
++        num_envs=1,
++        sim_dt=0.005,
++        base_name="palm_lower",
++        position_actuator_gains={"kp": 3.0, "kd": 0.01},
++    )
++    model = backend._model
++    hand_dof_ids = np.asarray(
++        [
++            model.jnt_dofadr[
++                mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, str(joint_name))
++            ]
++            for joint_name in UNILAB_SIM_JOINT_ORDER
++        ],
++        dtype=np.int32,
++    )
++    object_joint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "leap_object_joint")
++    object_dof_start = int(model.jnt_dofadr[object_joint_id])
++
++    np.testing.assert_allclose(model.dof_damping[hand_dof_ids], 0.03)
++    np.testing.assert_allclose(model.dof_frictionloss[hand_dof_ids], 0.001)
++    np.testing.assert_allclose(model.dof_armature[hand_dof_ids], 0.0)
++    np.testing.assert_allclose(model.dof_damping[object_dof_start:], 0.0)
++    np.testing.assert_allclose(model.dof_frictionloss[object_dof_start:], 0.0)
++    np.testing.assert_allclose(model.dof_armature[object_dof_start:], 0.0)
++    np.testing.assert_allclose(model.actuator_gainprm[:, 0], 3.0)
++    np.testing.assert_allclose(model.actuator_biasprm[:, 1], -3.0)
++    np.testing.assert_allclose(model.actuator_biasprm[:, 2], -0.01)
++
++
+ def test_leap_objects_are_owned_by_leap_asset_directory() -> None:
+     cube = (LEAP_ASSET_DIR / "cube.xml").read_text(encoding="utf-8")
+     ball = (LEAP_ASSET_DIR / "ball.xml").read_text(encoding="utf-8")

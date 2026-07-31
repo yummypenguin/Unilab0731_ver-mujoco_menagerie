@@ -10,3 +10,4 @@
 *.ckpt filter=lfs diff=lfs merge=lfs -text
 logs/**/events.out.tfevents.* filter=lfs diff=lfs merge=lfs -text
 runs/**/events.out.tfevents.* filter=lfs diff=lfs merge=lfs -text
+events.out.tfevents.* filter=lfs diff=lfs merge=lfs -text

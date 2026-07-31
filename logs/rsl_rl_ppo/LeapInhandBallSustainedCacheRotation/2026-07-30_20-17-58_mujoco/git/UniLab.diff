@@ -1,0 +1,397 @@
+--- git commit ---
+1f656bc953e3d04afee1d44e232dfdd848f09723
+
+
+--- git status ---
+On branch codex/leap-state-cycle-pose-065
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	deleted:    .codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.package-map.json
+	modified:   .codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json
+	modified:   .codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json
+	deleted:    .codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.8igbh5f913.wasm
+	deleted:    .codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.ydhvw1dp55.wasm
+	modified:   .codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json
+	modified:   .codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/package.json
+	deleted:    .codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.package-map.json
+	modified:   .codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json
+	modified:   .codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json
+	deleted:    .codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.8igbh5f913.wasm
+	deleted:    .codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.ydhvw1dp55.wasm
+	modified:   .codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json
+	modified:   .codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/package.json
+	modified:   conf/ppo/task/leap_inhand/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml
+	modified:   conf/ppo/task/leap_inhand_toss/mujoco.yaml
+	modified:   tests/config/test_config_system.py
+	modified:   tests/envs/test_leap_inhand.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.txc2l08aqo.wasm
+	.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.1yr4ye2c96.wasm
+	.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.txc2l08aqo.wasm
+	.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.1yr4ye2c96.wasm
+	src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.package-map.json b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.package-map.json
+deleted file mode 100644
+index d68543fe..00000000
+--- a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.package-map.json
++++ /dev/null
+@@ -1 +0,0 @@
+-{"packages":{".":{"url":"..","dependencies":{"@bufbuild/protobuf":"@bufbuild/protobuf","@oai/artifact-tool":".","@oai/embedded-fonts":"@oai/embedded-fonts","@oai/walnut":"@oai/walnut","agent-base":"agent-base","debug":"debug","detect-libc":"detect-libc","follow-redirects":"follow-redirects","https-proxy-agent":"https-proxy-agent","ms":"ms","parenthesis":"parenthesis","skia-canvas":"skia-canvas","string-split-by":"string-split-by"}},"@bufbuild/protobuf":{"url":"./@bufbuild/protobuf","dependencies":{"@bufbuild/protobuf":"@bufbuild/protobuf"}},"@oai/embedded-fonts":{"url":"./@oai/embedded-fonts","dependencies":{"@oai/embedded-fonts":"@oai/embedded-fonts"}},"@oai/walnut":{"url":"./@oai/walnut","dependencies":{"@bufbuild/protobuf":"@bufbuild/protobuf","@oai/walnut":"@oai/walnut"}},"agent-base":{"url":"./agent-base","dependencies":{"agent-base":"agent-base"}},"debug":{"url":"./debug","dependencies":{"debug":"debug","ms":"ms"}},"detect-libc":{"url":"./detect-libc","dependencies":{"detect-libc":"detect-libc"}},"follow-redirects":{"url":"./follow-redirects","dependencies":{"follow-redirects":"follow-redirects"}},"https-proxy-agent":{"url":"./https-proxy-agent","dependencies":{"agent-base":"agent-base","debug":"debug","https-proxy-agent":"https-proxy-agent"}},"ms":{"url":"./ms","dependencies":{"ms":"ms"}},"parenthesis":{"url":"./parenthesis","dependencies":{"parenthesis":"parenthesis"}},"skia-canvas":{"url":"./skia-canvas","dependencies":{"detect-libc":"detect-libc","follow-redirects":"follow-redirects","https-proxy-agent":"https-proxy-agent","skia-canvas":"skia-canvas","string-split-by":"string-split-by"}},"string-split-by":{"url":"./string-split-by","dependencies":{"parenthesis":"parenthesis","string-split-by":"string-split-by"}}}}
+diff --git a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json
+index dbef2c25..8dbb025f 100644
+--- a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json
++++ b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json
+@@ -1,14 +1,13 @@
+ {
+-  "lastValidatedTimestamp": 1785188858362,
++  "lastValidatedTimestamp": 1785461127174,
+   "projects": {
+-    "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\tmp.DfskCJdOJi": {
++    "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\tmp.P5R7z8xQhJ": {
+       "name": "@oai/artifact-tool",
+-      "version": "2.8.33"
++      "version": "2.8.36"
+     }
+   },
+   "pnpmfiles": [],
+   "settings": {
+-    "enableGlobalVirtualStore": false,
+     "allowBuilds": {
+       "skia-canvas": true
+     },
+diff --git a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json
+index b863f9a0..619ae5aa 100644
+--- a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json
++++ b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@oai/walnut",
+-  "version": "0.1.231",
++  "version": "0.1.242",
+   "type": "module",
+   "exports": {
+     "./wasm": "./wasm",
+diff --git a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.8igbh5f913.wasm b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.8igbh5f913.wasm
+deleted file mode 100644
+index 1ba3cfb2..00000000
+Binary files a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.8igbh5f913.wasm and /dev/null differ
+diff --git a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.ydhvw1dp55.wasm b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.ydhvw1dp55.wasm
+deleted file mode 100644
+index 69784007..00000000
+Binary files a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.ydhvw1dp55.wasm and /dev/null differ
+diff --git a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json
+index f752fdbe..9e0cf42a 100644
+--- a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json
++++ b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json
+@@ -1,10 +1,10 @@
+ {
+   "mainAssemblyName": "Walnut",
+   "resources": {
+-    "hash": "sha256-9mBQWJ3CAygVf61OLkY6bbBm5X1fM09vUb7RuzNVpUQ=",
++    "hash": "sha256-BTHnnKCjXHLtqtS4X5I9pufbz4x69vD/tsODwtdWm9c=",
+     "fingerprinting": {
+       "DocumentFormat.OpenXml.Framework.kx8sy06e2n.wasm": "DocumentFormat.OpenXml.Framework.wasm",
+-      "DocumentFormat.OpenXml.8igbh5f913.wasm": "DocumentFormat.OpenXml.wasm",
++      "DocumentFormat.OpenXml.txc2l08aqo.wasm": "DocumentFormat.OpenXml.wasm",
+       "Google.Protobuf.ze35jf5cfr.wasm": "Google.Protobuf.wasm",
+       "System.Collections.Concurrent.wjwe8brmug.wasm": "System.Collections.Concurrent.wasm",
+       "System.Collections.NonGeneric.0ku6qyjc24.wasm": "System.Collections.NonGeneric.wasm",
+@@ -32,7 +32,7 @@
+       "System.Text.RegularExpressions.62o7zr7ple.wasm": "System.Text.RegularExpressions.wasm",
+       "System.v2bpr4wvug.wasm": "System.wasm",
+       "System.Xml.Linq.oyxx9bz5vb.wasm": "System.Xml.Linq.wasm",
+-      "Walnut.ydhvw1dp55.wasm": "Walnut.wasm",
++      "Walnut.1yr4ye2c96.wasm": "Walnut.wasm",
+       "dotnet.native.xk4h31owf3.js": "dotnet.native.js",
+       "dotnet.native.tj9dxbl64y.wasm": "dotnet.native.wasm",
+       "dotnet.js": "dotnet.js",
+@@ -53,7 +53,7 @@
+     },
+     "assembly": {
+       "DocumentFormat.OpenXml.Framework.kx8sy06e2n.wasm": "sha256-OF57xYYSGSMcas2H9mn2epzRu0iz5sPH1Zpi8ZH6+/U=",
+-      "DocumentFormat.OpenXml.8igbh5f913.wasm": "sha256-sMLf6+tPJIX4q4/T4M6G9iwad5E8sR5XcpmwZkH4/6Y=",
++      "DocumentFormat.OpenXml.txc2l08aqo.wasm": "sha256-AeOs2pQHMkEClErmXgJcd4RiBNGA3kVUOkB1YTX0L40=",
+       "Google.Protobuf.ze35jf5cfr.wasm": "sha256-i38brCJSYmpsUEG3n34uEuDFfLxkrlECq4wIOMlpBiY=",
+       "System.Collections.Concurrent.wjwe8brmug.wasm": "sha256-tB8VxZjKe2uNYWW1T5TTWeu7k1aCsSMt5DZQpwj0ek4=",
+       "System.Collections.NonGeneric.0ku6qyjc24.wasm": "sha256-MDKU4gYdidRTMQVjpesyIBsU7MP9Dxas/JCu2lH6nUg=",
+@@ -79,7 +79,7 @@
+       "System.Text.RegularExpressions.62o7zr7ple.wasm": "sha256-couvRXok+6C971UjgVpYCCC5ueE3IQSuCwfXB+pthUg=",
+       "System.v2bpr4wvug.wasm": "sha256-V0+qqJsDHNUBCJjD4bkeDVr+f+Orz+wNldNNIxrsd+4=",
+       "System.Xml.Linq.oyxx9bz5vb.wasm": "sha256-ME/lD8PZteQCLi6BaWR7la1wp8SbfwTDxEtk8BRee8I=",
+-      "Walnut.ydhvw1dp55.wasm": "sha256-OsJZrDtqn4j+S1DwQvXMwKdxMfsARXa4evZ1kI6D7tg="
++      "Walnut.1yr4ye2c96.wasm": "sha256-eeDZc16plM1toxkjU+CFM3gg+t+bn84Mxf9KjNUiZCE="
+     }
+   },
+   "debugLevel": 0,
+diff --git a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/package.json b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/package.json
+index cfa69bee..2a5fbd41 100644
+--- a/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/package.json
++++ b/.codex_tmp/leap_monthly_progress/node_modules/@oai/artifact-tool/package.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "@oai/artifact-tool",
+-  "version": "2.8.33",
++  "version": "2.8.36",
+   "private": true,
+   "type": "module",
+   "dependencies": {
+     "@oai/embedded-fonts": "0.1.1",
+     "skia-canvas": "^3.0.6",
+-    "@oai/walnut": "0.1.231"
++    "@oai/walnut": "0.1.242"
+   },
+   "exports": {
+     ".": "./dist/artifact_tool.mjs",
+diff --git a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.package-map.json b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.package-map.json
+deleted file mode 100644
+index d68543fe..00000000
+--- a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.package-map.json
++++ /dev/null
+@@ -1 +0,0 @@
+-{"packages":{".":{"url":"..","dependencies":{"@bufbuild/protobuf":"@bufbuild/protobuf","@oai/artifact-tool":".","@oai/embedded-fonts":"@oai/embedded-fonts","@oai/walnut":"@oai/walnut","agent-base":"agent-base","debug":"debug","detect-libc":"detect-libc","follow-redirects":"follow-redirects","https-proxy-agent":"https-proxy-agent","ms":"ms","parenthesis":"parenthesis","skia-canvas":"skia-canvas","string-split-by":"string-split-by"}},"@bufbuild/protobuf":{"url":"./@bufbuild/protobuf","dependencies":{"@bufbuild/protobuf":"@bufbuild/protobuf"}},"@oai/embedded-fonts":{"url":"./@oai/embedded-fonts","dependencies":{"@oai/embedded-fonts":"@oai/embedded-fonts"}},"@oai/walnut":{"url":"./@oai/walnut","dependencies":{"@bufbuild/protobuf":"@bufbuild/protobuf","@oai/walnut":"@oai/walnut"}},"agent-base":{"url":"./agent-base","dependencies":{"agent-base":"agent-base"}},"debug":{"url":"./debug","dependencies":{"debug":"debug","ms":"ms"}},"detect-libc":{"url":"./detect-libc","dependencies":{"detect-libc":"detect-libc"}},"follow-redirects":{"url":"./follow-redirects","dependencies":{"follow-redirects":"follow-redirects"}},"https-proxy-agent":{"url":"./https-proxy-agent","dependencies":{"agent-base":"agent-base","debug":"debug","https-proxy-agent":"https-proxy-agent"}},"ms":{"url":"./ms","dependencies":{"ms":"ms"}},"parenthesis":{"url":"./parenthesis","dependencies":{"parenthesis":"parenthesis"}},"skia-canvas":{"url":"./skia-canvas","dependencies":{"detect-libc":"detect-libc","follow-redirects":"follow-redirects","https-proxy-agent":"https-proxy-agent","skia-canvas":"skia-canvas","string-split-by":"string-split-by"}},"string-split-by":{"url":"./string-split-by","dependencies":{"parenthesis":"parenthesis","string-split-by":"string-split-by"}}}}
+diff --git a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json
+index dbef2c25..8dbb025f 100644
+--- a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json
++++ b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/.pnpm-workspace-state-v1.json
+@@ -1,14 +1,13 @@
+ {
+-  "lastValidatedTimestamp": 1785188858362,
++  "lastValidatedTimestamp": 1785461127174,
+   "projects": {
+-    "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\tmp.DfskCJdOJi": {
++    "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\tmp.P5R7z8xQhJ": {
+       "name": "@oai/artifact-tool",
+-      "version": "2.8.33"
++      "version": "2.8.36"
+     }
+   },
+   "pnpmfiles": [],
+   "settings": {
+-    "enableGlobalVirtualStore": false,
+     "allowBuilds": {
+       "skia-canvas": true
+     },
+diff --git a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json
+index b863f9a0..619ae5aa 100644
+--- a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json
++++ b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "@oai/walnut",
+-  "version": "0.1.231",
++  "version": "0.1.242",
+   "type": "module",
+   "exports": {
+     "./wasm": "./wasm",
+diff --git a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.8igbh5f913.wasm b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.8igbh5f913.wasm
+deleted file mode 100644
+index 1ba3cfb2..00000000
+Binary files a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/DocumentFormat.OpenXml.8igbh5f913.wasm and /dev/null differ
+diff --git a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.ydhvw1dp55.wasm b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.ydhvw1dp55.wasm
+deleted file mode 100644
+index 69784007..00000000
+Binary files a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/Walnut.ydhvw1dp55.wasm and /dev/null differ
+diff --git a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json
+index f752fdbe..9e0cf42a 100644
+--- a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json
++++ b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/node_modules/@oai/walnut/wasm/blazor.boot.json
+@@ -1,10 +1,10 @@
+ {
+   "mainAssemblyName": "Walnut",
+   "resources": {
+-    "hash": "sha256-9mBQWJ3CAygVf61OLkY6bbBm5X1fM09vUb7RuzNVpUQ=",
++    "hash": "sha256-BTHnnKCjXHLtqtS4X5I9pufbz4x69vD/tsODwtdWm9c=",
+     "fingerprinting": {
+       "DocumentFormat.OpenXml.Framework.kx8sy06e2n.wasm": "DocumentFormat.OpenXml.Framework.wasm",
+-      "DocumentFormat.OpenXml.8igbh5f913.wasm": "DocumentFormat.OpenXml.wasm",
++      "DocumentFormat.OpenXml.txc2l08aqo.wasm": "DocumentFormat.OpenXml.wasm",
+       "Google.Protobuf.ze35jf5cfr.wasm": "Google.Protobuf.wasm",
+       "System.Collections.Concurrent.wjwe8brmug.wasm": "System.Collections.Concurrent.wasm",
+       "System.Collections.NonGeneric.0ku6qyjc24.wasm": "System.Collections.NonGeneric.wasm",
+@@ -32,7 +32,7 @@
+       "System.Text.RegularExpressions.62o7zr7ple.wasm": "System.Text.RegularExpressions.wasm",
+       "System.v2bpr4wvug.wasm": "System.wasm",
+       "System.Xml.Linq.oyxx9bz5vb.wasm": "System.Xml.Linq.wasm",
+-      "Walnut.ydhvw1dp55.wasm": "Walnut.wasm",
++      "Walnut.1yr4ye2c96.wasm": "Walnut.wasm",
+       "dotnet.native.xk4h31owf3.js": "dotnet.native.js",
+       "dotnet.native.tj9dxbl64y.wasm": "dotnet.native.wasm",
+       "dotnet.js": "dotnet.js",
+@@ -53,7 +53,7 @@
+     },
+     "assembly": {
+       "DocumentFormat.OpenXml.Framework.kx8sy06e2n.wasm": "sha256-OF57xYYSGSMcas2H9mn2epzRu0iz5sPH1Zpi8ZH6+/U=",
+-      "DocumentFormat.OpenXml.8igbh5f913.wasm": "sha256-sMLf6+tPJIX4q4/T4M6G9iwad5E8sR5XcpmwZkH4/6Y=",
++      "DocumentFormat.OpenXml.txc2l08aqo.wasm": "sha256-AeOs2pQHMkEClErmXgJcd4RiBNGA3kVUOkB1YTX0L40=",
+       "Google.Protobuf.ze35jf5cfr.wasm": "sha256-i38brCJSYmpsUEG3n34uEuDFfLxkrlECq4wIOMlpBiY=",
+       "System.Collections.Concurrent.wjwe8brmug.wasm": "sha256-tB8VxZjKe2uNYWW1T5TTWeu7k1aCsSMt5DZQpwj0ek4=",
+       "System.Collections.NonGeneric.0ku6qyjc24.wasm": "sha256-MDKU4gYdidRTMQVjpesyIBsU7MP9Dxas/JCu2lH6nUg=",
+@@ -79,7 +79,7 @@
+       "System.Text.RegularExpressions.62o7zr7ple.wasm": "sha256-couvRXok+6C971UjgVpYCCC5ueE3IQSuCwfXB+pthUg=",
+       "System.v2bpr4wvug.wasm": "sha256-V0+qqJsDHNUBCJjD4bkeDVr+f+Orz+wNldNNIxrsd+4=",
+       "System.Xml.Linq.oyxx9bz5vb.wasm": "sha256-ME/lD8PZteQCLi6BaWR7la1wp8SbfwTDxEtk8BRee8I=",
+-      "Walnut.ydhvw1dp55.wasm": "sha256-OsJZrDtqn4j+S1DwQvXMwKdxMfsARXa4evZ1kI6D7tg="
++      "Walnut.1yr4ye2c96.wasm": "sha256-eeDZc16plM1toxkjU+CFM3gg+t+bn84Mxf9KjNUiZCE="
+     }
+   },
+   "debugLevel": 0,
+diff --git a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/package.json b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/package.json
+index cfa69bee..2a5fbd41 100644
+--- a/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/package.json
++++ b/.codex_tmp/leap_monthly_progress_update/node_modules/@oai/artifact-tool/package.json
+@@ -1,12 +1,12 @@
+ {
+   "name": "@oai/artifact-tool",
+-  "version": "2.8.33",
++  "version": "2.8.36",
+   "private": true,
+   "type": "module",
+   "dependencies": {
+     "@oai/embedded-fonts": "0.1.1",
+     "skia-canvas": "^3.0.6",
+-    "@oai/walnut": "0.1.231"
++    "@oai/walnut": "0.1.242"
+   },
+   "exports": {
+     ".": "./dist/artifact_tool.mjs",
+diff --git a/conf/ppo/task/leap_inhand/mujoco.yaml b/conf/ppo/task/leap_inhand/mujoco.yaml
+index 0ccbc372..fbe88444 100644
+--- a/conf/ppo/task/leap_inhand/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand/mujoco.yaml
+@@ -47,7 +47,7 @@ env:
+       joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+       damping: 0.03
+       frictionloss: 0.001
+-      armature: 0.0
++      armature: 0.01
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   max_episode_seconds: 20.0
+diff --git a/conf/ppo/task/leap_inhand_ball/mujoco.yaml b/conf/ppo/task/leap_inhand_ball/mujoco.yaml
+index a58f69ca..2b12aae7 100644
+--- a/conf/ppo/task/leap_inhand_ball/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball/mujoco.yaml
+@@ -48,7 +48,7 @@ env:
+       joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+       damping: 0.03
+       frictionloss: 0.001
+-      armature: 0.0
++      armature: 0.01
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   gen_grasp: false
+diff --git a/conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml
+index 64c3691e..3fa559ff 100644
+--- a/conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_cache/mujoco.yaml
+@@ -47,7 +47,7 @@ env:
+       joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+       damping: 0.03
+       frictionloss: 0.001
+-      armature: 0.0
++      armature: 0.01
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   gen_grasp: false
+diff --git a/conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml
+index 76b25d0b..09dab95d 100644
+--- a/conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_rotation_v2/mujoco.yaml
+@@ -51,7 +51,7 @@ env:
+       joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+       damping: 0.03
+       frictionloss: 0.001
+-      armature: 0.0
++      armature: 0.01
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   gen_grasp: false
+diff --git a/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+index 9fdb5298..c5adcac1 100644
+--- a/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_state_cycle/mujoco.yaml
+@@ -59,7 +59,7 @@ env:
+       joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+       damping: 0.03
+       frictionloss: 0.001
+-      armature: 0.0
++      armature: 0.01
+   sim_dt: 0.005
+   ctrl_dt: 0.05
+   max_episode_seconds: 30.0
+diff --git a/conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml
+index 0d6c3870..8eceabb1 100644
+--- a/conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_sustained/mujoco.yaml
+@@ -64,7 +64,7 @@ env:
+       joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+       damping: 0.03
+       frictionloss: 0.001
+-      armature: 0.0
++      armature: 0.01
+   sim_dt: 0.005
+   ctrl_dt: 0.05
+   gen_grasp: false
+diff --git a/conf/ppo/task/leap_inhand_toss/mujoco.yaml b/conf/ppo/task/leap_inhand_toss/mujoco.yaml
+index e667807b..0fcb2fc7 100644
+--- a/conf/ppo/task/leap_inhand_toss/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_toss/mujoco.yaml
+@@ -61,7 +61,7 @@ env:
+       joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+       damping: 0.03
+       frictionloss: 0.001
+-      armature: 0.0
++      armature: 0.01
+   sim_dt: 0.008333333333333333
+   ctrl_dt: 0.05
+   max_episode_seconds: 15.0
+diff --git a/tests/config/test_config_system.py b/tests/config/test_config_system.py
+index e61bd5b4..fe581b72 100644
+--- a/tests/config/test_config_system.py
++++ b/tests/config/test_config_system.py
+@@ -107,7 +107,7 @@ def test_ppo_leap_mujoco_owners_use_menagerie_dynamics(task: str) -> None:
+     ]
+     assert cfg.env.scene.joint_dynamics.damping == pytest.approx(0.03)
+     assert cfg.env.scene.joint_dynamics.frictionloss == pytest.approx(0.001)
+-    assert cfg.env.scene.joint_dynamics.armature == pytest.approx(0.0)
++    assert cfg.env.scene.joint_dynamics.armature == pytest.approx(0.01)
+     assert cfg.env.control_config.kp == pytest.approx(3.0)
+     assert cfg.env.control_config.kd == pytest.approx(0.01)
+ 
+diff --git a/tests/envs/test_leap_inhand.py b/tests/envs/test_leap_inhand.py
+index d1cb90e4..591bb6bd 100644
+--- a/tests/envs/test_leap_inhand.py
++++ b/tests/envs/test_leap_inhand.py
+@@ -195,7 +195,7 @@ def test_leap_mujoco_profile_matches_menagerie_joint_and_actuator_dynamics() ->
+                 joint_names=[str(index) for index in UNILAB_SIM_JOINT_ORDER],
+                 damping=0.03,
+                 frictionloss=0.001,
+-                armature=0.0,
++                armature=0.01,
+             ),
+         ),
+         num_envs=1,
+@@ -218,7 +218,7 @@ def test_leap_mujoco_profile_matches_menagerie_joint_and_actuator_dynamics() ->
+ 
+     np.testing.assert_allclose(model.dof_damping[hand_dof_ids], 0.03)
+     np.testing.assert_allclose(model.dof_frictionloss[hand_dof_ids], 0.001)
+-    np.testing.assert_allclose(model.dof_armature[hand_dof_ids], 0.0)
++    np.testing.assert_allclose(model.dof_armature[hand_dof_ids], 0.01)
+     np.testing.assert_allclose(model.dof_damping[object_dof_start:], 0.0)
+     np.testing.assert_allclose(model.dof_frictionloss[object_dof_start:], 0.0)
+     np.testing.assert_allclose(model.dof_armature[object_dof_start:], 0.0)

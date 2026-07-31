@@ -220,6 +220,245 @@ def test_render_states_get_frames_tracking_skips_when_backend_unusable(monkeypat
     assert frames == []
 
 
+def test_render_process_count_defaults_to_one_on_windows(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "win32")
+    monkeypatch.delenv("UNILAB_RENDER_PROCESSES", raising=False)
+
+    assert render_many._resolve_render_process_count(None, frame_count=200) == 1
+    assert render_many._resolve_render_process_count(8, frame_count=200) == 1
+
+
+def test_render_process_count_defaults_to_eight_on_linux(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "linux")
+    monkeypatch.delenv("UNILAB_RENDER_PROCESSES", raising=False)
+
+    assert render_many._resolve_render_process_count(None, frame_count=200) == 8
+
+
+def test_render_process_override_takes_precedence(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "win32")
+    monkeypatch.setenv("UNILAB_RENDER_PROCESSES", "2")
+
+    assert render_many._resolve_render_process_count(8, frame_count=200) == 2
+
+
+@pytest.mark.parametrize("value", ["0", "-1", "abc", "1.5"])
+def test_invalid_render_process_override_uses_safe_default(
+    monkeypatch, capsys, value: str
+) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "win32")
+    monkeypatch.setenv("UNILAB_RENDER_PROCESSES", value)
+
+    assert render_many._resolve_render_process_count(8, frame_count=200) == 1
+    assert "Ignoring invalid UNILAB_RENDER_PROCESSES" in capsys.readouterr().err
+
+
+def test_invalid_render_process_override_ignores_requested_count_on_linux(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "linux")
+    monkeypatch.setenv("UNILAB_RENDER_PROCESSES", "invalid")
+
+    assert render_many._resolve_render_process_count(2, frame_count=200) == 8
+
+
+def test_render_process_count_is_bounded_by_frame_count(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "linux")
+    monkeypatch.setenv("UNILAB_RENDER_PROCESSES", "8")
+
+    assert render_many._resolve_render_process_count(None, frame_count=3) == 3
+    assert render_many._resolve_render_process_count(None, frame_count=0) == 1
+
+
+def test_init_worker_uses_requested_framebuffer_size(monkeypatch) -> None:
+    render_many = _reload_render_many_with_geom_enums(monkeypatch)
+    model = types.SimpleNamespace(
+        vis=types.SimpleNamespace(global_=types.SimpleNamespace(offwidth=0, offheight=0)),
+        ngeom=0,
+    )
+    renderer_calls: list[tuple[int, int]] = []
+
+    monkeypatch.setattr(
+        render_many.mujoco,
+        "MjModel",
+        types.SimpleNamespace(from_xml_path=lambda path: model),
+        raising=False,
+    )
+    monkeypatch.setattr(render_many.mujoco, "MjData", lambda loaded: object(), raising=False)
+
+    class FakeRenderer:
+        def __init__(self, loaded, *, height, width):
+            renderer_calls.append((width, height))
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(render_many.mujoco, "Renderer", FakeRenderer, raising=False)
+
+    render_many.init_worker("model.xml", (1280, 720))
+    try:
+        assert model.vis.global_.offwidth == 1280
+        assert model.vis.global_.offheight == 720
+        assert renderer_calls == [(1280, 720)]
+    finally:
+        render_many._close_worker()
+
+
+def test_close_worker_is_idempotent(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    close_calls: list[bool] = []
+    render_many._worker_ctx.update(
+        {
+            "renderer": types.SimpleNamespace(close=lambda: close_calls.append(True)),
+            "models": [object()],
+            "data_list": [object()],
+            "terrain_geom_indices": [object()],
+        }
+    )
+
+    render_many._close_worker()
+    render_many._close_worker()
+
+    assert close_calls == [True]
+    assert render_many._worker_ctx == {}
+
+
+def test_partial_worker_init_failure_clears_context(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    models = [
+        types.SimpleNamespace(vis=types.SimpleNamespace(global_=types.SimpleNamespace())),
+        types.SimpleNamespace(vis=types.SimpleNamespace(global_=types.SimpleNamespace())),
+    ]
+    loaded = iter(models)
+    data_calls = 0
+
+    monkeypatch.setattr(
+        render_many.mujoco,
+        "MjModel",
+        types.SimpleNamespace(from_xml_path=lambda path: next(loaded)),
+        raising=False,
+    )
+
+    def fake_data(model):
+        nonlocal data_calls
+        data_calls += 1
+        if data_calls == 2:
+            raise MemoryError("simulated allocation failure")
+        return object()
+
+    monkeypatch.setattr(render_many.mujoco, "MjData", fake_data, raising=False)
+
+    with pytest.raises(MemoryError, match="simulated allocation failure"):
+        render_many.init_worker(["first.xml", "second.xml"], (1280, 720))
+
+    assert render_many._worker_ctx == {}
+
+
+def test_num_processes_one_does_not_create_process_pool(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many, "render_backend_usable", lambda: True)
+    monkeypatch.setattr(
+        render_many,
+        "_try_render_tasks_serial",
+        lambda model_path, shape, tasks, render_job: ["serial"],
+    )
+
+    class ForbiddenPool:
+        def __init__(self, *args, **kwargs):
+            raise AssertionError("ProcessPoolExecutor must not be created")
+
+    monkeypatch.setattr(render_many, "ProcessPoolExecutor", ForbiddenPool)
+
+    frames = render_many.render_states_get_frames(
+        [np.zeros((1, 8), dtype=np.float32)],
+        "model.xml",
+        num_processes=1,
+    )
+
+    assert frames == ["serial"]
+
+
+def test_windows_default_uses_serial_path(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "win32")
+    monkeypatch.delenv("UNILAB_RENDER_PROCESSES", raising=False)
+    monkeypatch.setattr(render_many, "render_backend_usable", lambda: True)
+    serial_calls: list[int] = []
+    monkeypatch.setattr(
+        render_many,
+        "_try_render_tasks_serial",
+        lambda model_path, shape, tasks, render_job: serial_calls.append(len(tasks))
+        or ["serial"],
+    )
+    monkeypatch.setattr(
+        render_many,
+        "_render_tasks_parallel",
+        lambda *args, **kwargs: pytest.fail("parallel path must not run on Windows by default"),
+    )
+
+    frames = render_many.render_states_get_frames(
+        [np.zeros((1, 8), dtype=np.float32)],
+        "model.xml",
+        num_processes=8,
+    )
+
+    assert frames == ["serial"]
+    assert serial_calls == [1]
+
+
+def test_parallel_failure_falls_back_to_serial_once(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "linux")
+    monkeypatch.delenv("UNILAB_RENDER_PROCESSES", raising=False)
+    monkeypatch.setattr(render_many, "render_backend_usable", lambda: True)
+    monkeypatch.setattr(
+        render_many,
+        "_render_tasks_parallel",
+        lambda *args, **kwargs: (_ for _ in ()).throw(render_many.BrokenExecutor("boom")),
+    )
+    serial_calls: list[int] = []
+    monkeypatch.setattr(
+        render_many,
+        "_try_render_tasks_serial",
+        lambda model_path, shape, tasks, render_job: serial_calls.append(len(tasks))
+        or ["recovered"],
+    )
+
+    states = [np.zeros((1, 8), dtype=np.float32) for _ in range(2)]
+    frames = render_many.render_states_get_frames(states, "model.xml", num_processes=2)
+
+    assert frames == ["recovered"]
+    assert serial_calls == [2]
+
+
+def test_parallel_and_serial_failure_returns_empty_list(monkeypatch) -> None:
+    render_many = _reload_render_many(monkeypatch)
+    monkeypatch.setattr(render_many.sys, "platform", "linux")
+    monkeypatch.delenv("UNILAB_RENDER_PROCESSES", raising=False)
+    monkeypatch.setattr(render_many, "render_backend_usable", lambda: True)
+    monkeypatch.setattr(
+        render_many,
+        "_render_tasks_parallel",
+        lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("parallel failed")),
+    )
+    serial_calls: list[bool] = []
+    monkeypatch.setattr(
+        render_many,
+        "_try_render_tasks_serial",
+        lambda *args, **kwargs: serial_calls.append(True) or [],
+    )
+
+    states = [np.zeros((1, 8), dtype=np.float32) for _ in range(2)]
+    frames = render_many.render_states_get_frames(states, "model.xml", num_processes=2)
+
+    assert frames == []
+    assert serial_calls == [True]
+
+
 def test_render_states_get_frames_fails_fast_on_worker_init_error(monkeypatch) -> None:
     """A failing pool initializer must NOT respawn workers forever (issue #605).
 
@@ -228,6 +467,9 @@ def test_render_states_get_frames_fails_fast_on_worker_init_error(monkeypatch) -
     """
     # Skip the EGL probe in spawned workers (they inherit MUJOCO_GL via os.environ).
     monkeypatch.setenv("MUJOCO_GL", "osmesa")
+    # Windows defaults to serial; explicitly opt in so this legacy regression
+    # test still exercises ProcessPoolExecutor initializer failure.
+    monkeypatch.setenv("UNILAB_RENDER_PROCESSES", "2")
     render_many = _reload_render_many(monkeypatch)
     # Bypass the parent pre-flight so we exercise the pool's fail-fast path.
     monkeypatch.setattr(render_many, "render_backend_usable", lambda: True)
