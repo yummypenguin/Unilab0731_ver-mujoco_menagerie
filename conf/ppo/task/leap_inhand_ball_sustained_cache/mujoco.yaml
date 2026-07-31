@@ -59,7 +59,7 @@ reward:
 
 env:
   reset_source: cache
-  grasp_cache_path: robots/leap_hand/caches/ball_grasp_official_50k.npy
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy
   termination_workspace_radius: 0.05
   curriculum:
     direct_target_mode: true

@@ -28,6 +28,7 @@ _NUMBA_ACCEL_SUPPORTED_TASK_NAMES = {
 _LEAP_MUJOCO_DYNAMICS_TASKS = (
     "leap_inhand",
     "leap_inhand_ball",
+    "leap_inhand_ball_0730",
     "leap_inhand_ball_allegro",
     "leap_inhand_ball_cache",
     "leap_inhand_ball_cache_gaiting",
@@ -42,7 +43,9 @@ _LEAP_MUJOCO_DYNAMICS_TASKS = (
     "leap_inhand_toss",
 )
 _LEAP_MOTRIX_DYNAMICS_TASKS = tuple(
-    task for task in _LEAP_MUJOCO_DYNAMICS_TASKS if task != "leap_inhand_ball_grasp_allegro"
+    task
+    for task in _LEAP_MUJOCO_DYNAMICS_TASKS
+    if task not in {"leap_inhand_ball_0730", "leap_inhand_ball_grasp_allegro"}
 )
 
 
@@ -107,7 +110,7 @@ def test_ppo_leap_mujoco_owners_use_menagerie_dynamics(task: str) -> None:
     ]
     assert cfg.env.scene.joint_dynamics.damping == pytest.approx(0.03)
     assert cfg.env.scene.joint_dynamics.frictionloss == pytest.approx(0.001)
-    assert cfg.env.scene.joint_dynamics.armature == pytest.approx(0.0)
+    assert cfg.env.scene.joint_dynamics.armature == pytest.approx(0.01)
     assert cfg.env.control_config.kp == pytest.approx(3.0)
     assert cfg.env.control_config.kd == pytest.approx(0.01)
 

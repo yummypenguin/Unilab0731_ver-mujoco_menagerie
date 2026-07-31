@@ -195,7 +195,7 @@ def test_leap_mujoco_profile_matches_menagerie_joint_and_actuator_dynamics() -> 
                 joint_names=[str(index) for index in UNILAB_SIM_JOINT_ORDER],
                 damping=0.03,
                 frictionloss=0.001,
-                armature=0.0,
+                armature=0.01,
             ),
         ),
         num_envs=1,
@@ -218,7 +218,7 @@ def test_leap_mujoco_profile_matches_menagerie_joint_and_actuator_dynamics() -> 
 
     np.testing.assert_allclose(model.dof_damping[hand_dof_ids], 0.03)
     np.testing.assert_allclose(model.dof_frictionloss[hand_dof_ids], 0.001)
-    np.testing.assert_allclose(model.dof_armature[hand_dof_ids], 0.0)
+    np.testing.assert_allclose(model.dof_armature[hand_dof_ids], 0.01)
     np.testing.assert_allclose(model.dof_damping[object_dof_start:], 0.0)
     np.testing.assert_allclose(model.dof_frictionloss[object_dof_start:], 0.0)
     np.testing.assert_allclose(model.dof_armature[object_dof_start:], 0.0)
