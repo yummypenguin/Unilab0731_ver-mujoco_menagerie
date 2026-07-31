@@ -25,6 +25,25 @@ _NUMBA_ACCEL_SUPPORTED_TASK_NAMES = {
     "G1WalkFlat",
     "G1WalkRough",
 }
+_LEAP_MUJOCO_DYNAMICS_TASKS = (
+    "leap_inhand",
+    "leap_inhand_ball",
+    "leap_inhand_ball_allegro",
+    "leap_inhand_ball_cache",
+    "leap_inhand_ball_cache_gaiting",
+    "leap_inhand_ball_direct",
+    "leap_inhand_ball_finger_gaiting",
+    "leap_inhand_ball_grasp",
+    "leap_inhand_ball_grasp_allegro",
+    "leap_inhand_ball_rotation_v2",
+    "leap_inhand_ball_state_cycle",
+    "leap_inhand_ball_sustained",
+    "leap_inhand_ball_sustained_cache",
+    "leap_inhand_toss",
+)
+_LEAP_MOTRIX_DYNAMICS_TASKS = tuple(
+    task for task in _LEAP_MUJOCO_DYNAMICS_TASKS if task != "leap_inhand_ball_grasp_allegro"
+)
 
 
 def _expected_backend_from_variant(name: str) -> str | None:
@@ -77,6 +96,29 @@ def _assert_reward_populated(cfg, label: str):
         )
     else:
         assert len(reward_dict) > 0, f"{label} reward config must be non-empty"
+
+
+@pytest.mark.parametrize("task", _LEAP_MUJOCO_DYNAMICS_TASKS)
+def test_ppo_leap_mujoco_owners_use_menagerie_dynamics(task: str) -> None:
+    cfg = _compose("ppo", overrides=[f"task={task}/mujoco"])
+
+    assert list(cfg.env.scene.joint_dynamics.joint_names) == [
+        str(index) for index in range(16)
+    ]
+    assert cfg.env.scene.joint_dynamics.damping == pytest.approx(0.03)
+    assert cfg.env.scene.joint_dynamics.frictionloss == pytest.approx(0.001)
+    assert cfg.env.scene.joint_dynamics.armature == pytest.approx(0.0)
+    assert cfg.env.control_config.kp == pytest.approx(3.0)
+    assert cfg.env.control_config.kd == pytest.approx(0.01)
+
+
+@pytest.mark.parametrize("task", _LEAP_MOTRIX_DYNAMICS_TASKS)
+def test_ppo_leap_motrix_owners_keep_isaac_style_dynamics(task: str) -> None:
+    cfg = _compose("ppo", overrides=[f"task={task}/motrix"])
+
+    assert cfg.env.scene.joint_dynamics is None
+    assert cfg.env.control_config.kp == pytest.approx(3.0)
+    assert cfg.env.control_config.kd == pytest.approx(0.1)
 
 
 def _supported_task_cases() -> list[tuple[str, str, str, str, str, list[str]]]:

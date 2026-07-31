@@ -12,6 +12,10 @@ algo:
   num_envs: 1024
 
 env:
+  scene:
+    joint_dynamics: null
+  control_config:
+    kd: 0.1
   # Motrix hand profiles use a larger stable physics step than this task's
   # MuJoCo owner while preserving the policy-facing control interval.
   sim_dt: 0.01

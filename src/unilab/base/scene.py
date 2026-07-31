@@ -6,6 +6,16 @@ from unilab.terrains.terrain_generator import TerrainGeneratorCfg
 
 
 @dataclass
+class JointDynamicsCfg:
+    """Cold-path joint dynamics overrides selected by joint name."""
+
+    joint_names: list[str] = field(default_factory=list)
+    damping: float | None = None
+    frictionloss: float | None = None
+    armature: float | None = None
+
+
+@dataclass
 class TerrainSceneCfg:
     """Backend-agnostic terrain slot declaration for a scene."""
 
@@ -21,6 +31,7 @@ class SceneCfg:
     model_file: str
     fragment_files: list[str] = field(default_factory=list)
     terrain: TerrainSceneCfg | None = None
+    joint_dynamics: JointDynamicsCfg | None = None
     # Optional render-only model override. When set, offline playback/video
     # export renders this XML instead of ``model_file`` while physics keeps
     # using ``model_file``. Used to give the renderer a visual twin of the

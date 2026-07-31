@@ -7,3 +7,8 @@ training:
   task_name: LeapInhandBallStateCycleRotation
   sim_backend: motrix
 
+env:
+  scene:
+    joint_dynamics: null
+  control_config:
+    kd: 0.1

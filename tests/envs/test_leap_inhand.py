@@ -13,7 +13,9 @@ import pytest
 
 from unilab.assets import ASSETS_ROOT_PATH
 from unilab.base import registry
+from unilab.base.backend.mujoco.backend import MuJoCoBackend
 from unilab.base.registry import ensure_registries
+from unilab.base.scene import JointDynamicsCfg, SceneCfg
 from unilab.envs.manipulation.leap_inhand.allegro_faithful_rotation import (
     LeapInhandBallAllegroRotationCfg,
 )
@@ -182,6 +184,47 @@ def test_leap_scene_compiles_with_aligned_joint_and_actuator_order(scene_name: s
             "leap_ring_contact",
             "leap_thumb_contact",
         } <= sensor_names
+
+
+def test_leap_mujoco_profile_matches_menagerie_joint_and_actuator_dynamics() -> None:
+    mujoco = pytest.importorskip("mujoco")
+    backend = MuJoCoBackend(
+        SceneCfg(
+            model_file=str(LEAP_ASSET_DIR / "scene_ball.xml"),
+            joint_dynamics=JointDynamicsCfg(
+                joint_names=[str(index) for index in UNILAB_SIM_JOINT_ORDER],
+                damping=0.03,
+                frictionloss=0.001,
+                armature=0.0,
+            ),
+        ),
+        num_envs=1,
+        sim_dt=0.005,
+        base_name="palm_lower",
+        position_actuator_gains={"kp": 3.0, "kd": 0.01},
+    )
+    model = backend._model
+    hand_dof_ids = np.asarray(
+        [
+            model.jnt_dofadr[
+                mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, str(joint_name))
+            ]
+            for joint_name in UNILAB_SIM_JOINT_ORDER
+        ],
+        dtype=np.int32,
+    )
+    object_joint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "leap_object_joint")
+    object_dof_start = int(model.jnt_dofadr[object_joint_id])
+
+    np.testing.assert_allclose(model.dof_damping[hand_dof_ids], 0.03)
+    np.testing.assert_allclose(model.dof_frictionloss[hand_dof_ids], 0.001)
+    np.testing.assert_allclose(model.dof_armature[hand_dof_ids], 0.0)
+    np.testing.assert_allclose(model.dof_damping[object_dof_start:], 0.0)
+    np.testing.assert_allclose(model.dof_frictionloss[object_dof_start:], 0.0)
+    np.testing.assert_allclose(model.dof_armature[object_dof_start:], 0.0)
+    np.testing.assert_allclose(model.actuator_gainprm[:, 0], 3.0)
+    np.testing.assert_allclose(model.actuator_biasprm[:, 1], -3.0)
+    np.testing.assert_allclose(model.actuator_biasprm[:, 2], -0.01)
 
 
 def test_leap_objects_are_owned_by_leap_asset_directory() -> None:

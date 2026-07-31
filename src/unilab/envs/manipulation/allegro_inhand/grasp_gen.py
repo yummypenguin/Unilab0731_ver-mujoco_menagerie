@@ -100,6 +100,10 @@ class AllegroRotationGrasp(AllegroRotationPPO):
             return 0
         return int(sum(states.shape[0] for states in self._saved_grasping_states))
 
+    def _filter_grasp_rows(self, states: np.ndarray) -> np.ndarray:
+        """Extension hook for cache-dataset filtering after physical acceptance."""
+        return states
+
     def _stop_collection(self) -> None:
         if self._grasp_target_reached_notified:
             return
@@ -178,6 +182,10 @@ class AllegroRotationGrasp(AllegroRotationPPO):
         ball_pos = curr_ball_pos[success_env_ids]
         ball_quat = curr_ball_quat[success_env_ids]
         states = np.concatenate([hand_qpos, ball_pos, ball_quat], axis=1).astype(np.float32)
+
+        states = self._filter_grasp_rows(states)
+        if states.shape[0] == 0:
+            return
 
         self._saved_grasping_states.append(states)
         self._save_grasp_cache()

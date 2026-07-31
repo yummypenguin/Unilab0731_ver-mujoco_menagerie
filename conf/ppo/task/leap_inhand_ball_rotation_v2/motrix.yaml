@@ -8,5 +8,9 @@ training:
   sim_backend: motrix
 
 env:
+  scene:
+    joint_dynamics: null
+  control_config:
+    kd: 0.1
   sim_dt: 0.01
   grasp_cache_path: robots/leap_hand/caches/ball_grasp_s10_5k.npy

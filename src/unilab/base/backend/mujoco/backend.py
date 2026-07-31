@@ -12,7 +12,7 @@ import mujoco
 import numpy as np
 from mujoco.batch_env import BatchEnvPool
 
-from unilab.base.scene import SceneCfg
+from unilab.base.scene import JointDynamicsCfg, SceneCfg
 from unilab.dr.types import (
     RESET_TERM_BASE_COM,
     RESET_TERM_BASE_MASS,
@@ -105,6 +105,7 @@ def _compile_model_variant_chunk_to_mjb(
     sim_dt: float,
     iterations: int | None,
     position_actuator_gains: dict | None,
+    joint_dynamics: JointDynamicsCfg | None,
     variants: tuple[ModelVariantSpec, ...],
 ) -> tuple[str, ...]:
     model_path, tmp_paths = _prepare_variant_model_xml(
@@ -131,6 +132,8 @@ def _compile_model_variant_chunk_to_mjb(
                 model.opt.iterations = int(iterations)
             if position_actuator_gains is not None:
                 _apply_position_actuator_gains_to_mj_model(model, **position_actuator_gains)
+            if joint_dynamics is not None:
+                _apply_joint_dynamics_to_mj_model(model, joint_dynamics)
             output_path = os.path.join(output_dir, f"variant_{idx}.mjb")
             mujoco.mj_saveModel(model, output_path)
             output_paths.append(output_path)
@@ -177,6 +180,47 @@ def _apply_position_actuator_gains_to_mj_model(
     model.actuator_gainprm[actuator_ids, 0] = kp_arr
     model.actuator_biasprm[actuator_ids, 1] = -kp_arr
     model.actuator_biasprm[actuator_ids, 2] = -kd_arr
+
+
+def _apply_joint_dynamics_to_mj_model(
+    model: mujoco.MjModel,
+    cfg: JointDynamicsCfg,
+) -> None:
+    """Apply named joint dynamics without affecting object or root joints."""
+    if not cfg.joint_names:
+        raise ValueError("joint_dynamics.joint_names must not be empty")
+    if cfg.damping is None and cfg.frictionloss is None and cfg.armature is None:
+        raise ValueError(
+            "joint_dynamics must provide at least one of damping, frictionloss, or armature"
+        )
+    values = {
+        "damping": cfg.damping,
+        "frictionloss": cfg.frictionloss,
+        "armature": cfg.armature,
+    }
+    for name, value in values.items():
+        if value is not None and (not np.isfinite(value) or value < 0.0):
+            raise ValueError(f"joint_dynamics.{name} must be finite and non-negative")
+
+    for joint_name in cfg.joint_names:
+        joint_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)
+        if joint_id < 0:
+            raise ValueError(f"Joint dynamics target '{joint_name}' not found in MuJoCo model")
+        joint_type = int(model.jnt_type[joint_id])
+        if joint_type not in {
+            int(mujoco.mjtJoint.mjJNT_HINGE),
+            int(mujoco.mjtJoint.mjJNT_SLIDE),
+        }:
+            raise ValueError(
+                f"Joint dynamics target '{joint_name}' must be a hinge or slide joint"
+            )
+        dof_id = int(model.jnt_dofadr[joint_id])
+        if cfg.damping is not None:
+            model.dof_damping[dof_id] = float(cfg.damping)
+        if cfg.frictionloss is not None:
+            model.dof_frictionloss[dof_id] = float(cfg.frictionloss)
+        if cfg.armature is not None:
+            model.dof_armature[dof_id] = float(cfg.armature)
 
 
 def _remove_temp_xml(path: str) -> None:
@@ -305,6 +349,7 @@ class MuJoCoBackend(SimBackend):
         self._position_actuator_gains = (
             None if position_actuator_gains is None else dict(position_actuator_gains)
         )
+        self._joint_dynamics = scene.joint_dynamics
         self._pre_step_control_fn = None
         self._model = self._load_base_model()
         self._base_body_id = (
@@ -461,6 +506,8 @@ class MuJoCoBackend(SimBackend):
             model.opt.iterations = self._iterations
         if self._position_actuator_gains is not None:
             self._apply_position_actuator_gains_to_model(model, **self._position_actuator_gains)
+        if self._joint_dynamics is not None:
+            _apply_joint_dynamics_to_mj_model(model, self._joint_dynamics)
 
     def _resolve_push_body_id(self, model: mujoco.MjModel) -> int:
         body_name = self._push_body_name if self._push_body_name is not None else self._base_name
@@ -525,6 +572,7 @@ class MuJoCoBackend(SimBackend):
                 sim_dt=self._sim_dt,
                 iterations=self._iterations,
                 position_actuator_gains=self._position_actuator_gains,
+                joint_dynamics=self._joint_dynamics,
                 variants=variants,
             )
             return _load_compiled_models_and_cleanup(mjb_paths)
@@ -548,6 +596,7 @@ class MuJoCoBackend(SimBackend):
                         sim_dt=self._sim_dt,
                         iterations=self._iterations,
                         position_actuator_gains=self._position_actuator_gains,
+                        joint_dynamics=self._joint_dynamics,
                         variants=chunk,
                     )
                     for chunk in chunks
@@ -562,6 +611,7 @@ class MuJoCoBackend(SimBackend):
                     sim_dt=self._sim_dt,
                     iterations=self._iterations,
                     position_actuator_gains=self._position_actuator_gains,
+                    joint_dynamics=self._joint_dynamics,
                     variants=chunk,
                 )
                 for chunk in chunks

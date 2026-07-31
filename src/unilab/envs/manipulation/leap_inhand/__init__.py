@@ -1,5 +1,6 @@
 from . import (  # registers tasks via decorators
     allegro_faithful_rotation,
+    ball_grasp_allegro,
     ball_grasp_gen,
     ball_rotation,
     cache_rotation,
@@ -16,6 +17,7 @@ from . import (  # registers tasks via decorators
 
 __all__ = [
     "allegro_faithful_rotation",
+    "ball_grasp_allegro",
     "ball_grasp_gen",
     "ball_rotation",
     "cache_rotation",

@@ -8,5 +8,9 @@ training:
   sim_backend: motrix
 
 env:
+  scene:
+    joint_dynamics: null
+  control_config:
+    kd: 0.1
   # Keep the established Motrix integration rate; reward/control semantics match MuJoCo.
   sim_dt: 0.01

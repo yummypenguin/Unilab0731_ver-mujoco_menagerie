@@ -59,6 +59,12 @@ reward:
   failure_debounce_steps: 3
   speed_tracking_tolerance_ratio: 0.25
 env:
+  scene:
+    joint_dynamics:
+      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
+      damping: 0.03
+      frictionloss: 0.001
+      armature: 0.0
   sim_dt: 0.005
   ctrl_dt: 0.05
   gen_grasp: false
@@ -82,7 +88,7 @@ env:
   control_config:
     action_scale: 0.041666666666666664
     kp: 3.0
-    kd: 0.1
+    kd: 0.01
   domain_rand:
     randomize_base_mass: false
     random_com: false
