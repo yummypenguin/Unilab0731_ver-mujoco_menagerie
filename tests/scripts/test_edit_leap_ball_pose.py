@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import queue
 from pathlib import Path
 
 import numpy as np
@@ -14,6 +15,86 @@ def _load_script():
     module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
     spec.loader.exec_module(module)  # type: ignore[union-attr]
     return module
+
+
+def test_panel_command_coalesces_pose_and_button_requests():
+    mod = _load_script()
+    state = mod.PoseEditorState(np.zeros(16), np.zeros(3), np.zeros(3))
+    state.desired_hand[4] = 0.25
+    state.desired_ball_position[:] = [-0.01, 0.02, 0.6]
+    state.pose_dirty = True
+    state.toggle_settling_requested = True
+    state.copy_requested = True
+
+    command, revision = mod.collect_panel_command(state, pose_revision=6)
+
+    assert revision == 7
+    assert command is not None
+    assert command["pose_revision"] == 7
+    assert command["desired_hand"][4] == pytest.approx(0.25)
+    assert command["desired_ball_position"] == pytest.approx([-0.01, 0.02, 0.6])
+    assert command["toggle_settling"] is True
+    assert command["copy"] is True
+    assert not state.pose_dirty
+    assert not state.toggle_settling_requested
+    assert not state.copy_requested
+
+
+def test_apply_panel_command_and_snapshot_preserve_pose_revision():
+    mod = _load_script()
+    state = mod.PoseEditorState(np.zeros(16), np.zeros(3), np.zeros(3))
+    hand = np.linspace(-0.2, 0.2, 16)
+    command = {
+        "pose_revision": 3,
+        "desired_hand": hand.tolist(),
+        "desired_ball_position": [-0.02, 0.03, 0.61],
+        "desired_ball_euler": [0.1, -0.2, 0.3],
+        "freeze": True,
+        "print": True,
+    }
+
+    revision = mod.apply_panel_command(state, command)
+    state.running = True
+    snapshot = mod.build_panel_snapshot(state, pose_revision=revision)
+
+    assert revision == 3
+    np.testing.assert_allclose(state.desired_hand, hand)
+    np.testing.assert_allclose(state.desired_ball_position, [-0.02, 0.03, 0.61])
+    np.testing.assert_allclose(state.desired_ball_euler, [0.1, -0.2, 0.3])
+    assert state.pose_dirty
+    assert state.freeze_requested
+    assert state.print_requested
+    assert snapshot["pose_revision"] == 3
+    assert snapshot["running"] is True
+    assert snapshot["desired_hand"] == pytest.approx(hand)
+
+
+def test_apply_panel_command_rejects_invalid_pose_payload():
+    mod = _load_script()
+    state = mod.PoseEditorState(np.zeros(16), np.zeros(3), np.zeros(3))
+
+    with pytest.raises(ValueError, match="desired_hand"):
+        mod.apply_panel_command(
+            state,
+            {
+                "pose_revision": 1,
+                "desired_hand": [0.0] * 15,
+                "desired_ball_position": [0.0] * 3,
+                "desired_ball_euler": [0.0] * 3,
+            },
+        )
+
+
+def test_drain_queue_nowait_returns_all_available_messages():
+    mod = _load_script()
+    messages = queue.Queue()
+    messages.put_nowait({"value": 1})
+    messages.put_nowait({"value": 2})
+
+    drained = mod.drain_queue_nowait(messages)
+
+    assert drained == [{"value": 1}, {"value": 2}]
+    assert messages.empty()
 
 
 def test_normalize_pose_qpos_normalizes_only_ball_quaternion():

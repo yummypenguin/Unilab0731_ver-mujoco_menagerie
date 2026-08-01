@@ -53,7 +53,7 @@ env:
   ctrl_dt: 0.05
   max_episode_seconds: 20.0
   gen_grasp: false
-  grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy
   termination_drop_distance: 0.005
   noise_config:
     level: 0.0

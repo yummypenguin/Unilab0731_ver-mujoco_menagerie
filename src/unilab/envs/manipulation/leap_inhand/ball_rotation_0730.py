@@ -40,7 +40,7 @@ class LeapInhandBall0730RotationCfg(AllegroRotationPPOCfg):
     noise_config: NoiseConfig = field(default_factory=lambda: NoiseConfig(level=0.0))
     gen_grasp: bool = False
     grasp_cache_path: str = (
-        "robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy"
+        "robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy"
     )
     termination_drop_distance: float = 0.005
 
@@ -92,7 +92,7 @@ class LeapInhandBall0730RotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
                 "initial_ball_z must be initialized for every environment at reset"
             )
         threshold = initial_ball_z - float(self._cfg.termination_drop_distance)
-        return np.asarray(ball_pos[:, 2] < threshold, dtype=bool)
+        return np.asarray(ball_pos[:, 2] <= threshold, dtype=bool)
 
 
 __all__ = [

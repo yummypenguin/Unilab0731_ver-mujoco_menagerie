@@ -19,29 +19,29 @@ from unilab.envs.manipulation.leap_inhand.ball_grasp_allegro import (
 
 NOMINAL_QPOS = np.asarray(
     [
-        1.615086902652708,
-        0.05592890833161862,
-        0.287868545519634,
-        0.05789584343082383,
-        1.385416217870236,
-        0.019181783056566676,
-        -0.020953303695846966,
-        0.16266530072328944,
-        1.6940339396072988,
-        -0.042944887708793206,
-        0.08608101675297872,
-        0.04204787407706335,
-        1.6353669902981327,
-        0.5618974997807215,
-        -0.1469763717278566,
-        0.520989074906656,
-        -0.03218510819218568,
-        0.03676290825215784,
-        0.6626576150346267,
-        0.92598793755222,
-        -0.010678814768592742,
-        -0.06800823346343168,
-        0.37122389821253027,
+        1.5152045040427635,
+        0.11430147259750476,
+        0.2876406730815961,
+        0.19280835997306603,
+        1.4188457206477074,
+        0.025681830807677088,
+        -0.26717932336688344,
+        0.5369823550831088,
+        1.5294890485315962,
+        -0.01798386011739139,
+        0.27558019211759954,
+        0.19821762108233876,
+        1.9245445859343515,
+        0.04788276935232176,
+        -0.021885380331691334,
+        0.19524630120127295,
+        -0.032440416893199604,
+        0.041151239943936,
+        0.664301098275159,
+        0.9300906819767993,
+        0.07052047191574277,
+        -0.04548098804911446,
+        0.3576166467976395,
     ],
     dtype=np.float64,
 )
@@ -62,6 +62,8 @@ def _measure(env: LeapInhandBallGraspAllegroEnv) -> dict[str, object]:
     distances = np.linalg.norm(env.get_fingertip_pos()[0] - ball_pos[None, :], axis=-1)
     flags = _contact_flags(env)
     cond1, cond2, cond3 = env._compute_grasp_conditions()
+    initial_ball_z = float(np.asarray(env.state.info["initial_ball_z"])[0])
+    drop_threshold = initial_ball_z - float(env.cfg.termination_drop_distance)
     return {
         "fingertip_body_origin_distances": distances.tolist(),
         "max_fingertip_distance": float(np.max(distances)),
@@ -71,7 +73,9 @@ def _measure(env: LeapInhandBallGraspAllegroEnv) -> dict[str, object]:
         },
         "contact_count": int(np.count_nonzero(flags)),
         "ball_center_z": float(ball_pos[2]),
-        "height_threshold": float(env._reward_cfg.reset_z_threshold),
+        "initial_ball_z": initial_ball_z,
+        "drop_distance": float(env.cfg.termination_drop_distance),
+        "height_threshold": drop_threshold,
         "conditions": {
             "fingertip_distance": bool(cond1[0]),
             "contact_count": bool(cond2[0]),
@@ -82,14 +86,15 @@ def _measure(env: LeapInhandBallGraspAllegroEnv) -> dict[str, object]:
 
 def _build_cfg() -> LeapInhandBallGraspAllegroCfg:
     cfg = LeapInhandBallGraspAllegroCfg(
-        max_episode_seconds=3.0,
+        max_episode_seconds=2.5,
         reset_source="home",
         grasp_seed_qpos=NOMINAL_QPOS.tolist(),
         grasp_auto_save=False,
         grasp_collection_target=50_000,
         grasp_quality_check=True,
         grasp_min_contacts=2,
-        grasp_max_fingertip_distance=0.1061,
+        grasp_max_fingertip_distance=0.1,
+        termination_drop_distance=0.005,
         domain_rand=DomainRandConfig(
             randomize_base_mass=False,
             random_com=False,
@@ -110,7 +115,7 @@ def _build_cfg() -> LeapInhandBallGraspAllegroCfg:
             },
             angvel_clip_min=-0.5,
             angvel_clip_max=0.5,
-            reset_z_threshold=0.6576576150346267,
+            reset_z_threshold=0.0,
         ),
     )
     cfg.validate()
@@ -145,7 +150,7 @@ def run_preflight() -> dict[str, object]:
 
         initial = _measure(env)
         zero_action = np.zeros((1, env._NUM_HAND_DOF), dtype=env._np_dtype)
-        requested_steps = int(np.ceil(3.0 / cfg.ctrl_dt))
+        requested_steps = int(np.ceil(cfg.max_episode_seconds / cfg.ctrl_dt))
         ever_terminated = False
         executed_steps = 0
         for _ in range(requested_steps):
@@ -164,6 +169,7 @@ def run_preflight() -> dict[str, object]:
             "nominal_qpos": NOMINAL_QPOS.tolist(),
             "nominal_quaternion_norm": float(np.linalg.norm(NOMINAL_QPOS[19:23])),
             "initial": initial,
+            "requested_seconds": float(cfg.max_episode_seconds),
             "requested_steps": requested_steps,
             "executed_steps": executed_steps,
             "simulated_seconds": executed_steps * cfg.ctrl_dt,
@@ -186,8 +192,9 @@ def main() -> int:
     if report["timeout_success"]:
         return 0
     failed = [name for name, passed in report["final"]["conditions"].items() if not passed]
+    requested_seconds = float(report["requested_seconds"])
     print(
-        "Nominal seed failed the 3.0 s timeout-success contract; "
+        f"Nominal seed failed the {requested_seconds:g} s timeout-success contract; "
         f"failed conditions: {failed or ['terminated_before_timeout']}."
     )
     return 1

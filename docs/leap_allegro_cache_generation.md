@@ -26,15 +26,17 @@ the sampled `prev_ctrl` target remains fixed while MuJoCo settles the grasp.
 
 The three online conditions are evaluated from the first control step:
 
-1. All four fingertip body origins are strictly less than 0.1061 m from the
+1. All four fingertip body origins are strictly less than 0.1 m from the
    ball center.
 2. At least two of the four fingertip contact sensors are active.
-3. Ball-center world Z is strictly greater than 0.6576576150346267 m.
+3. Ball-center world Z is strictly greater than that reset proposal's initial
+   ball Z minus 0.005 m. With the current nominal pose this threshold is
+   `0.664301098275159 - 0.005 = 0.659301098275159 m`.
 
 Thumb contact is not required, and palm contact is not counted. There is no
 warmup. An environment terminates immediately when any condition fails. The
-episode timeout is 3.0 seconds, and success is exactly `truncated AND NOT
-terminated`.
+episode timeout is 2.5 seconds (50 control steps at `ctrl_dt = 0.05` seconds),
+and success is exactly `truncated AND NOT terminated`.
 
 The generator saves the episode's final settled hand qpos, ball XYZ, and ball
 WXYZ quaternion as a 23D float32 row. It does not save control targets,
@@ -48,16 +50,20 @@ drift, serialization round-trip, replay-validation, or frontier gates.
 Deduplication occurs only after physical timeout success and float32 conversion.
 The key contains 19 quantized values:
 
-- 16 hand joints on a 0.01 rad grid
-- ball XYZ on a 0.001 m grid
+- 16 hand joints on a 0.001 rad grid
+- ball XYZ on a 0.0005 m grid
 
 Ball quaternion is excluded because it changes the beach-ball texture
 orientation without changing spherical contact geometry. Duplicate rows do not
 enter the cache and do not count toward the 50,000-row target.
 
+The post-generation inspector applies the same nominal-height dataset gate.
+Rows with ball Z less than or equal to `0.659301098275159 m` are rejected. This
+is a static cache validation step; physics replay validation is not required.
+
 The output path is:
 
-`src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy`
+`src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy`
 
 ## Commands to run manually
 
@@ -73,13 +79,13 @@ uv run python scripts/check_leap_allegro_grasp_seed.py
 ### 2. Smoke generation to a separate path
 
 ```powershell
-uv run train --algo ppo --task leap_inhand_ball_grasp_allegro --sim mujoco training.no_play=true algo.num_envs=64 env.grasp_collection_target=100 env.grasp_cache_path=robots/leap_hand/caches/ball_grasp_allegro_dedup_smoke_100.npy
+uv run train --algo ppo --task leap_inhand_ball_grasp_allegro --sim mujoco training.no_play=true algo.num_envs=64 env.grasp_collection_target=100 env.grasp_cache_path=robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_smoke_100.npy
 ```
 
 ### 3. Inspect the smoke cache
 
 ```powershell
-uv run python scripts/inspect_leap_allegro_grasp_cache.py --path src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_dedup_smoke_100.npy --expected-rows 100
+uv run python scripts/inspect_leap_allegro_grasp_cache.py --path src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_smoke_100.npy --expected-rows 100
 ```
 
 ### 4. Generate the final 50k cache
@@ -91,5 +97,5 @@ uv run train --algo ppo --task leap_inhand_ball_grasp_allegro --sim mujoco train
 ### 5. Inspect the final cache
 
 ```powershell
-uv run python scripts/inspect_leap_allegro_grasp_cache.py --path src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy --expected-rows 50000
+uv run python scripts/inspect_leap_allegro_grasp_cache.py --path src/unilab/assets/robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy --expected-rows 50000
 ```

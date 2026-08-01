@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from hydra import compose, initialize_config_dir
 from hydra.core.global_hydra import GlobalHydra
+from omegaconf import OmegaConf
 
 from unilab.base import registry
 from unilab.base.np_env import NpEnvState
@@ -63,14 +64,17 @@ def test_0730_owner_is_independent_and_matches_allegro_reward_contract() -> None
     }
     assert cfg.reward.angvel_clip_min == pytest.approx(-0.5)
     assert cfg.reward.angvel_clip_max == pytest.approx(0.5)
-    assert cfg.env.grasp_cache_path.endswith("ball_grasp_allegro_dedup_50k.npy")
+    assert cfg.env.grasp_cache_path.endswith(
+        "ball_grasp_allegro_new_physics_0731_50k.npy"
+    )
     assert cfg.env.termination_drop_distance == pytest.approx(0.005)
     assert cfg.env.max_episode_seconds == pytest.approx(20.0)
-    assert cfg.env.scene.joint_dynamics.armature == pytest.approx(0.01)
+    assert OmegaConf.select(cfg, "env.scene.joint_dynamics") is None
     owner = (
         ROOT / "conf" / "ppo" / "task" / "leap_inhand_ball_0730" / "mujoco.yaml"
     ).read_text(encoding="utf-8")
     assert "defaults:" not in owner
+    assert "joint_dynamics:" not in owner
 
 
 def test_0730_task_is_not_coupled_to_existing_leap_rotation_task() -> None:
@@ -113,7 +117,9 @@ def test_0730_mujoco_reset_records_cache_relative_drop_anchor() -> None:
         assert initial_ball_z.shape == (2,)
         np.testing.assert_allclose(initial_ball_z, env.get_ball_pos()[:, 2], atol=1e-6)
         assert env.cfg.max_episode_steps == 400
-        assert env.cfg.grasp_cache_path.endswith("ball_grasp_allegro_dedup_50k.npy")
+        assert env.cfg.grasp_cache_path.endswith(
+            "ball_grasp_allegro_new_physics_0731_50k.npy"
+        )
     finally:
         env.close()
 
@@ -151,7 +157,7 @@ def test_relative_drop_termination_uses_per_environment_initial_height() -> None
     terminated = env._compute_terminated(ball_pos)
 
     # First fell more than 5 mm; second is exactly at 5 mm; third fell less.
-    np.testing.assert_array_equal(terminated, [True, False, False])
+    np.testing.assert_array_equal(terminated, [True, True, False])
 
 
 def test_relative_drop_anchor_changes_when_reset_info_changes() -> None:
@@ -159,7 +165,7 @@ def test_relative_drop_anchor_changes_when_reset_info_changes() -> None:
     ball_pos = np.asarray([[0.0, 0.0, 0.655]])
     assert env._compute_terminated(ball_pos)[0]
 
-    env.state.info["initial_ball_z"][:] = 0.660
+    env.state.info["initial_ball_z"][:] = 0.659
     assert not env._compute_terminated(ball_pos)[0]
 
 

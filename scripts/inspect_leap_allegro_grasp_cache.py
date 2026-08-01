@@ -25,6 +25,8 @@ def inspect_cache(
     expected_rows: int,
     joint_resolution: float,
     ball_position_resolution: float,
+    nominal_ball_z: float,
+    max_drop_distance: float,
 ) -> dict[str, object]:
     if expected_rows <= 0:
         raise ValueError("expected_rows must be positive")
@@ -32,6 +34,10 @@ def inspect_cache(
         raise ValueError("joint_resolution must be positive and finite")
     if not np.isfinite(ball_position_resolution) or ball_position_resolution <= 0.0:
         raise ValueError("ball_position_resolution must be positive and finite")
+    if not np.isfinite(nominal_ball_z):
+        raise ValueError("nominal_ball_z must be finite")
+    if not np.isfinite(max_drop_distance) or max_drop_distance <= 0.0:
+        raise ValueError("max_drop_distance must be positive and finite")
 
     report: dict[str, object] = {"path": str(path), "file_exists": path.is_file()}
     if not path.is_file():
@@ -54,6 +60,20 @@ def inspect_cache(
     report["row_count"] = row_count
     report["expected_rows"] = int(expected_rows)
     report["expected_row_count_pass"] = row_count == expected_rows
+    # Cache rows are published as float32. Quantize the threshold to the same
+    # representation so an exactly-5-mm drop cannot pass due only to comparing
+    # a rounded float32 row against an unrounded float64 threshold.
+    height_threshold = float(np.float32(nominal_ball_z - max_drop_distance))
+    ball_z = rows[:, 18].astype(np.float64)
+    dropped_mask = ball_z <= height_threshold
+    report["nominal_ball_z"] = float(nominal_ball_z)
+    report["max_drop_distance"] = float(max_drop_distance)
+    report["height_threshold"] = height_threshold
+    report["height_rejected_row_count"] = int(np.count_nonzero(dropped_mask))
+    report["height_valid"] = not bool(np.any(dropped_mask))
+    report["minimum_height_margin"] = (
+        float(np.min(ball_z - height_threshold)) if row_count else None
+    )
     if row_count == 0:
         report.update(
             {
@@ -108,8 +128,10 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--path", type=Path, required=True)
     parser.add_argument("--expected-rows", type=int, required=True)
-    parser.add_argument("--joint-resolution", type=float, default=0.01)
-    parser.add_argument("--ball-position-resolution", type=float, default=0.001)
+    parser.add_argument("--joint-resolution", type=float, default=0.001)
+    parser.add_argument("--ball-position-resolution", type=float, default=0.0005)
+    parser.add_argument("--nominal-ball-z", type=float, default=0.664301098275159)
+    parser.add_argument("--max-drop-distance", type=float, default=0.005)
     return parser.parse_args(argv)
 
 
@@ -120,6 +142,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         expected_rows=args.expected_rows,
         joint_resolution=args.joint_resolution,
         ball_position_resolution=args.ball_position_resolution,
+        nominal_ball_z=args.nominal_ball_z,
+        max_drop_distance=args.max_drop_distance,
     )
     print(json.dumps(report, indent=2, sort_keys=True))
     return int(
@@ -129,6 +153,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             and report.get("dtype_valid")
             and report.get("finite")
             and report.get("expected_row_count_pass")
+            and report.get("height_valid")
             and report.get("quantized_duplicate_count") == 0
         )
     )

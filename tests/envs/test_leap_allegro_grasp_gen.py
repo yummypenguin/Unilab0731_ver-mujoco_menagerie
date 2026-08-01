@@ -27,38 +27,39 @@ from unilab.envs.manipulation.leap_inhand.ball_grasp_allegro import (
 )
 from unilab.envs.manipulation.leap_inhand.ball_grasp_gen import (
     LeapInhandBallGraspEnv,
+    grasp_cache_row_key,
 )
 
 ROOT = Path(__file__).parent.parent.parent
 CONF_DIR = ROOT / "conf" / "ppo"
 SCENE = ROOT / "src" / "unilab" / "assets" / "robots" / "leap_hand" / "scene_ball.xml"
 STRICT_CACHE = "robots/leap_hand/caches/ball_grasp_official_50k.npy"
-NEW_CACHE = "robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy"
+NEW_CACHE = "robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy"
 SEED = np.asarray(
     [
-        1.615086902652708,
-        0.05592890833161862,
-        0.287868545519634,
-        0.05789584343082383,
-        1.385416217870236,
-        0.019181783056566676,
-        -0.020953303695846966,
-        0.16266530072328944,
-        1.6940339396072988,
-        -0.042944887708793206,
-        0.08608101675297872,
-        0.04204787407706335,
-        1.6353669902981327,
-        0.5618974997807215,
-        -0.1469763717278566,
-        0.520989074906656,
-        -0.03218510819218568,
-        0.03676290825215784,
-        0.6626576150346267,
-        0.92598793755222,
-        -0.010678814768592742,
-        -0.06800823346343168,
-        0.37122389821253027,
+        1.5152045040427635,
+        0.11430147259750476,
+        0.2876406730815961,
+        0.19280835997306603,
+        1.4188457206477074,
+        0.025681830807677088,
+        -0.26717932336688344,
+        0.5369823550831088,
+        1.5294890485315962,
+        -0.01798386011739139,
+        0.27558019211759954,
+        0.19821762108233876,
+        1.9245445859343515,
+        0.04788276935232176,
+        -0.021885380331691334,
+        0.19524630120127295,
+        -0.032440416893199604,
+        0.041151239943936,
+        0.664301098275159,
+        0.9300906819767993,
+        0.07052047191574277,
+        -0.04548098804911446,
+        0.3576166467976395,
     ],
     dtype=np.float64,
 )
@@ -90,8 +91,8 @@ def _dedup_env(*, enabled: bool = True):
     env = object.__new__(LeapInhandBallGraspAllegroEnv)
     env._cfg = SimpleNamespace(
         grasp_dedup_enabled=enabled,
-        grasp_dedup_joint_resolution=0.01,
-        grasp_dedup_ball_position_resolution=0.001,
+        grasp_dedup_joint_resolution=0.001,
+        grasp_dedup_ball_position_resolution=0.0005,
     )
     env._saved_grasp_keys = set()
     env._saved_grasping_states = []
@@ -157,10 +158,14 @@ def test_registration_and_hydra_contract() -> None:
     assert np.isfinite(seed).all()
     np.testing.assert_array_equal(seed, SEED)
     assert np.linalg.norm(seed[19:23]) == pytest.approx(1.0)
-    assert cfg.env.grasp_max_fingertip_distance == pytest.approx(0.1061)
-    assert cfg.reward.reset_z_threshold == pytest.approx(0.6576576150346267)
-    assert cfg.env.max_episode_seconds == pytest.approx(3.0)
+    assert cfg.env.grasp_max_fingertip_distance == pytest.approx(0.1)
+    assert cfg.reward.reset_z_threshold == pytest.approx(0.0)
+    assert cfg.env.max_episode_seconds == pytest.approx(2.5)
+    assert cfg.env.grasp_dedup_joint_resolution == pytest.approx(0.001)
+    assert cfg.env.grasp_dedup_ball_position_resolution == pytest.approx(0.0005)
+    assert int(round(cfg.env.max_episode_seconds / cfg.env.ctrl_dt)) == 50
     assert cfg.env.grasp_min_contacts == 2
+    assert cfg.env.termination_drop_distance == pytest.approx(0.005)
     assert cfg.env.domain_rand.joint_noise == pytest.approx(0.25)
     assert cfg.env.grasp_cache_path == NEW_CACHE
     assert cfg.env.grasp_cache_path != STRICT_CACHE
@@ -173,6 +178,7 @@ def test_registration_and_hydra_contract() -> None:
         ({"grasp_seed_qpos": [0.0] * 23}, "non-zero"),
         ({"grasp_max_fingertip_distance": 0.0}, "positive"),
         ({"grasp_collection_target": 0}, "positive"),
+        ({"termination_drop_distance": 0.0}, "positive"),
         ({"grasp_min_contacts": 5}, "within"),
         ({"grasp_dedup_joint_resolution": 0.0}, "positive"),
         ({"grasp_dedup_ball_position_resolution": 0.0}, "positive"),
@@ -246,6 +252,8 @@ def test_inherited_info_updates_set_prev_ctrl_from_sampled_qpos() -> None:
     np.testing.assert_allclose(updates["prev_dof_pos"], hand, rtol=1e-6)
     np.testing.assert_allclose(updates["prev_ball_pos"], ball_pos, rtol=1e-6)
     np.testing.assert_allclose(updates["prev_ball_quat"], ball_quat, rtol=1e-6)
+    np.testing.assert_allclose(updates["initial_ball_z"], ball_pos[:, 2], rtol=1e-6)
+    assert not np.shares_memory(updates["initial_ball_z"], ball_pos)
     np.testing.assert_array_equal(updates["current_actions"], 0.0)
     np.testing.assert_array_equal(updates["last_actions"], 0.0)
 
@@ -276,13 +284,23 @@ def test_external_actions_are_ignored_and_sampled_target_is_held() -> None:
 
 def test_three_conditions_use_strict_boundaries() -> None:
     env = object.__new__(LeapInhandBallGraspAllegroEnv)
+    env._num_envs = 1
     env._cfg = SimpleNamespace(
-        grasp_max_fingertip_distance=0.1061,
+        grasp_max_fingertip_distance=0.1,
         grasp_min_contacts=2,
+        termination_drop_distance=0.005,
     )
-    env._reward_cfg = SimpleNamespace(reset_z_threshold=0.6576576150346267)
-    ball = np.asarray([[0.0, 0.0, 0.6576576150346267]])
-    tips = np.asarray([[[0.1061, 0.0, ball[0, 2]]] * 4])
+    initial_ball_z = np.float32(SEED[18])
+    env._state = NpEnvState(
+        obs={},
+        reward=np.zeros(1),
+        terminated=np.zeros(1, dtype=bool),
+        truncated=np.zeros(1, dtype=bool),
+        info={"initial_ball_z": np.asarray([initial_ball_z])},
+    )
+    threshold = np.float32(initial_ball_z - np.float32(0.005))
+    ball = np.asarray([[0.0, 0.0, threshold]], dtype=np.float32)
+    tips = np.asarray([[[0.1, 0.0, ball[0, 2]]] * 4])
     env.get_ball_pos = lambda: ball
     env.get_fingertip_pos = lambda: tips
     env._contact_count = lambda: np.asarray([1], dtype=np.int32)
@@ -294,8 +312,8 @@ def test_three_conditions_use_strict_boundaries() -> None:
     assert not cond2[0]
     assert not cond3[0]
 
-    tips[:, :, 0] = 0.10609
-    ball[:, 2] += 1e-9
+    tips[:, :, 0] = 0.09999
+    ball[:, 2] = np.nextafter(ball[:, 2], np.float32(np.inf))
     env._contact_count = lambda: np.asarray([2], dtype=np.int32)
     cond1, cond2, cond3 = env._compute_grasp_conditions()
     assert cond1[0] and cond2[0] and cond3[0]
@@ -389,21 +407,21 @@ def test_dedup_rejects_same_batch_cross_batch_and_quaternion_only_rows() -> None
 def test_dedup_quantization_cells_and_quaternion_exclusion() -> None:
     base = _row()
     same_joint_cell = base.copy()
-    same_joint_cell[0] = 0.004
+    same_joint_cell[0] = 0.0004
     other_joint_cell = base.copy()
-    other_joint_cell[0] = 0.006
+    other_joint_cell[0] = 0.0006
     same_ball_cell = base.copy()
-    same_ball_cell[16] = 0.0004
+    same_ball_cell[16] = 0.0002
     other_ball_cell = base.copy()
-    other_ball_cell[16] = 0.0006
+    other_ball_cell[16] = 0.0003
     other_quaternion = base.copy()
     other_quaternion[19:23] = [0.0, 0.0, 1.0, 0.0]
 
     def key(row):
         return quantized_grasp_key(
             row,
-            joint_resolution=0.01,
-            ball_position_resolution=0.001,
+            joint_resolution=0.001,
+            ball_position_resolution=0.0005,
         )
 
     assert key(base) == key(same_joint_cell)
@@ -412,6 +430,22 @@ def test_dedup_quantization_cells_and_quaternion_exclusion() -> None:
     assert key(base) != key(other_ball_cell)
     assert key(base) == key(other_quaternion)
     assert len(key(base)) == 19
+
+
+def test_allegro_dedup_grid_matches_strict_grid() -> None:
+    row = _row()
+    row[:16] = np.linspace(-0.01, 0.01, 16, dtype=np.float32)
+    row[16:19] = [0.0012, -0.0007, 0.0021]
+    row[19:23] = [1.0, 0.0, 0.0, 0.0]
+
+    allegro_key = quantized_grasp_key(
+        row,
+        joint_resolution=0.001,
+        ball_position_resolution=0.0005,
+    )
+    strict_key = grasp_cache_row_key(row)
+
+    assert allegro_key == strict_key
 
 
 def test_duplicate_does_not_increase_saved_count() -> None:
@@ -531,8 +565,8 @@ def test_direct_save_uses_float32_unique_rows_and_temporary_path(tmp_path) -> No
             {
                 quantized_grasp_key(
                     row,
-                    joint_resolution=0.01,
-                    ball_position_resolution=0.001,
+                    joint_resolution=0.001,
+                    ball_position_resolution=0.0005,
                 )
                 for row in saved
             }
@@ -552,8 +586,10 @@ def test_cache_inspector_reports_quantized_and_quaternion_only_duplicates(tmp_pa
     report = inspector.inspect_cache(
         path,
         expected_rows=3,
-        joint_resolution=0.01,
-        ball_position_resolution=0.001,
+        joint_resolution=0.001,
+        ball_position_resolution=0.0005,
+        nominal_ball_z=SEED[18],
+        max_drop_distance=0.005,
     )
 
     assert report["file_exists"]
@@ -568,6 +604,30 @@ def test_cache_inspector_reports_quantized_and_quaternion_only_duplicates(tmp_pa
     assert report["expected_row_count_pass"]
 
 
+def test_cache_inspector_rejects_rows_dropped_5_mm_from_nominal(tmp_path) -> None:
+    inspector = _load_inspector_module()
+    rows = np.stack([_row(), _row()])
+    threshold = float(np.float32(SEED[18] - 0.005))
+    rows[0, 18] = threshold + 1e-6
+    rows[1, 0] = 0.01
+    rows[1, 18] = threshold
+    path = tmp_path / "height_gate.npy"
+    np.save(path, rows)
+
+    report = inspector.inspect_cache(
+        path,
+        expected_rows=2,
+        joint_resolution=0.001,
+        ball_position_resolution=0.0005,
+        nominal_ball_z=SEED[18],
+        max_drop_distance=0.005,
+    )
+
+    assert report["height_threshold"] == pytest.approx(threshold)
+    assert report["height_rejected_row_count"] == 1
+    assert not report["height_valid"]
+
+
 def test_leap_ball_collision_radius_is_33_5_mm() -> None:
     mujoco = pytest.importorskip("mujoco")
     model = mujoco.MjModel.from_xml_path(str(SCENE))
@@ -576,9 +636,9 @@ def test_leap_ball_collision_radius_is_33_5_mm() -> None:
     assert model.geom_size[geom_id, 0] == pytest.approx(0.0335)
 
 
-def test_reset_provider_inherits_allegro_info_initialization() -> None:
+def test_reset_provider_extends_allegro_info_with_initial_ball_height() -> None:
     assert issubclass(
         LeapAllegroGraspResetProvider,
         AllegroRotationDomainRandomizationProvider,
     )
-    assert "_build_info_updates" not in LeapAllegroGraspResetProvider.__dict__
+    assert "_build_info_updates" in LeapAllegroGraspResetProvider.__dict__

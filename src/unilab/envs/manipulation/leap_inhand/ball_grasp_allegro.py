@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 
 from unilab.base import registry
+from unilab.dtype_config import get_global_dtype
 from unilab.dr import DomainRandomizationProvider
 from unilab.envs.manipulation.allegro_inhand.grasp_gen import AllegroRotationGrasp
 from unilab.envs.manipulation.allegro_inhand.rotation import (
@@ -46,16 +47,19 @@ class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
     """Configuration for Allegro-lifecycle LEAP grasp collection."""
 
     gen_grasp: bool = True
-    grasp_cache_path: str = "robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy"
+    grasp_cache_path: str = (
+        "robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy"
+    )
     grasp_collection_target: int = 50_000
     grasp_auto_save: bool = True
     grasp_quality_check: bool = True
     grasp_min_contacts: int = 2
     grasp_seed_qpos: list[float] = field(default_factory=list)
-    grasp_max_fingertip_distance: float = 0.1061
+    grasp_max_fingertip_distance: float = 0.1
+    termination_drop_distance: float = 0.005
     grasp_dedup_enabled: bool = True
-    grasp_dedup_joint_resolution: float = 0.01
-    grasp_dedup_ball_position_resolution: float = 0.001
+    grasp_dedup_joint_resolution: float = 0.001
+    grasp_dedup_ball_position_resolution: float = 0.0005
 
     def validate(self) -> None:
         super().validate()
@@ -73,6 +77,11 @@ class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
             raise ValueError("grasp_max_fingertip_distance must be positive and finite")
         if self.grasp_collection_target <= 0:
             raise ValueError("grasp_collection_target must be positive")
+        if (
+            not np.isfinite(self.termination_drop_distance)
+            or self.termination_drop_distance <= 0.0
+        ):
+            raise ValueError("termination_drop_distance must be positive and finite")
         if not 0 <= self.grasp_min_contacts <= 4:
             raise ValueError("grasp_min_contacts must be within [0, 4]")
         if (
@@ -111,6 +120,20 @@ class LeapAllegroGraspResetProvider(AllegroRotationDomainRandomizationProvider):
         qvel = np.zeros((num_reset, env.nv), dtype=np.float64)
         return hand_qpos, ball_pos, ball_quat, qvel
 
+    def _build_info_updates(
+        self,
+        env: Any,
+        hand_qpos: np.ndarray,
+        ball_pos: np.ndarray,
+        ball_quat: np.ndarray,
+    ) -> dict[str, np.ndarray]:
+        updates = super()._build_info_updates(env, hand_qpos, ball_pos, ball_quat)
+        updates["initial_ball_z"] = np.asarray(
+            ball_pos[:, 2],
+            dtype=get_global_dtype(),
+        ).copy()
+        return updates
+
 
 @registry.env("LeapInhandBallGraspAllegro", sim_backend="mujoco")
 @registry.env("LeapInhandBallGraspAllegro", sim_backend="motrix")
@@ -144,13 +167,25 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
         ball_pos = self.get_ball_pos()
         fingertip_pos = self.get_fingertip_pos()
 
+        if self.state is None:
+            raise RuntimeError("environment state is unavailable during grasp validation")
+        initial_ball_z = np.asarray(
+            self.state.info.get("initial_ball_z"),
+            dtype=get_global_dtype(),
+        )
+        if initial_ball_z.shape != (self._num_envs,):
+            raise RuntimeError(
+                "initial_ball_z must be initialized for every environment at reset"
+            )
+
         cond1 = np.all(
             np.linalg.norm(fingertip_pos - ball_pos[:, None, :], axis=-1)
             < float(self._cfg.grasp_max_fingertip_distance),
             axis=1,
         )
         cond2 = self._contact_count() >= int(self._cfg.grasp_min_contacts)
-        cond3 = ball_pos[:, 2] > float(self._reward_cfg.reset_z_threshold)
+        drop_threshold = initial_ball_z - float(self._cfg.termination_drop_distance)
+        cond3 = ball_pos[:, 2] > drop_threshold
         return (
             np.asarray(cond1, dtype=bool),
             np.asarray(cond2, dtype=bool),

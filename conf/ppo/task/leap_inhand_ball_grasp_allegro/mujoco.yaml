@@ -21,48 +21,51 @@ reward:
     torque: 0.0
     work: 0.0
     drop: 0.0
-  reset_z_threshold: 0.6576576150346267
+  # Compatibility field required by RewardConfigPPO. Grasp survival uses each
+  # reset proposal's initial_ball_z minus env.termination_drop_distance.
+  reset_z_threshold: 0.0
 
 env:
   gen_grasp: true
   reset_source: home
-  max_episode_seconds: 3.0
+  max_episode_seconds: 2.5
 
-  grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_dedup_50k.npy
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy
   grasp_collection_target: 50000
   grasp_auto_save: true
   grasp_quality_check: true
   grasp_min_contacts: 2
-  grasp_max_fingertip_distance: 0.1061
+  grasp_max_fingertip_distance: 0.1
+  termination_drop_distance: 0.005
 
   grasp_dedup_enabled: true
-  grasp_dedup_joint_resolution: 0.01
-  grasp_dedup_ball_position_resolution: 0.001
+  grasp_dedup_joint_resolution: 0.001
+  grasp_dedup_ball_position_resolution: 0.0005
 
   grasp_seed_qpos:
-    - 1.615086902652708
-    - 0.05592890833161862
-    - 0.287868545519634
-    - 0.05789584343082383
-    - 1.385416217870236
-    - 0.019181783056566676
-    - -0.020953303695846966
-    - 0.16266530072328944
-    - 1.6940339396072988
-    - -0.042944887708793206
-    - 0.08608101675297872
-    - 0.04204787407706335
-    - 1.6353669902981327
-    - 0.5618974997807215
-    - -0.1469763717278566
-    - 0.520989074906656
-    - -0.03218510819218568
-    - 0.03676290825215784
-    - 0.6626576150346267
-    - 0.92598793755222
-    - -0.010678814768592742
-    - -0.06800823346343168
-    - 0.37122389821253027
+    - 1.5152045040427635
+    - 0.11430147259750476
+    - 0.2876406730815961
+    - 0.19280835997306603
+    - 1.4188457206477074
+    - 0.025681830807677088
+    - -0.26717932336688344
+    - 0.5369823550831088
+    - 1.5294890485315962
+    - -0.01798386011739139
+    - 0.27558019211759954
+    - 0.19821762108233876
+    - 1.9245445859343515
+    - 0.04788276935232176
+    - -0.021885380331691334
+    - 0.19524630120127295
+    - -0.032440416893199604
+    - 0.041151239943936
+    - 0.664301098275159
+    - 0.9300906819767993
+    - 0.07052047191574277
+    - -0.04548098804911446
+    - 0.3576166467976395
 
   noise_config:
     level: 0.0

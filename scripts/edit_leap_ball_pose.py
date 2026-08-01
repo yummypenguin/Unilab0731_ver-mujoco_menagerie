@@ -1,8 +1,8 @@
 """Interactively edit a LEAP-hand ball pose with MuJoCo and Tkinter controls.
 
-This is a cold-path visualization tool. It updates ``MjData`` only from the
-main thread and never writes task assets, configuration, caches, or training
-state.
+This is a cold-path visualization tool. The main process owns MuJoCo and its
+viewer; a spawned child process owns Tk and sends only serializable commands.
+It never writes task assets, configuration, caches, or training state.
 """
 
 from __future__ import annotations
@@ -26,6 +26,9 @@ POSE_QPOS_SIZE = 23
 BALL_POS_OFFSET = 16
 JOINT_STEPS = (0.001, 0.005, 0.01, 0.05)
 BALL_STEPS = (0.0005, 0.001, 0.002, 0.005)
+VIEWER_FRAME_HZ = 60.0
+PANEL_SYNC_HZ = 15.0
+PANEL_POLL_MS = 16
 
 
 class HandJointMetadata(NamedTuple):
@@ -342,6 +345,93 @@ class PoseEditorState:
         self.copy_requested = False
 
 
+def collect_panel_command(
+    state: PoseEditorState,
+    pose_revision: int,
+) -> tuple[dict[str, object] | None, int]:
+    """Coalesce pending Tk callbacks into one serializable IPC command."""
+    command: dict[str, object] = {}
+    if state.pose_dirty:
+        pose_revision += 1
+        command.update(
+            {
+                "pose_revision": pose_revision,
+                "desired_hand": state.desired_hand.tolist(),
+                "desired_ball_position": state.desired_ball_position.tolist(),
+                "desired_ball_euler": state.desired_ball_euler.tolist(),
+            }
+        )
+        state.pose_dirty = False
+    for attribute, key in (
+        ("toggle_settling_requested", "toggle_settling"),
+        ("freeze_requested", "freeze"),
+        ("reset_requested", "reset"),
+        ("print_requested", "print"),
+        ("copy_requested", "copy"),
+    ):
+        if getattr(state, attribute):
+            command[key] = True
+            setattr(state, attribute, False)
+    return (command or None), pose_revision
+
+
+def apply_panel_command(state: PoseEditorState, command: dict[str, object]) -> int | None:
+    """Apply one panel-process command to main-process editor state."""
+    applied_revision: int | None = None
+    if "pose_revision" in command:
+        hand = np.asarray(command["desired_hand"], dtype=np.float64)
+        ball_position = np.asarray(command["desired_ball_position"], dtype=np.float64)
+        ball_euler = np.asarray(command["desired_ball_euler"], dtype=np.float64)
+        if hand.shape != (HAND_DOF,) or not np.isfinite(hand).all():
+            raise ValueError("Panel desired_hand must contain 16 finite values")
+        if ball_position.shape != (3,) or not np.isfinite(ball_position).all():
+            raise ValueError("Panel desired_ball_position must contain 3 finite values")
+        if ball_euler.shape != (3,) or not np.isfinite(ball_euler).all():
+            raise ValueError("Panel desired_ball_euler must contain 3 finite values")
+        applied_revision = int(command["pose_revision"])
+        if applied_revision <= 0:
+            raise ValueError("Panel pose_revision must be positive")
+        state.desired_hand[:] = hand
+        state.desired_ball_position[:] = ball_position
+        state.desired_ball_euler[:] = ball_euler
+        state.pose_dirty = True
+    state.toggle_settling_requested |= bool(command.get("toggle_settling", False))
+    state.freeze_requested |= bool(command.get("freeze", False))
+    state.reset_requested |= bool(command.get("reset", False))
+    state.print_requested |= bool(command.get("print", False))
+    state.copy_requested |= bool(command.get("copy", False))
+    return applied_revision
+
+
+def build_panel_snapshot(
+    state: PoseEditorState,
+    *,
+    pose_revision: int,
+    copy_text: str | None = None,
+) -> dict[str, object]:
+    """Build a serializable main-to-panel state snapshot."""
+    snapshot: dict[str, object] = {
+        "pose_revision": int(pose_revision),
+        "desired_hand": state.desired_hand.tolist(),
+        "desired_ball_position": state.desired_ball_position.tolist(),
+        "desired_ball_euler": state.desired_ball_euler.tolist(),
+        "running": bool(state.running),
+    }
+    if copy_text is not None:
+        snapshot["copy_text"] = copy_text
+    return snapshot
+
+
+def drain_queue_nowait(ipc_queue) -> list[dict[str, object]]:
+    """Drain currently available queue messages without relying on Queue.empty()."""
+    messages: list[dict[str, object]] = []
+    while True:
+        try:
+            messages.append(ipc_queue.get_nowait())
+        except queue.Empty:
+            return messages
+
+
 def sync_editor_state_from_data(
     state: PoseEditorState,
     data,
@@ -404,9 +494,10 @@ class PoseControlPanel:
         self.euler_variables: list[tk.DoubleVar] = []
         self.euler_value_labels: list[tk.StringVar] = []
         self.quaternion_labels = [tk.StringVar() for _ in range(4)]
+        self._displayed_running: bool | None = None
 
         root.title("LEAP Pose Controls")
-        root.geometry("780x820+20+40")
+        root.geometry("620x700+20+40")
         root.protocol("WM_DELETE_WINDOW", self._request_close)
 
         controls = ttk.Frame(root, padding=8)
@@ -430,7 +521,7 @@ class PoseControlPanel:
 
         joint_group = ttk.LabelFrame(root, text="Hand Joints", padding=6)
         joint_group.pack(fill=tk.BOTH, expand=True, padx=8, pady=(0, 6))
-        canvas = tk.Canvas(joint_group, height=390, highlightthickness=0)
+        canvas = tk.Canvas(joint_group, height=310, highlightthickness=0)
         scrollbar = ttk.Scrollbar(joint_group, orient=tk.VERTICAL, command=canvas.yview)
         joint_frame = ttk.Frame(canvas)
         joint_frame.bind(
@@ -453,7 +544,7 @@ class PoseControlPanel:
                 orient=tk.HORIZONTAL,
                 resolution=0.1,
                 showvalue=False,
-                length=470,
+                length=340,
                 variable=variable,
                 command=lambda value, i=index: self._on_joint_changed(i, value),
             )
@@ -480,7 +571,7 @@ class PoseControlPanel:
                 orient=tk.HORIZONTAL,
                 resolution=0.0001,
                 showvalue=False,
-                length=480,
+                length=350,
                 variable=variable,
                 command=lambda value, i=axis: self._on_position_changed(i, value),
             )
@@ -508,7 +599,7 @@ class PoseControlPanel:
                 orient=tk.HORIZONTAL,
                 resolution=0.1,
                 showvalue=False,
-                length=480,
+                length=350,
                 variable=variable,
                 command=lambda value, i=axis: self._on_orientation_changed(i, value),
             )
@@ -586,7 +677,21 @@ class PoseControlPanel:
         for label, name, value in zip(
             self.quaternion_labels, ("w", "x", "y", "z"), quat, strict=True
         ):
-            label.set(f"{name} = {value:+.6f}")
+            text = f"{name} = {value:+.6f}"
+            if label.get() != text:
+                label.set(text)
+
+    @staticmethod
+    def _set_numeric_variable(variable, value: float, *, tolerance: float) -> None:
+        """Avoid firing a Tk scale callback when its displayed value is unchanged."""
+        if abs(float(variable.get()) - value) > tolerance:
+            variable.set(value)
+
+    @staticmethod
+    def _set_text_variable(variable, text: str) -> None:
+        """Avoid redundant Tcl/Tk writes during periodic simulation refreshes."""
+        if variable.get() != text:
+            variable.set(text)
 
     def sync_from_state(self) -> None:
         """Update widgets without feeding values back into desired pose."""
@@ -594,21 +699,37 @@ class PoseControlPanel:
         try:
             for index, radians in enumerate(self.state.desired_hand):
                 degrees = float(np.rad2deg(radians))
-                self.joint_variables[index].set(degrees)
-                self.joint_value_labels[index].set(f"{degrees:.1f} deg")
+                self._set_numeric_variable(
+                    self.joint_variables[index], degrees, tolerance=0.05
+                )
+                self._set_text_variable(
+                    self.joint_value_labels[index], f"{degrees:.1f} deg"
+                )
             for axis, meters in enumerate(self.state.desired_ball_position):
                 value = float(meters)
-                self.position_variables[axis].set(value)
-                self.position_value_labels[axis].set(f"{value:.4f} m  ({value * 1_000.0:.1f} mm)")
+                self._set_numeric_variable(
+                    self.position_variables[axis], value, tolerance=0.00005
+                )
+                self._set_text_variable(
+                    self.position_value_labels[axis],
+                    f"{value:.4f} m  ({value * 1_000.0:.1f} mm)",
+                )
             for axis, radians in enumerate(self.state.desired_ball_euler):
                 degrees = float(np.rad2deg(radians))
-                self.euler_variables[axis].set(degrees)
-                self.euler_value_labels[axis].set(f"{degrees:.1f} deg")
+                self._set_numeric_variable(
+                    self.euler_variables[axis], degrees, tolerance=0.05
+                )
+                self._set_text_variable(
+                    self.euler_value_labels[axis], f"{degrees:.1f} deg"
+                )
             self._update_quaternion_labels()
         finally:
             self.state.updating_ui = False
 
     def set_running(self, running: bool) -> None:
+        if self._displayed_running is running:
+            return
+        self._displayed_running = running
         widget_state = self.tk.DISABLED if running else self.tk.NORMAL
         for scale in self.pose_scales:
             scale.configure(state=widget_state)
@@ -619,6 +740,82 @@ class PoseControlPanel:
         self.root.clipboard_clear()
         self.root.clipboard_append(text)
         self.root.update_idletasks()
+
+
+def run_pose_control_panel(
+    initial_hand: Sequence[float],
+    initial_ball_position: Sequence[float],
+    initial_ball_euler: Sequence[float],
+    joint_specs: Sequence[Sequence[object]],
+    ball_position_span: float,
+    command_queue,
+    snapshot_queue,
+    close_event,
+) -> None:
+    """Run Tk in a spawned process that never imports MuJoCo or OpenGL."""
+    import tkinter as tk
+
+    joints = [HandJointMetadata(*spec) for spec in joint_specs]
+    state = PoseEditorState(initial_hand, initial_ball_position, initial_ball_euler)
+    root = tk.Tk()
+    panel = PoseControlPanel(
+        root,
+        state,
+        joints,
+        np.asarray(initial_ball_position, dtype=np.float64),
+        ball_position_span,
+    )
+    pose_revision = 0
+    pending_pose_revision: int | None = None
+
+    def poll_ipc() -> None:
+        nonlocal pose_revision, pending_pose_revision
+        if close_event.is_set():
+            root.quit()
+            return
+        if state.close_requested:
+            close_event.set()
+            root.quit()
+            return
+
+        command, pose_revision = collect_panel_command(state, pose_revision)
+        if command is not None:
+            command_queue.put_nowait(command)
+            if "pose_revision" in command:
+                pending_pose_revision = int(command["pose_revision"])
+
+        sync_panel = False
+        for snapshot in drain_queue_nowait(snapshot_queue):
+            if "copy_text" in snapshot:
+                panel.copy_state(str(snapshot["copy_text"]))
+            state.running = bool(snapshot["running"])
+            acknowledged_revision = int(snapshot["pose_revision"])
+            if (
+                pending_pose_revision is None
+                or acknowledged_revision >= pending_pose_revision
+            ):
+                state.desired_hand[:] = snapshot["desired_hand"]
+                state.desired_ball_position[:] = snapshot["desired_ball_position"]
+                state.desired_ball_euler[:] = snapshot["desired_ball_euler"]
+                pending_pose_revision = None
+                sync_panel = True
+        if sync_panel:
+            panel.sync_from_state()
+        panel.set_running(state.running)
+        root.after(PANEL_POLL_MS, poll_ipc)
+
+    root.after(0, poll_ipc)
+    try:
+        root.mainloop()
+    finally:
+        close_event.set()
+        try:
+            root.destroy()
+        except tk.TclError:
+            pass
+        command_queue.cancel_join_thread()
+        command_queue.close()
+        snapshot_queue.close()
 
 
 def _overlay_text(
@@ -670,7 +867,7 @@ def _print_state(prefix: str, payload: dict[str, object]) -> str:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
 
-    import tkinter as tk
+    import multiprocessing as mp
 
     import mujoco
     import mujoco.viewer
@@ -705,13 +902,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         data.qpos[ball_qpos_address : ball_qpos_address + 3],
         quat_wxyz_to_euler_zyx(data.qpos[ball_qpos_address + 3 : ball_qpos_address + 7]),
     )
-    root = tk.Tk()
-    panel = PoseControlPanel(
-        root,
-        state,
-        joints,
-        initial_qpos[ball_qpos_address : ball_qpos_address + 3],
-        float(args.ball_position_span),
+    process_context = mp.get_context("spawn")
+    panel_commands = process_context.Queue()
+    panel_snapshots = process_context.Queue()
+    close_event = process_context.Event()
+    panel_process = process_context.Process(
+        target=run_pose_control_panel,
+        args=(
+            state.desired_hand.tolist(),
+            state.desired_ball_position.tolist(),
+            state.desired_ball_euler.tolist(),
+            [tuple(joint) for joint in joints],
+            float(args.ball_position_span),
+            panel_commands,
+            panel_snapshots,
+            close_event,
+        ),
+        name="unilab-leap-pose-controls",
+    )
+    panel_process.start()
+    applied_pose_revision = 0
+    panel_snapshots.put_nowait(
+        build_panel_snapshot(state, pose_revision=applied_pose_revision)
     )
 
     key_events: queue.SimpleQueue[int] = queue.SimpleQueue()
@@ -722,7 +934,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     def on_key(keycode: int) -> None:
         key_events.put(int(keycode))
 
-    print("LEAP ball pose editor: slider and keyboard edit modes are active.")
+    print("LEAP ball pose editor: Tk controls are isolated in a child process.")
     print("Press P to print state; closing either window prints final state.")
 
     try:
@@ -739,21 +951,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             viewer.cam.azimuth = float(args.camera_azimuth)
             viewer.cam.elevation = float(args.camera_elevation)
 
-            target_frame_seconds = 1.0 / 60.0
+            target_frame_seconds = 1.0 / VIEWER_FRAME_HZ
+            panel_sync_seconds = 1.0 / PANEL_SYNC_HZ
+            next_panel_sync = 0.0
             simulation_steps_per_frame = max(1, round(target_frame_seconds / model.opt.timestep))
 
-            while viewer.is_running() and not state.close_requested:
+            while (
+                viewer.is_running()
+                and panel_process.is_alive()
+                and not close_event.is_set()
+            ):
                 frame_start = time.perf_counter()
-                try:
-                    root.update_idletasks()
-                    root.update()
-                except tk.TclError:
-                    state.close_requested = True
-                    break
+                for command in drain_queue_nowait(panel_commands):
+                    revision = apply_panel_command(state, command)
+                    if revision is not None:
+                        applied_pose_revision = revision
 
                 data_changed = False
-                sync_panel = False
+                publish_panel = False
                 copy_text: str | None = None
+                overlay_text: tuple[int, int, str, str] | None = None
                 with viewer.lock():
                     if state.toggle_settling_requested:
                         state.toggle_settling_requested = False
@@ -762,7 +979,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                             data.qvel[:] = 0.0
                             mujoco.mj_forward(model, data)
                             sync_editor_state_from_data(state, data, joints, ball_qpos_address)
-                            sync_panel = True
+                            publish_panel = True
                         data_changed = True
 
                     if state.freeze_requested:
@@ -772,7 +989,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         mujoco.mj_forward(model, data)
                         sync_editor_state_from_data(state, data, joints, ball_qpos_address)
                         data_changed = True
-                        sync_panel = True
+                        publish_panel = True
 
                     if state.reset_requested:
                         state.reset_requested = False
@@ -787,7 +1004,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         mujoco.mj_forward(model, data)
                         sync_editor_state_from_data(state, data, joints, ball_qpos_address)
                         data_changed = True
-                        sync_panel = True
+                        publish_panel = True
 
                     while not key_events.empty():
                         keycode = key_events.get()
@@ -809,7 +1026,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                             state.running = False
                             data.qvel[:] = 0.0
                             mujoco.mj_forward(model, data)
-                            sync_panel = True
+                            publish_panel = True
                         elif keycode == ord(","):
                             joint_step_index = max(0, joint_step_index - 1)
                         elif keycode == ord("."):
@@ -849,37 +1066,37 @@ def main(argv: Sequence[str] | None = None) -> int:
                             state.running = False
                             data.qvel[:] = 0.0
                             mujoco.mj_forward(model, data)
-                            sync_panel = True
+                            publish_panel = True
                         elif keycode == ord(" "):
                             state.running = not state.running
                             if not state.running:
                                 data.qvel[:] = 0.0
                                 mujoco.mj_forward(model, data)
-                                sync_panel = True
+                                publish_panel = True
                         elif keycode == ord("R"):
                             state.running = False
                             data.qvel[:] = 0.0
                             mujoco.mj_forward(model, data)
-                            sync_panel = True
+                            publish_panel = True
                         elif keycode == ord("P"):
                             _print_state("UNILAB_POSE_STATE=", state_payload(data))
                         data_changed = True
 
-                    if sync_panel:
+                    if publish_panel:
                         sync_editor_state_from_data(state, data, joints, ball_qpos_address)
 
                     if state.pose_dirty:
                         apply_desired_pose(data, joints, ball_qpos_address, state)
                         mujoco.mj_forward(model, data)
                         data_changed = True
-                        sync_panel = True
+                        publish_panel = True
 
                     if state.running:
                         for _ in range(simulation_steps_per_frame):
                             mujoco.mj_step(model, data)
                         sync_editor_state_from_data(state, data, joints, ball_qpos_address)
                         data_changed = True
-                        sync_panel = True
+                        publish_panel = frame_start >= next_panel_sync
 
                     if state.print_requested:
                         state.print_requested = False
@@ -900,31 +1117,43 @@ def main(argv: Sequence[str] | None = None) -> int:
                             joint_step_index=joint_step_index,
                             ball_step_index=ball_step_index,
                         )
-                        viewer.set_texts(
-                            (
-                                int(mujoco.mjtFontScale.mjFONTSCALE_100),
-                                int(mujoco.mjtGridPos.mjGRID_TOPLEFT),
-                                labels,
-                                values,
-                            )
+                        overlay_text = (
+                            int(mujoco.mjtFontScale.mjFONTSCALE_100),
+                            int(mujoco.mjtGridPos.mjGRID_TOPLEFT),
+                            labels,
+                            values,
                         )
                         changed = False
 
-                if sync_panel:
-                    panel.sync_from_state()
-                panel.set_running(state.running)
-                if copy_text is not None:
-                    panel.copy_state(copy_text)
+                # set_texts waits for the render thread to consume the previous
+                # request. Calling it while holding viewer.lock can deadlock the
+                # two threads because the render loop also needs that mutex.
+                if overlay_text is not None:
+                    viewer.set_texts(overlay_text)
+                if publish_panel or copy_text is not None:
+                    panel_snapshots.put_nowait(
+                        build_panel_snapshot(
+                            state,
+                            pose_revision=applied_pose_revision,
+                            copy_text=copy_text,
+                        )
+                    )
+                    next_panel_sync = frame_start + panel_sync_seconds
                 viewer.sync()
                 remaining = target_frame_seconds - (time.perf_counter() - frame_start)
                 if remaining > 0.0:
                     time.sleep(remaining)
     finally:
+        close_event.set()
         _print_state("UNILAB_FINAL_STATE=", state_payload(data))
-        try:
-            root.destroy()
-        except tk.TclError:
-            pass
+        panel_process.join(timeout=2.0)
+        if panel_process.is_alive():
+            panel_process.terminate()
+            panel_process.join(timeout=2.0)
+        panel_commands.cancel_join_thread()
+        panel_snapshots.cancel_join_thread()
+        panel_commands.close()
+        panel_snapshots.close()
     return 0
 
 
