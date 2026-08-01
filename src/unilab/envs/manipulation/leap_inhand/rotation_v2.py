@@ -268,12 +268,14 @@ class LeapInhandBallRotationV2Env(LeapInhandBallRotationEnv):
             np.square(np.asarray(info["current_actions"]) - np.asarray(info["last_actions"])),
             axis=1,
         )
+        kp, kd = self.get_pd_gains()
         torques = compute_pd_torques(
             targets=np.asarray(info["prev_ctrl"]),
             dof_pos=dof_pos,
             dof_vel=dof_vel,
-            kp=self._cfg.control_config.kp,
-            kd=self._cfg.control_config.kd,
+            kp=kp,
+            kd=kd,
+            torque_limit=self._PD_TORQUE_LIMIT,
         )
         torque_cost = np.sum(np.square(torques), axis=1)
         work_cost = np.square(np.sum(torques * dof_vel, axis=1))

@@ -102,17 +102,16 @@ def _assert_reward_populated(cfg, label: str):
 
 
 @pytest.mark.parametrize("task", _LEAP_MUJOCO_DYNAMICS_TASKS)
-def test_ppo_leap_mujoco_owners_use_menagerie_dynamics(task: str) -> None:
+def test_ppo_leap_mujoco_owners_defer_model_constants_to_xml(task: str) -> None:
     cfg = _compose("ppo", overrides=[f"task={task}/mujoco"])
+    owner = (CONF_DIR / "ppo" / "task" / task / "mujoco.yaml").read_text(
+        encoding="utf-8"
+    )
 
-    assert list(cfg.env.scene.joint_dynamics.joint_names) == [
-        str(index) for index in range(16)
-    ]
-    assert cfg.env.scene.joint_dynamics.damping == pytest.approx(0.03)
-    assert cfg.env.scene.joint_dynamics.frictionloss == pytest.approx(0.001)
-    assert cfg.env.scene.joint_dynamics.armature == pytest.approx(0.01)
-    assert cfg.env.control_config.kp == pytest.approx(3.0)
-    assert cfg.env.control_config.kd == pytest.approx(0.01)
+    assert OmegaConf.select(cfg, "env.scene.joint_dynamics") is None
+    assert "joint_dynamics:" not in owner
+    assert "\n    kp:" not in owner
+    assert "\n    kd:" not in owner
 
 
 @pytest.mark.parametrize("task", _LEAP_MOTRIX_DYNAMICS_TASKS)
@@ -120,7 +119,7 @@ def test_ppo_leap_motrix_owners_keep_isaac_style_dynamics(task: str) -> None:
     cfg = _compose("ppo", overrides=[f"task={task}/motrix"])
 
     assert cfg.env.scene.joint_dynamics is None
-    assert cfg.env.control_config.kp == pytest.approx(3.0)
+    assert OmegaConf.select(cfg, "env.control_config.kp", default=3.0) == pytest.approx(3.0)
     assert cfg.env.control_config.kd == pytest.approx(0.1)
 
 

@@ -682,12 +682,14 @@ class LeapInhandBallGraspEnv(AllegroRotationGrasp, LeapHandBaseEnv):
         ball_angvel = self.get_ball_angvel()
         fingertip_pos = self.get_fingertip_pos()
         targets = np.asarray(self.state.info["prev_ctrl"])
+        kp, kd = self.get_pd_gains()
         torques = compute_pd_torques(
             targets,
             dof_pos,
             dof_vel,
-            self._cfg.control_config.kp,
-            self._cfg.control_config.kd,
+            kp,
+            kd,
+            torque_limit=self._PD_TORQUE_LIMIT,
         )
         work = np.abs(np.sum(torques * dof_vel, axis=1))
         details = self._backend.get_contact_penetration_details(
@@ -838,12 +840,14 @@ class LeapInhandBallGraspEnv(AllegroRotationGrasp, LeapHandBaseEnv):
         ball_angvel = self.get_ball_angvel()[env_ids]
         fingertip_pos = self.get_fingertip_pos()[env_ids]
         targets = np.asarray(self.state.info["prev_ctrl"])[env_ids]
+        kp, kd = self.get_pd_gains()
         torques = compute_pd_torques(
             targets,
             dof_pos,
             dof_vel,
-            self._cfg.control_config.kp,
-            self._cfg.control_config.kd,
+            kp,
+            kd,
+            torque_limit=self._PD_TORQUE_LIMIT,
         )
         work = np.abs(np.sum(torques * dof_vel, axis=1))
         measurements = {
@@ -937,12 +941,14 @@ class LeapInhandBallGraspEnv(AllegroRotationGrasp, LeapHandBaseEnv):
         targets = dof_pos
         if self.state is not None:
             targets = np.asarray(self.state.info.get("prev_ctrl", dof_pos))
+        kp, kd = self.get_pd_gains()
         torques = compute_pd_torques(
             targets,
             dof_pos,
             dof_vel,
-            cfg.control_config.kp,
-            cfg.control_config.kd,
+            kp,
+            kd,
+            torque_limit=self._PD_TORQUE_LIMIT,
         )
         work = np.abs(np.sum(torques * dof_vel, axis=1))
 

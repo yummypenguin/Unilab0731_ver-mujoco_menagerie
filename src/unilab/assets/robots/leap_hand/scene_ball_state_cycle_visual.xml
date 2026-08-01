@@ -12,7 +12,16 @@
     <contact name="leap_middle_contact" geom1="middle_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
     <contact name="leap_ring_contact" geom1="ring_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
     <contact name="leap_thumb_contact" geom1="thumb_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
-    <contact name="leap_palm_contact" geom1="palm_lower_collision" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_1" geom1="palm_collision_1" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_2" geom1="palm_collision_2" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_3" geom1="palm_collision_3" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_4" geom1="palm_collision_4" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_5" geom1="palm_collision_5" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_6" geom1="palm_collision_6" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_7" geom1="palm_collision_7" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_8" geom1="palm_collision_8" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_9" geom1="palm_collision_9" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
+    <contact name="leap_palm_contact_10" geom1="palm_collision_10" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
   </sensor>
 
   <keyframe>

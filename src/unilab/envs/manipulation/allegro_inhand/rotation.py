@@ -60,10 +60,17 @@ def compute_ball_angvel(
 
 
 def compute_pd_torques(
-    targets: np.ndarray, dof_pos: np.ndarray, dof_vel: np.ndarray, kp: float, kd: float
+    targets: np.ndarray,
+    dof_pos: np.ndarray,
+    dof_vel: np.ndarray,
+    kp: float,
+    kd: float,
+    torque_limit: float | None = None,
 ) -> np.ndarray:
     torques = kp * (targets - dof_pos) - kd * dof_vel
-    return np.asarray(np.clip(torques, -0.5, 0.5), dtype=get_global_dtype())
+    if torque_limit is not None:
+        torques = np.clip(torques, -torque_limit, torque_limit)
+    return np.asarray(torques, dtype=get_global_dtype())
 
 
 def build_obs_lag_history(
@@ -283,11 +290,10 @@ class AllegroRotationPPO(AllegroBaseEnv):
             base_name=self._BASE_BODY_NAME,
             push_body_name=cfg.domain_rand.push_body_name,
             add_body_sensors=True,
-            position_actuator_gains={
-                "kp": cfg.control_config.kp,
-                "kd": cfg.control_config.kd,
-                "actuator_ids": slice(0, 16),
-            },
+            position_actuator_gains=self._backend_position_actuator_gains(
+                cfg,
+                backend_type,
+            ),
             **env_backend_kwargs(cfg),
         )
         super().__init__(cfg, backend, num_envs)
@@ -441,12 +447,14 @@ class AllegroRotationPPO(AllegroBaseEnv):
         state.info["prev_ball_quat"] = ball_quat.copy()
 
         targets = state.info["prev_ctrl"]
+        kp, kd = self.get_pd_gains()
         torques = compute_pd_torques(
             targets=targets,
             dof_pos=dof_pos,
             dof_vel=dof_vel,
-            kp=self._cfg.control_config.kp,
-            kd=self._cfg.control_config.kd,
+            kp=kp,
+            kd=kd,
+            torque_limit=getattr(self, "_PD_TORQUE_LIMIT", 0.5),
         )
         terminated = self._compute_terminated(ball_pos)
 

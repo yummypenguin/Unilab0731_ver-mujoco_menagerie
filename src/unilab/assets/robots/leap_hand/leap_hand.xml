@@ -1,177 +1,393 @@
 <mujoco model="leap_hand">
-  <compiler angle="radian" meshdir="assets" autolimits="true" balanceinertia="true"/>
+  <compiler angle="radian" meshdir="assets/menagerie" autolimits="true"/>
+  <option integrator="implicitfast" cone="elliptic" impratio="100"/>
 
-  <option cone="elliptic" impratio="20" noslip_iterations="3"/>
+  <!-- mesh assets -->
+  <asset>
+    <material name="black" rgba="0.2 0.2 0.2 1"/>
+    <material name="white" rgba="1 1 1 1"/>
 
+    <mesh name="palm" file="palm_right.obj"/>
+    <mesh name="base" file="base.obj"/>
+    <mesh name="proximal" file="proximal.obj"/>
+    <mesh name="medial" file="medial.obj"/>
+    <mesh name="distal" file="distal.obj"/>
+    <mesh name="tip" file="tip.obj"/>
+    <mesh name="thumb_base" file="thumb_base.obj"/>
+    <mesh name="thumb_proximal" file="thumb_proximal.obj"/>
+    <mesh name="thumb_distal" file="thumb_distal.obj"/>
+    <mesh name="thumb_tip" file="thumb_tip.obj"/>
+  </asset>
+
+  <!-- defaults -->
   <default>
-    <default class="robot">
-      <joint damping="0.1" armature="0.001" frictionloss="0.01"/>
-      <default class="visual">
-        <geom contype="0" conaffinity="0" group="2" />
-      </default>
-      <default class="collision">
-        <geom contype="1" conaffinity="1" group="3" density="800"
-              condim="6" friction="2.0 0.05 0.01"
-              solimp="0.9 0.95 0.001" solref="0.02 1"/>
-      </default>
+    <!-- constraint stiffness -->
+    <geom solimp="0.999 0.999 0.001 0.0001 1" solref="0.0001 1" friction=".2"/>
+
+    <!-- actuator defaults -->
+    <position kp="3.0" kv="0.01"/>
+    <joint damping="0.03" frictionloss="0.001" armature="0.01"/>
+
+    <!-- geom class defaults -->
+    <default class="visual">
+      <geom group="1" type="mesh" contype="0" conaffinity="0" density="0" rgba="0.2 0.2 0.2 1"/>
+    </default>
+    <default class="collision">
+      <geom rgba="0.2 0.2 0.2 1"/>
+    </default>
+    <default class="tip">
+      <geom type="mesh" mesh="tip" friction="0.5" rgba="1 1 1 1"/>
+    </default>
+    <default class="thumb_tip">
+      <geom type="mesh" mesh="thumb_tip" friction="0.5" rgba="1 1 1 1"/>
+    </default>
+
+    <!-- joint class defaults -->
+    <default class="mcp">
+      <joint pos="0 0 0" axis="0 0 -1" limited="true" range="-0.314 2.23"/>
+      <position ctrlrange="-0.314 2.23"/>
+    </default>
+    <default class="rot">
+      <joint pos="0 0 0" axis="0 0 -1" limited="true" range="-1.047 1.047"/>
+      <position ctrlrange="-1.047 1.047"/>
+    </default>
+    <default class="pip">
+      <joint pos="0 0 0" axis="0 0 -1" limited="true" range="-0.506 1.885"/>
+      <position ctrlrange="-0.506 1.885"/>
+    </default>
+    <default class="dip">
+      <joint pos="0 0 0" axis="0 0 -1" limited="true" range="-0.366 2.042"/>
+      <position ctrlrange="-0.366 2.042"/>
+    </default>
+    <default class="thumb_cmc">
+      <joint pos="0 0 0" axis="0 0 -1" limited="true" range="-0.349 2.094"/>
+      <position ctrlrange="-0.349 2.094"/>
+    </default>
+    <default class="thumb_axl">
+      <joint pos="0 0 0" axis="0 0 -1" limited="true" range="-0.349 2.094"/>
+      <position ctrlrange="-0.349 2.094"/>
+    </default>
+    <default class="thumb_mcp">
+      <joint pos="0 0 0" axis="0 0 -1" limited="true" range="-0.47 2.443"/>
+      <position ctrlrange="-0.47 2.443"/>
+    </default>
+    <default class="thumb_ipl">
+      <joint pos="0 0 0" axis="0 0 -1" limited="true" range="-1.34 1.88"/>
+      <position ctrlrange="-1.34 1.88"/>
     </default>
   </default>
 
-  <worldbody>
-    <body name="palm_lower" childclass="robot" pos="0 0 0.5" quat="0 1 0 0">
-      <inertial pos="0 0 0" mass="0.237" diaginertia="0.000354094 0.000260915 0.000529257"/>
-      <geom name="palm_lower_collision" pos="-0.020095249652862544332 0.025757756134899473244 -0.034722403578460216134" type="mesh" mesh="palm_lower_palm_lower" class="collision"/>
-      <geom name="palm_lower_visual" pos="-0.020095249652862544332 0.025757756134899473244 -0.034722403578460216134" type="mesh" mesh="palm_lower_palm_lower" material="palm_lower_material" class="visual" />
-      <body name="mcp_joint" pos="-0.0070952496528625457958 0.023057756134899472233 -0.01872240357846021927" quat="0.5 0.5 0.5 -0.5">
-        <inertial pos="0 0 0" mass="0.044" diaginertia="1.1499e-05 7.796e-06 1.4759e-05" />
-        <joint name="1" type="hinge" range="-0.314 2.23" axis="0 0 -1" />
-        <geom name="index_mcp_col" pos="0.0084069022611744960438 0.0077662438597169954416 0.014657354985032912051" type="mesh" mesh="mcp_joint_mcp_joint" class="collision"/>
-        <geom name="mcp_joint_visual" pos="0.0084069022611744960438 0.0077662438597169954416 0.014657354985032912051" type="mesh" mesh="mcp_joint_mcp_joint" material="mcp_joint_material" class="visual" />
-        <body name="pip" pos="-0.012200000000000007713 0.038099999999999994982 0.014500000000000000736" quat="0.5 -0.5 -0.5 0.5">
-          <inertial pos="0 0 0" mass="0.032" diaginertia="4.798e-06 2.862e-06 4.234e-06" />
-          <joint name="0" type="hinge" range="-1.047 1.047" axis="0 0 -1" />
-          <geom name="index_pip_col" pos="0.0096433630922713280131 0.00029999999999998951117 0.00078403401041737645627" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="pip_pip" class="collision"/>
-          <geom name="pip_visual" pos="0.0096433630922713280131 0.00029999999999998951117 0.00078403401041737645627" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="pip_pip" material="pip_material" class="visual" />
-          <body name="dip" pos="0.01499999999999996822 0.014299999999999904801 -0.012999999999999824196" quat="0.5 0.5 -0.5 0.5">
-            <inertial pos="0 0 0" mass="0.037" diaginertia="5.542e-06 5.727e-06 6.682e-06" />
-            <joint name="2" type="hinge" range="-0.506 1.885" axis="0 0 -1" />
-            <geom name="index_dip_col" pos="0.021133352895225002849 -0.0084321191467048792201 0.0097850881620952408213" quat="0 -1 0 0" type="mesh" mesh="dip_dip" class="collision"/>
-            <geom name="dip_visual" pos="0.021133352895225002849 -0.0084321191467048792201 0.0097850881620952408213" quat="0 -1 0 0" type="mesh" mesh="dip_dip" material="mcp_joint_material" class="visual" />
-            <body name="fingertip" pos="-4.0880582495572692636e-09 -0.036100004210367367397 0.00020000000000007858714">
-              <inertial pos="0 0 0" mass="0.016" diaginertia="3.368e-06 1.556e-06 2.863e-06" />
-              <joint name="3" type="hinge" range="-0.366 2.042" axis="0 0 -1" />
-              <geom name="index_tip_col" pos="0.013286424108533503169 -0.0061142383865419869249 0.014499999999999497666" quat="0 1 0 0" type="mesh" mesh="fingertip_fingertip" class="collision"/>
-              <geom name="fingertip_visual" pos="0.013286424108533503169 -0.0061142383865419869249 0.014499999999999497666" quat="0 1 0 0" type="mesh" mesh="fingertip_fingertip" material="mcp_joint_material" class="visual" />
-            </body>
-          </body>
-        </body>
-      </body>
-      <body name="mcp_joint_2" pos="-0.0070952496528625388569 -0.022392243865100525113 -0.018722403578460229678" quat="0.5 0.5 0.5 -0.5">
-        <inertial pos="0 0 0" mass="0.044" diaginertia="1.1499e-05 7.796e-06 1.4759e-05" />
-        <joint name="5" type="hinge" range="-0.314 2.23" axis="0 0 -1" />
-        <geom name="middle_mcp_col" pos="0.0084069022611744960438 0.0077662438597169954416 0.014657354985032913786" type="mesh" mesh="mcp_joint_mcp_joint" class="collision"/>
-        <geom name="mcp_joint_2_visual" pos="0.0084069022611744960438 0.0077662438597169954416 0.014657354985032913786" type="mesh" mesh="mcp_joint_mcp_joint" material="mcp_joint_material" class="visual" />
-        <body name="pip_2" pos="-0.012200000000000019856 0.038099999999999981104 0.01450000000000000594" quat="0.5 -0.5 -0.5 0.5">
-          <inertial pos="0 0 0" mass="0.032" diaginertia="4.798e-06 2.862e-06 4.234e-06" />
-          <joint name="4" type="hinge" range="-1.047 1.047" axis="0 0 -1" />
-          <geom name="middle_pip_col" pos="0.0096433630922713280131 0.00029999999999999471534 0.00078403401041737645627" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="pip_pip" class="collision"/>
-          <geom name="pip_2_visual" pos="0.0096433630922713280131 0.00029999999999999471534 0.00078403401041737645627" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="pip_pip" material="pip_material" class="visual" />
-          <body name="dip_2" pos="0.014999999999999975159 0.014300000000000000211 -0.013000000000000018485" quat="0.5 0.5 -0.5 0.5">
-            <inertial pos="0 0 0" mass="0.037" diaginertia="5.542e-06 5.727e-06 6.682e-06" />
-            <joint name="6" type="hinge" range="-0.506 1.885" axis="0 0 -1" />
-            <geom name="middle_dip_col" pos="0.021133352895225002849 -0.0084321191467048653423 0.0097850881620952373519" quat="0 -1 0 0" type="mesh" mesh="dip_dip" class="collision"/>
-            <geom name="dip_2_visual" pos="0.021133352895225002849 -0.0084321191467048653423 0.0097850881620952373519" quat="0 -1 0 0" type="mesh" mesh="dip_dip" material="mcp_joint_material" class="visual" />
-            <body name="fingertip_2" pos="1.0061396160665481148e-16 -0.036099999999999854428 0.00020000000000007858714">
-              <inertial pos="0 0 0" mass="0.016" diaginertia="3.368e-06 1.556e-06 2.863e-06" />
-              <joint name="7" type="hinge" range="-0.366 2.042" axis="0 0 -1" />
-              <geom name="middle_tip_col" pos="0.01328642410853349623 -0.0061142383865420008027 0.014499999999999495931" quat="0 1 0 0" type="mesh" mesh="fingertip_fingertip" class="collision"/>
-              <geom name="fingertip_2_visual" pos="0.01328642410853349623 -0.0061142383865420008027 0.014499999999999495931" quat="0 1 0 0" type="mesh" mesh="fingertip_fingertip" material="mcp_joint_material" class="visual" />
-            </body>
-          </body>
-        </body>
-      </body>
-      <body name="mcp_joint_3" pos="-0.0070952454426398371343 -0.067842243865100515521 -0.018722407666402932774" quat="0.5 0.5 0.5 -0.5">
-        <inertial pos="0 0 0" mass="0.044" diaginertia="1.1499e-05 7.796e-06 1.4759e-05" />
-        <joint name="9" type="hinge" range="-0.314 2.23" axis="0 0 -1" />
-        <geom name="ring_mcp_col" pos="0.0084069022611744995133 0.0077662438597169963089 0.014657354985032913786" type="mesh" mesh="mcp_joint_mcp_joint" class="collision"/>
-        <geom name="mcp_joint_3_visual" pos="0.0084069022611744995133 0.0077662438597169963089 0.014657354985032913786" type="mesh" mesh="mcp_joint_mcp_joint" material="mcp_joint_material" class="visual" />
-        <body name="pip_3" pos="-0.012200000000000004244 0.038100000000000001921 0.014499999999999999001" quat="0.5 -0.5 -0.5 0.5">
-          <inertial pos="0 0 0" mass="0.032" diaginertia="4.798e-06 2.862e-06 4.234e-06" />
-          <joint name="8" type="hinge" range="-1.047 1.047" axis="0 0 -1" />
-          <geom name="ring_pip_col" pos="0.0096433630922713314826 0.00029999999999998083755 0.00078403401041737645627" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="pip_pip" class="collision"/>
-          <geom name="pip_3_visual" pos="0.0096433630922713314826 0.00029999999999998083755 0.00078403401041737645627" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="pip_pip" material="pip_material" class="visual" />
-          <body name="dip_3" pos="0.014999999999999971689 0.014299999999999951639 -0.012999999999999959505" quat="0.5 0.5 -0.5 0.5">
-            <inertial pos="0 0 0" mass="0.037" diaginertia="5.542e-06 5.727e-06 6.682e-06" />
-            <joint name="10" type="hinge" range="-0.506 1.885" axis="0 0 -1" />
-            <geom name="ring_dip_col" pos="0.021133352895225006318 -0.0084321191467048653423 0.0097850881620952373519" quat="0 -1 0 0" type="mesh" mesh="dip_dip" class="collision"/>
-            <geom name="dip_3_visual" pos="0.021133352895225006318 -0.0084321191467048653423 0.0097850881620952373519" quat="0 -1 0 0" type="mesh" mesh="dip_dip" material="mcp_joint_material" class="visual" />
-            <body name="fingertip_3" pos="9.7144514654701197287e-17 -0.036099999999999868305 0.00020000000000007511769">
-              <inertial pos="0 0 0" mass="0.016" diaginertia="3.368e-06 1.556e-06 2.863e-06" />
-              <joint name="11" type="hinge" range="-0.366 2.042" axis="0 0 -1" />
-              <geom name="ring_tip_col" pos="0.013286424108533501434 -0.0061142383865419869249 0.0144999999999994994" quat="0 1 0 0" type="mesh" mesh="fingertip_fingertip" class="collision"/>
-              <geom name="fingertip_3_visual" pos="0.013286424108533501434 -0.0061142383865419869249 0.0144999999999994994" quat="0 1 0 0" type="mesh" mesh="fingertip_fingertip" material="mcp_joint_material" class="visual" />
-            </body>
-          </body>
-        </body>
-      </body>
-      <body name="pip_4" pos="-0.069395249652862533996 -0.0012422438651005258004 -0.021622403578460215601" quat="0.7071 0 0.7071 0">
-        <inertial pos="0 0 0" mass="0.032" diaginertia="4.798e-06 2.862e-06 4.234e-06" />
-        <joint name="12" type="hinge" range="-0.349 2.094" axis="0 0 -1" />
-        <geom name="thumb_base_col" pos="-0.0053566369077286714317 0.00029999999999999991951 0.00078403401041737819099" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="pip_pip" class="collision"/>
-        <geom name="pip_4_visual" pos="-0.0053566369077286714317 0.00029999999999999991951 0.00078403401041737819099" quat="0.5 -0.5 -0.5 -0.5" type="mesh" mesh="pip_pip" material="pip_material" class="visual" />
-        <body name="thumb_pip" pos="-2.7755575615628913511e-17 0.014300000000000005415 -0.013000000000000011546" quat="0.5 0.5 -0.5 0.5">
-          <inertial pos="0 0 0" mass="0.003" diaginertia="5.93e-07 5.49e-07 2.24e-07" />
-          <joint name="13" type="hinge" range="-0.47 2.443" axis="0 0 -1" />
-          <geom name="thumb_pip_col" pos="0.011961920770611186859 -5.3082538364890297089e-16 -0.015852648956664199681" quat="0.7071 0.7071 0 0" type="mesh" mesh="thumb_pip_thumb_pip" class="collision"/>
-          <geom name="thumb_pip_visual" pos="0.011961920770611186859 -5.3082538364890297089e-16 -0.015852648956664199681" quat="0.7071 0.7071 0 0" type="mesh" mesh="thumb_pip_thumb_pip" material="mcp_joint_material" class="visual" />
-          <body name="thumb_dip" pos="0 0.014499999999999966041 -0.017000000000000053263" quat="0.7071 -0.7071 0 0">
-            <inertial pos="0 0 0" mass="0.038" diaginertia="8.474e-06 3.841e-06 7.679e-06" />
-            <joint name="14" type="hinge" range="-1.20 1.90" axis="0 0 -1" />
-            <geom name="thumb_dip_col" pos="0.043968715707239175439 0.057952952973709198625 -0.0086286764493694757122" type="mesh" mesh="thumb_dip_thumb_dip" class="collision"/>
-            <geom name="thumb_dip_visual" pos="0.043968715707239175439 0.057952952973709198625 -0.0086286764493694757122" type="mesh" mesh="thumb_dip_thumb_dip" material="mcp_joint_material" class="visual" />
-            <body name="thumb_fingertip" pos="-1.249000902703301108e-16 0.046599999999999863753 0.00019999999999997710581" quat="0 0 0 1">
-              <inertial pos="0 0 0" mass="0.049" diaginertia="2.0372e-05 4.336e-06 1.9845e-05" />
-              <joint name="15" type="hinge" range="-1.34 1.88" axis="0 0 -1" />
-              <geom name="thumb_tip_col" pos="0.062559538462667388381 0.078459682911396988469 0.048992911807332215068" type="mesh" mesh="thumb_fingertip_thumb_fingertip" class="collision"/>
-              <geom name="thumb_fingertip_visual" pos="0.062559538462667388381 0.078459682911396988469 0.048992911807332215068" type="mesh" mesh="thumb_fingertip_thumb_fingertip" material="palm_lower_material" class="visual" />
-            </body>
-          </body>
-        </body>
-      </body>
-    </body>
-  </worldbody>
-
+  <!-- collision filtering -->
   <contact>
-    <!-- MuJoCo adaptation: directly connected mesh links overlap at their joint interfaces. -->
+    <!-- filter the palm from all other finger bodies except the tips -->
     <exclude body1="palm_lower" body2="mcp_joint"/>
-    <exclude body1="mcp_joint" body2="pip"/>
-    <exclude body1="pip" body2="dip"/>
-    <exclude body1="dip" body2="fingertip"/>
     <exclude body1="palm_lower" body2="mcp_joint_2"/>
-    <exclude body1="mcp_joint_2" body2="pip_2"/>
-    <exclude body1="pip_2" body2="dip_2"/>
-    <exclude body1="dip_2" body2="fingertip_2"/>
     <exclude body1="palm_lower" body2="mcp_joint_3"/>
-    <exclude body1="mcp_joint_3" body2="pip_3"/>
-    <exclude body1="pip_3" body2="dip_3"/>
-    <exclude body1="dip_3" body2="fingertip_3"/>
     <exclude body1="palm_lower" body2="pip_4"/>
-    <exclude body1="pip_4" body2="thumb_pip"/>
-    <exclude body1="thumb_pip" body2="thumb_dip"/>
-    <exclude body1="thumb_dip" body2="thumb_fingertip"/>
+
+    <exclude body1="palm_lower" body2="pip"/>
+    <exclude body1="palm_lower" body2="pip_2"/>
+    <exclude body1="palm_lower" body2="pip_3"/>
+    <exclude body1="palm_lower" body2="thumb_pip"/>
+
+    <exclude body1="palm_lower" body2="dip"/>
+    <exclude body1="palm_lower" body2="dip_2"/>
+    <exclude body1="palm_lower" body2="dip_3"/>
+    <exclude body1="palm_lower" body2="thumb_dip"/>
+
+    <!-- none of the base fingertip geoms can touch each other -->
+    <exclude body1="mcp_joint" body2="mcp_joint_2"/>
+    <exclude body1="mcp_joint" body2="mcp_joint_3"/>
+    <exclude body1="mcp_joint_2" body2="mcp_joint_3"/>
+
+    <exclude body1="pip_4" body2="mcp_joint"/>
+    <exclude body1="pip_4" body2="mcp_joint_2"/>
+    <exclude body1="pip_4" body2="mcp_joint_3"/>
   </contact>
 
-  <asset>
-    <material name="palm_lower_material" rgba="0.60392156862745094426 0.14901960784313725283 0.14901960784313725283 1.0" />
-    <material name="mcp_joint_material" rgba="0.86666666666666669627 0.86666666666666669627 0.050980392156862744391 1.0" />
-    <material name="pip_material" rgba="0.74901960784313725839 0.74901960784313725839 0.74901960784313725839 1.0" />
-    <mesh name="palm_lower_palm_lower" file="palm_lower.stl" />
-    <mesh name="mcp_joint_mcp_joint" file="mcp_joint.stl" />
-    <mesh name="pip_pip" file="pip.stl" />
-    <mesh name="dip_dip" file="dip.stl" />
-    <mesh name="fingertip_fingertip" file="fingertip.stl" />
-    <mesh name="thumb_pip_thumb_pip" file="thumb_pip.stl" />
-    <mesh name="thumb_dip_thumb_dip" file="thumb_dip.stl" />
-    <mesh name="thumb_fingertip_thumb_fingertip" file="thumb_fingertip.stl" />
-  </asset>
-
+  <!-- actuators -->
   <actuator>
-    <!-- Actuator order intentionally matches MuJoCo qpos traversal order. -->
-    <position name="act_joint_1" joint="1" kp="3" ctrlrange="-0.314 2.23" forcerange="-0.5 0.5"/>
-    <position name="act_joint_0" joint="0" kp="3" ctrlrange="-1.047 1.047" forcerange="-0.5 0.5"/>
-    <position name="act_joint_2" joint="2" kp="3" ctrlrange="-0.506 1.885" forcerange="-0.5 0.5"/>
-    <position name="act_joint_3" joint="3" kp="3" ctrlrange="-0.366 2.042" forcerange="-0.5 0.5"/>
-    <position name="act_joint_5" joint="5" kp="3" ctrlrange="-0.314 2.23" forcerange="-0.5 0.5"/>
-    <position name="act_joint_4" joint="4" kp="3" ctrlrange="-1.047 1.047" forcerange="-0.5 0.5"/>
-    <position name="act_joint_6" joint="6" kp="3" ctrlrange="-0.506 1.885" forcerange="-0.5 0.5"/>
-    <position name="act_joint_7" joint="7" kp="3" ctrlrange="-0.366 2.042" forcerange="-0.5 0.5"/>
-    <position name="act_joint_9" joint="9" kp="3" ctrlrange="-0.314 2.23" forcerange="-0.5 0.5"/>
-    <position name="act_joint_8" joint="8" kp="3" ctrlrange="-1.047 1.047" forcerange="-0.5 0.5"/>
-    <position name="act_joint_10" joint="10" kp="3" ctrlrange="-0.506 1.885" forcerange="-0.5 0.5"/>
-    <position name="act_joint_11" joint="11" kp="3" ctrlrange="-0.366 2.042" forcerange="-0.5 0.5"/>
-    <position name="act_joint_12" joint="12" kp="3" ctrlrange="-0.349 2.094" forcerange="-0.5 0.5"/>
-    <position name="act_joint_13" joint="13" kp="3" ctrlrange="-0.47 2.443" forcerange="-0.5 0.5"/>
-    <position name="act_joint_14" joint="14" kp="3" ctrlrange="-1.2 1.9" forcerange="-0.5 0.5"/>
-    <position name="act_joint_15" joint="15" kp="3" ctrlrange="-1.34 1.88" forcerange="-0.5 0.5"/>
+    <!-- index -->
+    <position name="if_mcp_act" joint="if_mcp" class="mcp"/>
+    <position name="if_rot_act" joint="if_rot" class="rot"/>
+    <position name="if_pip_act" joint="if_pip" class="pip"/>
+    <position name="if_dip_act" joint="if_dip" class="dip"/>
+
+    <!-- middle -->
+    <position name="mf_mcp_act" joint="mf_mcp" class="mcp"/>
+    <position name="mf_rot_act" joint="mf_rot" class="rot"/>
+    <position name="mf_pip_act" joint="mf_pip" class="pip"/>
+    <position name="mf_dip_act" joint="mf_dip" class="dip"/>
+
+    <!-- ring -->
+    <position name="rf_mcp_act" joint="rf_mcp" class="mcp"/>
+    <position name="rf_rot_act" joint="rf_rot" class="rot"/>
+    <position name="rf_pip_act" joint="rf_pip" class="pip"/>
+    <position name="rf_dip_act" joint="rf_dip" class="dip"/>
+
+    <!-- thumb -->
+    <position name="th_cmc_act" joint="th_cmc" class="thumb_cmc"/>
+    <position name="th_axl_act" joint="th_axl" class="thumb_axl"/>
+    <position name="th_mcp_act" joint="th_mcp" class="thumb_mcp"/>
+    <position name="th_ipl_act" joint="th_ipl" class="thumb_ipl"/>
   </actuator>
+
+  <!-- sensors -->
+  <sensor>
+    <!-- index -->
+    <jointpos name="if_mcp_sensor" joint="if_mcp"/>
+    <jointpos name="if_rot_sensor" joint="if_rot"/>
+    <jointpos name="if_pip_sensor" joint="if_pip"/>
+    <jointpos name="if_dip_sensor" joint="if_dip"/>
+
+    <!-- middle -->
+    <jointpos name="mf_mcp_sensor" joint="mf_mcp"/>
+    <jointpos name="mf_rot_sensor" joint="mf_rot"/>
+    <jointpos name="mf_pip_sensor" joint="mf_pip"/>
+    <jointpos name="mf_dip_sensor" joint="mf_dip"/>
+
+    <!-- ring -->
+    <jointpos name="rf_mcp_sensor" joint="rf_mcp"/>
+    <jointpos name="rf_rot_sensor" joint="rf_rot"/>
+    <jointpos name="rf_pip_sensor" joint="rf_pip"/>
+    <jointpos name="rf_dip_sensor" joint="rf_dip"/>
+
+    <!-- thumb -->
+    <jointpos name="th_cmc_sensor" joint="th_cmc"/>
+    <jointpos name="th_axl_sensor" joint="th_axl"/>
+    <jointpos name="th_mcp_sensor" joint="th_mcp"/>
+    <jointpos name="th_ipl_sensor" joint="th_ipl"/>
+  </sensor>
+
+  <worldbody>
+    <body name="palm_lower" pos="0 0 0.5" quat="0 1 0 0">
+      <!-- palm -->
+      <inertial pos="-0.049542 -0.042914 -0.010227" quat="0.565586 0.427629 -0.574956 0.408254" mass="0.237"
+        diaginertia="0.000407345 0.000304759 0.000180736"/>
+      <geom name="palm_visual" pos="-0.02 0.02575 -0.0347" quat="1 0 0 0" class="visual" mesh="palm"/>
+      <geom name="palm_collision_1" size="0.011 0.013 0.017" pos="-0.009 0.008 -0.011" type="box" class="collision"/>
+      <geom name="palm_collision_2" size="0.011 0.013 0.017" pos="-0.009 -0.037 -0.011" type="box" class="collision"/>
+      <geom name="palm_collision_3" size="0.011 0.013 0.017" pos="-0.009 -0.082 -0.011" type="box" class="collision"/>
+      <geom name="palm_collision_4" size="0.029 0.01 0.023" pos="-0.066 -0.078 -0.0115" quat="0.989016 0 0 -0.147806"
+        type="box" class="collision"/>
+      <geom name="palm_collision_5" size="0.01 0.06 0.015" pos="-0.03 -0.035 -0.003" type="box" class="collision"/>
+      <geom name="palm_collision_6" size="0.005 0.06 0.01" pos="-0.032 -0.035 -0.024" quat="0.923956 0 0.382499 0"
+        type="box" class="collision"/>
+      <geom name="palm_collision_7" size="0.012 0.058 0.023" pos="-0.048 -0.033 -0.0115" type="box" class="collision"/>
+      <geom name="palm_collision_8" size="0.022 0.026 0.023" pos="-0.078 -0.053 -0.0115" type="box" class="collision"/>
+      <geom name="palm_collision_9" size="0.002 0.018 0.017" pos="-0.098 -0.009 -0.006" type="box" class="collision"/>
+      <geom name="palm_collision_10" size="0.022 0.028 0.002" pos="-0.078 -0.003 0.01" type="box" class="collision"/>
+
+      <!-- index -->
+      <body name="mcp_joint" pos="-0.007 0.023 -0.0187" quat="0.500003 0.5 0.5 -0.499997">
+        <inertial pos="-0.022516 0.033882 0.016359" quat="0.388092 0.677951 -0.247713 0.573067" mass="0.044"
+          diaginertia="1.74972e-05 1.61504e-05 7.21342e-06"/>
+        <joint name="if_mcp" class="mcp"/>
+        <geom name="if_bs_visual" pos="0.0084 0.0077 0.01465" quat="1 0 0 0" class="visual" mesh="base"/>
+        <geom name="if_bs_collision_1" size="0.01 0.003 0.017" pos="0 0.018 0.0147" type="box" class="collision"/>
+        <geom name="if_bs_collision_2" size="0.014 0.02 0.01" pos="-0.027 0.042 0.015" type="box" class="collision"/>
+        <geom name="if_bs_collision_3" size="0.017 0.003 0.01" pos="-0.0262 0.02 0.0146" type="box" class="collision"/>
+        <geom name="if_bs_collision_4" size="0.01 0.012 0.004" pos="-0.0295 0.035 0.029" type="box" class="collision"/>
+        <geom name="if_bs_collision_5" size="0.007 0.01 0.002" pos="0 0.005 0.03" type="box" class="collision"/>
+        <geom name="if_bs_collision_6" size="0.007 0.01 0.002" pos="0 0.005 -0.001" type="box" class="collision"/>
+
+        <body name="pip" pos="-0.0122 0.0381 0.0145" quat="0.500003 -0.5 -0.499997 0.5">
+          <inertial pos="0.0075 -0.0002 -0.011" quat="0 0.707107 0 0.707107" mass="0.032"
+            diaginertia="4.8853e-06 4.3733e-06 3.0933e-06"/>
+          <joint name="if_rot" class="rot"/>
+          <geom name="if_px_visual" pos="0.0096 0.0002 0.0007" quat="0.500003 -0.5 -0.5 -0.499997" class="visual"
+            mesh="proximal"/>
+          <geom name="if_px_collision" size="0.017 0.013 0.011" pos="0.0075 -0.0002 -0.011" type="box"
+            class="collision"/>
+
+          <body name="dip" pos="0.015 0.0143 -0.013" quat="0.500003 0.5 -0.5 0.499997">
+            <inertial pos="0.0054215 -0.029148 0.015" quat="0.687228 0.687228 0.166487 0.166487" mass="0.037"
+              diaginertia="8.28004e-06 8.1598e-06 5.39516e-06"/>
+            <joint name="if_pip" class="pip"/>
+            <geom name="if_md_visual" pos="0.0211 -0.0084 0.0097" quat="2.67949e-08 -1 0 0" class="visual"
+              mesh="medial"/>
+            <geom name="if_md_collision_1" size="0.008 0.003 0.013" pos="0 -0.02 0.015" type="box" class="collision"/>
+            <geom name="if_md_collision_2" size="0.01 0.002 0.017" pos="0 -0.016 0.015" type="box" class="collision"/>
+            <geom name="if_md_collision_3" size="0.007 0.01 0.002" pos="0 -0.0045 0.03" type="box" class="collision"/>
+            <geom name="if_md_collision_4" size="0.007 0.01 0.002" pos="0 -0.0045 0" type="box" class="collision"/>
+            <geom name="if_md_collision_5" size="0.017 0.011 0.013" pos="0.0075 -0.035 0.015" type="box"
+              class="collision"/>
+
+            <body name="fingertip" pos="0 -0.0361 0.0002">
+              <inertial pos="-0.0008794 -0.027019 0.014594" quat="0.702905 0.710643 -0.0212937 -0.0214203" mass="0.016"
+                diaginertia="3.71863e-06 3.02396e-06 1.6518e-06"/>
+              <joint name="if_dip" class="dip"/>
+              <geom name="if_ds_visual" pos="0.0132 -0.0061 0.0144" quat="2.67949e-08 1 0 0" class="visual"
+                mesh="distal"/>
+              <geom name="if_ds_collision_1" size="0.01 0.003 0.015" pos="0 -0.017 0.015" type="box" class="collision"/>
+              <geom name="if_ds_collision_2" size="0.007 0.011 0.002" pos="0 -0.006 0.03" type="box" class="collision"/>
+              <geom name="if_ds_collision_3" size="0.007 0.011 0.002" pos="0 -0.006 -0.001" type="box"
+                class="collision"/>
+
+              <geom name="index_tip_col" class="tip"/>
+            </body>
+          </body>
+        </body>
+      </body>
+      <!-- index -->
+
+      <!-- middle -->
+      <body name="mcp_joint_2" pos="-0.0071 -0.0224 -0.0187" quat="0.500003 0.5 0.5 -0.499997">
+        <inertial pos="-0.022516 0.033882 0.016359" quat="0.388092 0.677951 -0.247713 0.573067" mass="0.044"
+          diaginertia="1.74972e-05 1.61504e-05 7.21342e-06"/>
+        <joint name="mf_mcp" class="mcp"/>
+        <geom name="mf_bs_visual" pos="0.0084 0.0077 0.01465" quat="1 0 0 0" class="visual" mesh="base"/>
+        <geom name="mf_bs_collision_1" size="0.01 0.003 0.017" pos="0 0.018 0.0147" type="box" class="collision"/>
+        <geom name="mf_bs_collision_2" size="0.014 0.02 0.01" pos="-0.027 0.042 0.015" type="box" class="collision"/>
+        <geom name="mf_bs_collision_3" size="0.017 0.003 0.01" pos="-0.0262 0.02 0.0146" type="box" class="collision"/>
+        <geom name="mf_bs_collision_4" size="0.01 0.012 0.004" pos="-0.0295 0.035 0.029" type="box" class="collision"/>
+        <geom name="mf_bs_collision_5" size="0.007 0.01 0.002" pos="0 0.005 0.03" type="box" class="collision"/>
+        <geom name="mf_bs_collision_6" size="0.007 0.01 0.002" pos="0 0.005 -0.001" type="box" class="collision"/>
+
+        <body name="pip_2" pos="-0.0122 0.0381 0.0145" quat="0.500003 -0.5 -0.499997 0.5">
+          <inertial pos="0.0075 -0.0002 -0.011" quat="0 0.707107 0 0.707107" mass="0.032"
+            diaginertia="4.8853e-06 4.3733e-06 3.0933e-06"/>
+          <joint name="mf_rot" class="rot"/>
+          <geom name="mf_px_visual" pos="0.0096 0.0003 0.0007" quat="0.500003 -0.5 -0.5 -0.499997" class="visual"
+            mesh="proximal"/>
+          <geom name="mf_px_collision" size="0.017 0.013 0.011" pos="0.0075 -0.0002 -0.011" type="box"
+            class="collision"/>
+
+          <body name="dip_2" pos="0.015 0.0143 -0.013" quat="0.500003 0.5 -0.5 0.499997">
+            <inertial pos="0.0054215 -0.029148 0.015" quat="0.687228 0.687228 0.166487 0.166487" mass="0.037"
+              diaginertia="8.28004e-06 8.1598e-06 5.39516e-06"/>
+            <joint name="mf_pip" class="pip"/>
+            <geom name="mf_md_visual" pos="0.0211 -0.0084 0.0097" quat="1.32679e-06 -1 0 0" class="visual"
+              mesh="medial"/>
+            <geom name="mf_md_collision_1" size="0.008 0.003 0.013" pos="0 -0.02 0.015" type="box" class="collision"/>
+            <geom name="mf_md_collision_2" size="0.01 0.002 0.017" pos="0 -0.016 0.015" type="box" class="collision"/>
+            <geom name="mf_md_collision_3" size="0.007 0.01 0.002" pos="0 -0.0045 0.03" type="box" class="collision"/>
+            <geom name="mf_md_collision_4" size="0.007 0.01 0.002" pos="0 -0.0045 0" type="box" class="collision"/>
+            <geom name="mf_md_collision_5" size="0.017 0.011 0.013" pos="0.0075 -0.035 0.015" type="box"
+              class="collision"/>
+
+            <body name="fingertip_2" pos="0 -0.0361 0.0002">
+              <inertial pos="-0.0008794 -0.027019 0.014594" quat="0.702905 0.710643 -0.0212937 -0.0214203" mass="0.016"
+                diaginertia="3.71863e-06 3.02396e-06 1.6518e-06"/>
+              <joint name="mf_dip" class="dip"/>
+              <geom name="mf_ds_visual" pos="0.0132 -0.0061 0.0145" quat="1.32679e-06 1 0 0" class="visual"
+                mesh="distal"/>
+              <geom name="mf_ds_collision_1" size="0.01 0.003 0.015" pos="0 -0.017 0.015" type="box" class="collision"/>
+              <geom name="mf_ds_collision_2" size="0.007 0.011 0.002" pos="0 -0.006 0.03" type="box" class="collision"/>
+              <geom name="mf_ds_collision_3" size="0.007 0.011 0.002" pos="0 -0.006 -0.001" type="box"
+                class="collision"/>
+
+              <geom name="middle_tip_col" class="tip"/>
+            </body>
+          </body>
+        </body>
+      </body>
+      <!-- middle -->
+
+      <!-- ring -->
+      <body name="mcp_joint_3" pos="-0.00709 -0.0678 -0.0187" quat="0.500003 0.5 0.5 -0.499997">
+        <inertial pos="-0.022516 0.033882 0.016359" quat="0.388092 0.677951 -0.247713 0.573067" mass="0.044"
+          diaginertia="1.74972e-05 1.61504e-05 7.21342e-06"/>
+        <joint name="rf_mcp" class="mcp"/>
+        <geom name="rf_bs_visual" pos="0.0084 0.0077 0.01465" quat="1 0 0 0" class="visual" mesh="base"/>
+        <geom name="rf_bs_collision_1" size="0.01 0.003 0.017" pos="0 0.018 0.0147" type="box" class="collision"/>
+        <geom name="rf_bs_collision_2" size="0.014 0.02 0.01" pos="-0.027 0.042 0.015" type="box" class="collision"/>
+        <geom name="rf_bs_collision_3" size="0.017 0.003 0.01" pos="-0.0262 0.02 0.0146" type="box" class="collision"/>
+        <geom name="rf_bs_collision_4" size="0.01 0.012 0.004" pos="-0.0295 0.035 0.029" type="box" class="collision"/>
+        <geom name="rf_bs_collision_5" size="0.007 0.01 0.002" pos="0 0.005 0.03" type="box" class="collision"/>
+        <geom name="rf_bs_collision_6" size="0.007 0.01 0.002" pos="0 0.005 -0.001" type="box" class="collision"/>
+
+        <body name="pip_3" pos="-0.0122 0.0381 0.0145" quat="0.500003 -0.5 -0.499997 0.5">
+          <inertial pos="0.0075 -0.0002 -0.011" quat="0 0.707107 0 0.707107" mass="0.032"
+            diaginertia="4.8853e-06 4.3733e-06 3.0933e-06"/>
+          <joint name="rf_rot" class="rot"/>
+          <geom name="rf_px_visual" pos="0.0096 0.0003 0.0007" quat="0.500003 -0.5 -0.5 -0.499997" class="visual"
+            mesh="proximal"/>
+          <geom name="rf_px_collision" size="0.017 0.013 0.011" pos="0.0075 -0.0002 -0.011" type="box"
+            class="collision"/>
+
+          <body name="dip_3" pos="0.015 0.0143 -0.013" quat="0.500003 0.5 -0.5 0.499997">
+            <inertial pos="0.0054215 -0.029148 0.015" quat="0.687228 0.687228 0.166487 0.166487" mass="0.037"
+              diaginertia="8.28004e-06 8.1598e-06 5.39516e-06"/>
+            <joint name="rf_pip" class="pip"/>
+            <geom name="rf_md_visual" pos="0.0211 -0.0084 0.0097" quat="1.32679e-06 -1 0 0" class="visual"
+              mesh="medial"/>
+            <geom name="rf_md_collision_1" size="0.008 0.003 0.013" pos="0 -0.02 0.015" type="box" class="collision"/>
+            <geom name="rf_md_collision_2" size="0.01 0.002 0.017" pos="0 -0.016 0.015" type="box" class="collision"/>
+            <geom name="rf_md_collision_3" size="0.007 0.01 0.002" pos="0 -0.0045 0.03" type="box" class="collision"/>
+            <geom name="rf_md_collision_4" size="0.007 0.01 0.002" pos="0 -0.0045 0" type="box" class="collision"/>
+            <geom name="rf_md_collision_5" size="0.017 0.011 0.013" pos="0.0075 -0.035 0.015" type="box"
+              class="collision"/>
+
+            <body name="fingertip_3" pos="0 -0.03609 0.0002">
+              <inertial pos="-0.0008794 -0.027019 0.014594" quat="0.702905 0.710643 -0.0212937 -0.0214203" mass="0.016"
+                diaginertia="3.71863e-06 3.02396e-06 1.6518e-06"/>
+              <joint name="rf_dip" class="dip"/>
+              <geom name="rf_ds_visual" pos="0.0132 -0.0061 0.0145" quat="1.32679e-06 1 0 0" class="visual"
+                mesh="distal"/>
+              <geom name="rf_ds_collision_1" size="0.01 0.003 0.015" pos="0 -0.017 0.015" type="box" class="collision"/>
+              <geom name="rf_ds_collision_2" size="0.007 0.011 0.002" pos="0 -0.006 0.03" type="box" class="collision"/>
+              <geom name="rf_ds_collision_3" size="0.007 0.011 0.002" pos="0 -0.006 -0.001" type="box"
+                class="collision"/>
+
+              <geom name="ring_tip_col" class="tip"/>
+            </body>
+          </body>
+        </body>
+      </body>
+      <!-- ring -->
+
+      <!-- thumb -->
+      <body name="pip_4" pos="-0.0693 -0.0012 -0.0216" quat="0.707109 0 0.707105 0">
+        <inertial pos="0.0075 -0.0002 -0.011" quat="0 0.707107 0 0.707107" mass="0.032"
+          diaginertia="4.8853e-06 4.3733e-06 3.0933e-06"/>
+        <joint name="th_cmc" class="thumb_cmc"/>
+        <geom name="th_mp_visual" pos="-0.0053 0.0003 0.00078" quat="0.500003 -0.5 -0.5 -0.499997" class="visual"
+          mesh="proximal"/>
+        <geom name="th_mp_collision" size="0.017 0.013 0.011" pos="-0.0075 -0.0002 -0.011" type="box"
+          class="collision"/>
+
+        <body name="thumb_pip" pos="0 0.0143 -0.013" quat="0.500003 0.5 -0.5 0.499997">
+          <inertial pos="0 0 -0.0070806" quat="0.707107 0.707107 0 0" mass="0.003"
+            diaginertia="6.1932e-07 5.351e-07 2.1516e-07"/>
+          <joint name="th_axl" class="thumb_axl"/>
+          <geom name="th_bs_visual" pos="0.01196 0 -0.0158" quat="0.707109 0.707105 0 0" class="visual"
+            mesh="thumb_base"/>
+          <geom name="th_bs_collision_1" size="0.009 0.0165 0.002" pos="0 0 -0.0015" type="box" class="collision"/>
+          <geom name="th_bs_collision_2" size="0.007 0.002 0.01" pos="0 -0.015 -0.013" type="box" class="collision"/>
+          <geom name="th_bs_collision_3" size="0.007 0.002 0.01" pos="0 0.015 -0.013" type="box" class="collision"/>
+
+          <body name="thumb_dip" pos="0 0.0145 -0.017" quat="0.707109 -0.707105 0 0">
+            <inertial pos="-0.0020593 0.015912 -0.013733" quat="0.698518 0.697382 -0.104933 0.121324" mass="0.038"
+              diaginertia="9.87104e-06 9.32653e-06 4.36203e-06"/>
+            <joint name="th_mcp" class="thumb_mcp"/>
+            <geom name="th_px_visual" pos="0.0439 0.0579 -0.0086" quat="1 0 0 0" class="visual" mesh="thumb_proximal"/>
+            <geom name="th_px_collision_1" size="0.01 0.02 0.012" pos="0 0.0105 -0.014" type="box" class="collision"/>
+            <geom name="th_px_collision_2" size="0.01 0.002 0.016" pos="0 0.031 -0.015" type="box" class="collision"/>
+            <geom name="th_px_collision_3" size="0.007 0.01 0.002" pos="0 0.042 0.001" type="box" class="collision"/>
+            <geom name="th_px_collision_4" size="0.007 0.01 0.002" pos="0 0.042 -0.029" type="box" class="collision"/>
+            <geom name="th_px_collision_5" size="0.005 0.012 0.009" pos="-0.0135 0.0175 -0.011656" type="box"
+              class="collision"/>
+
+            <body name="thumb_fingertip" pos="0 0.0466 0.0002" quat="1.32679e-06 0 0 1">
+              <inertial pos="0.00096191 -0.024203 -0.014419" quat="0.35287 0.311272 -0.632839 0.614904" mass="0.049"
+                diaginertia="2.08591e-05 2.0402e-05 4.71335e-06"/>
+              <joint name="th_ipl" class="thumb_ipl"/>
+              <geom name="th_ds_visual" pos="0.0625 0.0784 0.0489" quat="1 0 0 0" class="visual" mesh="thumb_distal"/>
+              <geom name="th_ds_collision_1" size="0.01 0.018 0.012" pos="0 -0.0085 -0.015" type="box"
+                class="collision"/>
+              <geom name="th_ds_collision_2" size="0.01 0.002 0.015" pos="0 -0.029 -0.014" type="box"
+                class="collision"/>
+              <geom name="th_ds_collision_3" size="0.004 0.012 0.009" pos="0.015 -0.0175 -0.0115" type="box"
+                class="collision"/>
+
+              <geom name="thumb_tip_col" class="thumb_tip"/>
+            </body>
+          </body>
+        </body>
+      </body>
+      <!-- thumb -->
+    </body>
+    <!-- palm -->
+  </worldbody>
 </mujoco>

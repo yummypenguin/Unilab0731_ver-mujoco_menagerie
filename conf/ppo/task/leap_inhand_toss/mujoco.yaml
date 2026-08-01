@@ -56,12 +56,6 @@ reward:
   thumb_lateral_sigma: 0.04
   reset_z_threshold: 0.4
 env:
-  scene:
-    joint_dynamics:
-      joint_names: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
-      damping: 0.03
-      frictionloss: 0.001
-      armature: 0.01
   sim_dt: 0.008333333333333333
   ctrl_dt: 0.05
   max_episode_seconds: 15.0
@@ -94,8 +88,6 @@ env:
     scale_joint_angle: 0.02
   control_config:
     action_scale: 0.041666666666666664
-    kp: 3.0
-    kd: 0.01
   domain_rand:
     randomize_base_mass: false
     random_com: false

@@ -217,8 +217,8 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--ctrl", type=float, nargs=HAND_DOF)
     parser.add_argument(
         "--selected-joint",
-        default="13",
-        help="Initial MuJoCo joint name (default: 13).",
+        default="th_axl",
+        help="Initial MuJoCo joint name (default: th_axl).",
     )
     parser.add_argument("--ball-position-span", type=float, default=0.08)
     parser.add_argument("--camera-azimuth", type=float, default=135.0)

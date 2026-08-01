@@ -7,6 +7,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from unilab.envs.manipulation.leap_inhand.base import MENAGERIE_SIM_JOINT_NAMES
+
 _SCRIPT_PATH = (
     Path(__file__).parent.parent.parent
     / "scripts"
@@ -29,7 +31,9 @@ def test_load_candidate_validates_and_normalizes_quaternion(tmp_path: Path):
     path.write_text(
         json.dumps(
             {
-                "coordinate_contract": {"qpos_joint_names": [str(i) for i in range(16)]},
+                "coordinate_contract": {
+                    "qpos_joint_names": list(MENAGERIE_SIM_JOINT_NAMES)
+                },
                 "qpos": [*np.arange(19, dtype=float), 2.0, 0.0, 0.0, 0.0],
                 "ctrl": np.arange(16, dtype=float).tolist(),
             }
@@ -41,7 +45,7 @@ def test_load_candidate_validates_and_normalizes_quaternion(tmp_path: Path):
 
     np.testing.assert_allclose(qpos[19:23], [1.0, 0.0, 0.0, 0.0])
     np.testing.assert_allclose(ctrl, np.arange(16, dtype=float))
-    assert joint_names == tuple(str(i) for i in range(16))
+    assert joint_names == MENAGERIE_SIM_JOINT_NAMES
 
 
 def test_load_candidate_rejects_duplicate_joint_names(tmp_path: Path):
@@ -50,7 +54,7 @@ def test_load_candidate_rejects_duplicate_joint_names(tmp_path: Path):
     path.write_text(
         json.dumps(
             {
-                "coordinate_contract": {"qpos_joint_names": ["0"] * 16},
+                "coordinate_contract": {"qpos_joint_names": ["if_mcp"] * 16},
                 "qpos": [*np.zeros(19), 1.0, 0.0, 0.0, 0.0],
                 "ctrl": np.zeros(16).tolist(),
             }
@@ -69,14 +73,14 @@ def test_build_probe_targets_creates_signed_single_joint_batch():
 
     targets, probes = mod.build_probe_targets(
         ctrl,
-        [str(index) for index in range(16)],
+        MENAGERIE_SIM_JOINT_NAMES,
         limits,
         0.04,
     )
 
     assert targets.shape == (33, 16)
     np.testing.assert_allclose(targets[0], 0.0)
-    assert probes[1]["joint_name"] == "0"
+    assert probes[1]["joint_name"] == "if_mcp"
     assert probes[1]["applied_delta_rad"] == pytest.approx(-0.04)
     assert probes[2]["applied_delta_rad"] == pytest.approx(0.04)
     assert np.count_nonzero(targets[1]) == 1
@@ -91,7 +95,7 @@ def test_build_probe_targets_reports_limit_clipping():
 
     targets, probes = mod.build_probe_targets(
         ctrl,
-        [str(index) for index in range(16)],
+        MENAGERIE_SIM_JOINT_NAMES,
         limits,
         0.04,
     )

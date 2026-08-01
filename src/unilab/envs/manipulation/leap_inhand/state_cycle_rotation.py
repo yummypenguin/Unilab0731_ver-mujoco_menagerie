@@ -693,7 +693,7 @@ class LeapInhandBallStateCycleRotationCfg(AllegroRotationPPOCfg):
     sim_dt: float = 0.005
     ctrl_dt: float = 0.05
     control_config: ControlConfig = field(
-        default_factory=lambda: ControlConfig(action_scale=1.0 / 24.0, kp=3.0, kd=0.1)
+        default_factory=lambda: ControlConfig(action_scale=1.0 / 24.0, kp=3.0, kd=0.01)
     )
     noise_config: NoiseConfig = field(default_factory=lambda: NoiseConfig(level=0.0))
     reward_config: StateCycleRewardConfig | None = None
@@ -830,8 +830,6 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         "leap_ring_contact",
         "leap_thumb_contact",
     )
-    _PALM_CONTACT_SENSOR_NAME = "leap_palm_contact"
-
     def __init__(
         self,
         cfg: LeapInhandBallStateCycleRotationCfg,
@@ -903,8 +901,7 @@ class LeapInhandBallStateCycleRotationEnv(AllegroRotationPPO, LeapHandBaseEnv):
         return np.asarray(contacts[env_ids] > 0.5, dtype=bool)
 
     def _palm_contacts(self, env_ids: np.ndarray) -> np.ndarray:
-        contacts = self._backend.get_sensor_data_batch((self._PALM_CONTACT_SENSOR_NAME,))
-        return np.asarray(contacts[env_ids, 0] > 0.5, dtype=self._np_dtype)
+        return np.asarray(self.get_palm_contact_flags(env_ids), dtype=self._np_dtype)
 
     def _palm_pose(self, env_ids: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         palm_pos = self._backend.get_body_pos_w(self._palm_body_ids)[env_ids, 0, :]

@@ -330,8 +330,6 @@ class LeapInhandBallSustainedRotationEnv(LeapInhandBallRotationV2Env):
     _cfg: LeapInhandBallSustainedRotationCfg
     _reward_cfg: SustainedRotationRewardConfig
     _NUM_SUSTAINED_OBS = 100
-    _PALM_CONTACT_SENSOR_NAME = "leap_palm_contact"
-
     def __init__(
         self,
         cfg: LeapInhandBallSustainedRotationCfg,
@@ -360,8 +358,7 @@ class LeapInhandBallSustainedRotationEnv(LeapInhandBallRotationV2Env):
         return {"obs": self._NUM_SUSTAINED_OBS}
 
     def _palm_contacts(self, env_ids: np.ndarray) -> np.ndarray:
-        contacts = self._backend.get_sensor_data_batch((self._PALM_CONTACT_SENSOR_NAME,))
-        return np.asarray(contacts[env_ids, 0] > 0.5, dtype=self._np_dtype)
+        return np.asarray(self.get_palm_contact_flags(env_ids), dtype=self._np_dtype)
 
     def _compute_sustained_obs(
         self, env_ids: np.ndarray, info: dict[str, Any]
@@ -491,12 +488,14 @@ class LeapInhandBallSustainedRotationEnv(LeapInhandBallRotationV2Env):
             np.square(np.asarray(info["current_actions"]) - np.asarray(info["last_actions"])),
             axis=1,
         )
+        kp, kd = self.get_pd_gains()
         torques = compute_pd_torques(
             targets=np.asarray(info["prev_ctrl"]),
             dof_pos=dof_pos,
             dof_vel=dof_vel,
-            kp=self._cfg.control_config.kp,
-            kd=self._cfg.control_config.kd,
+            kp=kp,
+            kd=kd,
+            torque_limit=self._PD_TORQUE_LIMIT,
         )
         torque_cost = np.sum(np.square(torques), axis=1)
         work_cost = np.square(np.sum(torques * dof_vel, axis=1))

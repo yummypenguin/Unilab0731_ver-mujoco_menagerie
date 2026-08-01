@@ -30,8 +30,8 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--joints",
         nargs="+",
-        default=["8", "10"],
-        help="LEAP joint names to probe (default: 8 10).",
+        default=["rf_rot", "rf_pip"],
+        help="LEAP joint names to probe (default: rf_rot rf_pip).",
     )
     parser.add_argument(
         "--deltas",

@@ -28,6 +28,12 @@ def test_normalize_pose_qpos_normalizes_only_ball_quaternion():
     assert normalized is not qpos
 
 
+def test_pose_editor_defaults_to_menagerie_thumb_joint_name():
+    mod = _load_script()
+
+    assert mod._parse_args([]).selected_joint == "th_axl"
+
+
 def test_apply_joint_delta_clips_and_synchronizes_ctrl():
     mod = _load_script()
     qpos = np.zeros(23, dtype=np.float64)

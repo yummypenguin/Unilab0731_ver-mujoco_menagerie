@@ -43,6 +43,23 @@ class AllegroBaseEnv(NpEnv):
     _init_qpos: np.ndarray
     _init_qvel: np.ndarray
 
+    def _backend_position_actuator_gains(
+        self,
+        cfg: AllegroBaseCfg,
+        backend_type: str,
+    ) -> dict[str, object] | None:
+        """Return task-owned gains for backends that support runtime overrides."""
+        del backend_type
+        return {
+            "kp": cfg.control_config.kp,
+            "kd": cfg.control_config.kd,
+            "actuator_ids": slice(0, self._NUM_HAND_DOF),
+        }
+
+    def get_pd_gains(self) -> tuple[float, float]:
+        """Return the gains used by reward and diagnostic torque estimates."""
+        return float(self._cfg.control_config.kp), float(self._cfg.control_config.kd)
+
     def __init__(self, cfg: AllegroBaseCfg, backend: SimBackend, num_envs: int = 1):
         super().__init__(cfg, backend, num_envs)
 

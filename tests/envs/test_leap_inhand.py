@@ -15,7 +15,8 @@ from unilab.assets import ASSETS_ROOT_PATH
 from unilab.base import registry
 from unilab.base.backend.mujoco.backend import MuJoCoBackend
 from unilab.base.registry import ensure_registries
-from unilab.base.scene import JointDynamicsCfg, SceneCfg
+from unilab.base.scene import SceneCfg
+from unilab.envs.manipulation.allegro_inhand.rotation import compute_pd_torques
 from unilab.envs.manipulation.leap_inhand.allegro_faithful_rotation import (
     LeapInhandBallAllegroRotationCfg,
 )
@@ -34,7 +35,11 @@ from unilab.envs.manipulation.leap_inhand.ball_grasp_gen import (
     select_frontier_rows,
 )
 from unilab.envs.manipulation.leap_inhand.ball_rotation import LeapInhandBallRotationCfg
-from unilab.envs.manipulation.leap_inhand.base import UNILAB_SIM_JOINT_ORDER
+from unilab.envs.manipulation.leap_inhand.base import (
+    LEAP_PALM_CONTACT_SENSOR_NAMES,
+    MENAGERIE_SIM_JOINT_NAMES,
+    LeapHandBaseEnv,
+)
 from unilab.envs.manipulation.leap_inhand.cache_rotation import (
     LeapInhandBallCacheRotationCfg,
     LeapInhandBallCacheRotationEnv,
@@ -94,50 +99,57 @@ from unilab.envs.manipulation.leap_inhand.toss import (
 
 LEAP_ASSET_DIR = Path(ASSETS_ROOT_PATH) / "robots" / "leap_hand"
 
-LEAP_COLLISION_VISUAL_GEOM_PAIRS = (
-    ("palm_lower_collision", "palm_lower_visual"),
-    ("index_mcp_col", "mcp_joint_visual"),
-    ("index_pip_col", "pip_visual"),
-    ("index_dip_col", "dip_visual"),
-    ("index_tip_col", "fingertip_visual"),
-    ("middle_mcp_col", "mcp_joint_2_visual"),
-    ("middle_pip_col", "pip_2_visual"),
-    ("middle_dip_col", "dip_2_visual"),
-    ("middle_tip_col", "fingertip_2_visual"),
-    ("ring_mcp_col", "mcp_joint_3_visual"),
-    ("ring_pip_col", "pip_3_visual"),
-    ("ring_dip_col", "dip_3_visual"),
-    ("ring_tip_col", "fingertip_3_visual"),
-    ("thumb_base_col", "pip_4_visual"),
-    ("thumb_pip_col", "thumb_pip_visual"),
-    ("thumb_dip_col", "thumb_dip_visual"),
-    ("thumb_tip_col", "thumb_fingertip_visual"),
+MENAGERIE_ACTUATOR_NAMES = tuple(f"{name}_act" for name in MENAGERIE_SIM_JOINT_NAMES)
+MENAGERIE_JOINT_RANGES = np.asarray(
+    [
+        [-0.314, 2.23],
+        [-1.047, 1.047],
+        [-0.506, 1.885],
+        [-0.366, 2.042],
+        [-0.314, 2.23],
+        [-1.047, 1.047],
+        [-0.506, 1.885],
+        [-0.366, 2.042],
+        [-0.314, 2.23],
+        [-1.047, 1.047],
+        [-0.506, 1.885],
+        [-0.366, 2.042],
+        [-0.349, 2.094],
+        [-0.349, 2.094],
+        [-0.47, 2.443],
+        [-1.34, 1.88],
+    ]
 )
 
-LEAP_ADJACENT_BODY_EXCLUDES = {
+MENAGERIE_BODY_EXCLUDES = {
     frozenset(pair)
     for pair in (
         ("palm_lower", "mcp_joint"),
-        ("mcp_joint", "pip"),
-        ("pip", "dip"),
-        ("dip", "fingertip"),
         ("palm_lower", "mcp_joint_2"),
-        ("mcp_joint_2", "pip_2"),
-        ("pip_2", "dip_2"),
-        ("dip_2", "fingertip_2"),
         ("palm_lower", "mcp_joint_3"),
-        ("mcp_joint_3", "pip_3"),
-        ("pip_3", "dip_3"),
-        ("dip_3", "fingertip_3"),
         ("palm_lower", "pip_4"),
-        ("pip_4", "thumb_pip"),
-        ("thumb_pip", "thumb_dip"),
-        ("thumb_dip", "thumb_fingertip"),
+        ("palm_lower", "pip"),
+        ("palm_lower", "pip_2"),
+        ("palm_lower", "pip_3"),
+        ("palm_lower", "thumb_pip"),
+        ("palm_lower", "dip"),
+        ("palm_lower", "dip_2"),
+        ("palm_lower", "dip_3"),
+        ("palm_lower", "thumb_dip"),
+        ("mcp_joint", "mcp_joint_2"),
+        ("mcp_joint", "mcp_joint_3"),
+        ("mcp_joint_2", "mcp_joint_3"),
+        ("pip_4", "mcp_joint"),
+        ("pip_4", "mcp_joint_2"),
+        ("pip_4", "mcp_joint_3"),
     )
 }
 
 
-@pytest.mark.parametrize("scene_name", ["scene.xml", "scene_ball.xml", "scene_toss.xml"])
+@pytest.mark.parametrize(
+    "scene_name",
+    ["scene.xml", "scene_ball.xml", "scene_toss.xml", "scene_ball_state_cycle_visual.xml"],
+)
 def test_leap_scene_compiles_with_aligned_joint_and_actuator_order(scene_name: str) -> None:
     mujoco = pytest.importorskip("mujoco")
     model = mujoco.MjModel.from_xml_path(str(LEAP_ASSET_DIR / scene_name))
@@ -147,27 +159,49 @@ def test_leap_scene_compiles_with_aligned_joint_and_actuator_order(scene_name: s
     assert model.nu == 16
     assert model.nkey == 1
     joint_names = [mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, i) for i in range(16)]
+    actuator_names = [
+        mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_ACTUATOR, i) for i in range(16)
+    ]
     actuator_joint_ids = model.actuator_trnid[:16, 0]
-    assert joint_names == [str(index) for index in UNILAB_SIM_JOINT_ORDER]
+    assert joint_names == list(MENAGERIE_SIM_JOINT_NAMES)
+    assert actuator_names == list(MENAGERIE_ACTUATOR_NAMES)
     np.testing.assert_array_equal(actuator_joint_ids, np.arange(16))
+    np.testing.assert_array_equal(model.jnt_qposadr[:16], np.arange(16))
+    np.testing.assert_allclose(model.jnt_range[:16], MENAGERIE_JOINT_RANGES)
+    np.testing.assert_allclose(model.actuator_ctrlrange, MENAGERIE_JOINT_RANGES)
     assert mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, "floating_base") == -1
+    assert model.opt.integrator == mujoco.mjtIntegrator.mjINT_IMPLICITFAST
+    assert model.opt.cone == mujoco.mjtCone.mjCONE_ELLIPTIC
+    assert model.opt.impratio == pytest.approx(100.0)
+
+    np.testing.assert_allclose(model.dof_damping[:16], 0.03)
+    np.testing.assert_allclose(model.dof_frictionloss[:16], 0.001)
+    np.testing.assert_allclose(model.dof_armature[:16], 0.01)
+    np.testing.assert_allclose(model.actuator_gainprm[:, 0], 3.0)
+    np.testing.assert_allclose(model.actuator_biasprm[:, 1], -3.0)
+    np.testing.assert_allclose(model.actuator_biasprm[:, 2], -0.01)
+    np.testing.assert_array_equal(model.actuator_forcelimited, np.zeros(16, dtype=np.uint8))
 
     data = mujoco.MjData(model)
     mujoco.mj_resetDataKeyframe(model, data, 0)
     mujoco.mj_forward(model, data)
 
-    for collision_name, visual_name in LEAP_COLLISION_VISUAL_GEOM_PAIRS:
-        collision_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, collision_name)
-        visual_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, visual_name)
-        assert model.geom_type[collision_id] == mujoco.mjtGeom.mjGEOM_MESH
-        assert model.geom_dataid[collision_id] == model.geom_dataid[visual_id]
-        assert model.geom_contype[collision_id] == 1
-        assert model.geom_conaffinity[collision_id] == 1
-        np.testing.assert_allclose(data.geom_xpos[collision_id], data.geom_xpos[visual_id])
-        np.testing.assert_allclose(data.geom_xmat[collision_id], data.geom_xmat[visual_id])
-
-    np.testing.assert_array_equal(model.actuator_forcelimited, np.ones(16, dtype=np.uint8))
-    np.testing.assert_allclose(model.actuator_forcerange, np.tile([-0.5, 0.5], (16, 1)))
+    for body_name in (
+        "palm_lower",
+        "fingertip",
+        "fingertip_2",
+        "fingertip_3",
+        "thumb_fingertip",
+    ):
+        assert mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name) >= 0
+    for index in range(1, 11):
+        geom_id = mujoco.mj_name2id(
+            model, mujoco.mjtObj.mjOBJ_GEOM, f"palm_collision_{index}"
+        )
+        assert model.geom_type[geom_id] == mujoco.mjtGeom.mjGEOM_BOX
+    for geom_name in ("index_tip_col", "middle_tip_col", "ring_tip_col", "thumb_tip_col"):
+        geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, geom_name)
+        assert model.geom_type[geom_id] == mujoco.mjtGeom.mjGEOM_MESH
 
     mujoco.mj_step(model, data)
     assert np.isfinite(data.qpos).all()
@@ -189,27 +223,16 @@ def test_leap_scene_compiles_with_aligned_joint_and_actuator_order(scene_name: s
 def test_leap_mujoco_profile_matches_menagerie_joint_and_actuator_dynamics() -> None:
     mujoco = pytest.importorskip("mujoco")
     backend = MuJoCoBackend(
-        SceneCfg(
-            model_file=str(LEAP_ASSET_DIR / "scene_ball.xml"),
-            joint_dynamics=JointDynamicsCfg(
-                joint_names=[str(index) for index in UNILAB_SIM_JOINT_ORDER],
-                damping=0.03,
-                frictionloss=0.001,
-                armature=0.01,
-            ),
-        ),
+        SceneCfg(model_file=str(LEAP_ASSET_DIR / "scene_ball.xml")),
         num_envs=1,
         sim_dt=0.005,
         base_name="palm_lower",
-        position_actuator_gains={"kp": 3.0, "kd": 0.01},
     )
     model = backend._model
     hand_dof_ids = np.asarray(
         [
-            model.jnt_dofadr[
-                mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, str(joint_name))
-            ]
-            for joint_name in UNILAB_SIM_JOINT_ORDER
+            model.jnt_dofadr[mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, joint_name)]
+            for joint_name in MENAGERIE_SIM_JOINT_NAMES
         ],
         dtype=np.int32,
     )
@@ -265,23 +288,108 @@ def test_leap_ball_rotation_marker_is_visual_only() -> None:
 
 def test_leap_ball_scene_defines_palm_contact_sensor() -> None:
     root = ET.parse(LEAP_ASSET_DIR / "scene_ball.xml").getroot()
-    sensor = root.find("./sensor/contact[@name='leap_palm_contact']")
+    sensors = {
+        sensor.attrib["name"]: sensor for sensor in root.findall("./sensor/contact")
+    }
 
-    assert sensor is not None
-    assert sensor.attrib["geom1"] == "palm_lower_collision"
-    assert sensor.attrib["geom2"] == "leap_object_col"
-    assert sensor.attrib["data"] == "found"
+    for index, sensor_name in enumerate(LEAP_PALM_CONTACT_SENSOR_NAMES, start=1):
+        sensor = sensors[sensor_name]
+        assert sensor.attrib["geom1"] == f"palm_collision_{index}"
+        assert sensor.attrib["geom2"] == "leap_object_col"
+        assert sensor.attrib["data"] == "found"
 
 
-def test_leap_contact_excludes_only_directly_connected_links() -> None:
+def test_leap_contact_excludes_match_menagerie_filtering() -> None:
     root = ET.parse(LEAP_ASSET_DIR / "leap_hand.xml").getroot()
     actual = {
         frozenset((exclude.attrib["body1"], exclude.attrib["body2"]))
         for exclude in root.findall("./contact/exclude")
     }
 
-    assert actual == LEAP_ADJACENT_BODY_EXCLUDES
+    assert actual == MENAGERIE_BODY_EXCLUDES
     assert frozenset(("palm_lower", "thumb_fingertip")) not in actual
+
+
+def test_leap_asset_records_pinned_menagerie_provenance() -> None:
+    source = (LEAP_ASSET_DIR / "SOURCE.md").read_text(encoding="utf-8")
+    robot = (LEAP_ASSET_DIR / "leap_hand.xml").read_text(encoding="utf-8")
+
+    assert "71f066ad0be9cd271f7ed58c030243ef157af9f4" in source
+    assert "leap_hand/right_hand.xml" in source
+    assert "armature=0.01" in source
+    assert (LEAP_ASSET_DIR / "LICENSE.menagerie").is_file()
+    assert len(list((LEAP_ASSET_DIR / "assets" / "menagerie").glob("*.obj"))) == 14
+    assert 'meshdir="assets/menagerie"' in robot
+    assert "forcerange" not in robot
+    assert "actuatorfrcrange" not in robot
+    assert ".stl" not in robot
+
+
+def test_leap_palm_contact_helper_aggregates_all_collision_boxes() -> None:
+    seen: list[tuple[str, ...]] = []
+
+    class FakeBackend:
+        def get_sensor_data_batch(self, names) -> np.ndarray:
+            seen.append(tuple(names))
+            values = np.zeros((3, 10), dtype=np.float32)
+            values[0, 0] = 1.0
+            values[2, 9] = 1.0
+            return values
+
+    env = SimpleNamespace(_backend=FakeBackend())
+
+    np.testing.assert_array_equal(
+        LeapHandBaseEnv.get_palm_contact_flags(env),
+        [True, False, True],
+    )
+    np.testing.assert_array_equal(
+        LeapHandBaseEnv.get_palm_contact_flags(env, np.asarray([2, 1])),
+        [True, False],
+    )
+    assert seen == [LEAP_PALM_CONTACT_SENSOR_NAMES, LEAP_PALM_CONTACT_SENSOR_NAMES]
+
+
+def test_pd_torque_limit_is_explicit_and_leap_uses_unclipped_estimate() -> None:
+    targets = np.asarray([[1.0, -1.0]], dtype=np.float32)
+    zeros = np.zeros_like(targets)
+
+    unclipped = compute_pd_torques(targets, zeros, zeros, kp=3.0, kd=0.01)
+    clipped = compute_pd_torques(
+        targets,
+        zeros,
+        zeros,
+        kp=3.0,
+        kd=0.01,
+        torque_limit=0.5,
+    )
+
+    np.testing.assert_allclose(unclipped, [[3.0, -3.0]])
+    np.testing.assert_allclose(clipped, [[0.5, -0.5]])
+    assert LeapHandBaseEnv._PD_TORQUE_LIMIT is None
+
+
+def test_leap_mujoco_model_owned_pd_gains_cannot_be_overridden() -> None:
+    cfg = SimpleNamespace(
+        scene=SimpleNamespace(joint_dynamics=None),
+        control_config=SimpleNamespace(kp=3.0, kd=0.01),
+    )
+    env = SimpleNamespace(
+        _MODEL_PD_KP=3.0,
+        _MODEL_PD_KD=0.01,
+    )
+
+    assert LeapHandBaseEnv._backend_position_actuator_gains(env, cfg, "mujoco") is None
+    assert env._uses_model_owned_pd_gains is True
+    assert LeapHandBaseEnv.get_pd_gains(env) == (3.0, 0.01)
+
+    cfg.control_config.kd = 0.02
+    with pytest.raises(ValueError, match="model-owned constants"):
+        LeapHandBaseEnv._backend_position_actuator_gains(env, cfg, "mujoco")
+
+    cfg.control_config.kd = 0.01
+    cfg.scene.joint_dynamics = object()
+    with pytest.raises(ValueError, match="joint_dynamics overrides are not allowed"):
+        LeapHandBaseEnv._backend_position_actuator_gains(env, cfg, "mujoco")
 
 
 def test_leap_cube_grasp_cache_matches_mujoco_layout() -> None:
@@ -317,7 +425,7 @@ def test_leap_ball_grasp_cache_is_independent_and_matches_layout() -> None:
         assert "reset_source: home" in owner
 
 
-def test_leap_ball_home_matches_validated_candidate() -> None:
+def test_leap_ball_home_matches_menagerie_named_candidate() -> None:
     mujoco = pytest.importorskip("mujoco")
     candidate = json.loads(
         (LEAP_ASSET_DIR / "canonical_poses" / "ball_candidate_01.json").read_text(encoding="utf-8")
@@ -325,6 +433,11 @@ def test_leap_ball_home_matches_validated_candidate() -> None:
     model = mujoco.MjModel.from_xml_path(str(LEAP_ASSET_DIR / "scene_ball.xml"))
     key_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "home")
 
+    assert tuple(candidate["coordinate_contract"]["qpos_joint_names"]) == (
+        MENAGERIE_SIM_JOINT_NAMES
+    )
+    assert candidate["status"] == "requires_revalidation"
+    assert candidate["validation"]["valid_for_current_model"] is False
     np.testing.assert_allclose(model.key_qpos[key_id], candidate["qpos"], atol=1e-7)
     np.testing.assert_allclose(model.key_ctrl[key_id], candidate["ctrl"], atol=1e-7)
 
@@ -635,7 +748,7 @@ def test_leap_ball_grasp_settling_diagnostic_uses_quality_contract() -> None:
         )
         probe_reports = env.diagnose_joint_coordinate_probes(
             qpos,
-            joint_names=["7"],
+            joint_names=["mf_dip"],
             delta_magnitudes=np.asarray([0.005]),
             settle_seconds=env.cfg.ctrl_dt,
         )
@@ -683,7 +796,11 @@ def test_leap_ball_grasp_settling_diagnostic_uses_quality_contract() -> None:
     assert set(replay.measurements) == set(report["measurements"])
 
     assert len(probe_reports) == 3
-    assert [item["probe"]["joint"] for item in probe_reports] == ["baseline", "7", "7"]
+    assert [item["probe"]["joint"] for item in probe_reports] == [
+        "baseline",
+        "mf_dip",
+        "mf_dip",
+    ]
     np.testing.assert_allclose(
         [item["probe"]["delta"] for item in probe_reports],
         [0.0, -0.005, 0.005],
@@ -888,8 +1005,7 @@ def test_allegro_faithful_leap_ball_reset_and_step(backend: str) -> None:
             np.broadcast_to(env.default_angles[None, :], (2, 16)),
             atol=1e-5,
         )
-        palm_contact = np.asarray(env.get_sensor_data("leap_palm_contact")).reshape(2, -1)
-        assert not np.any(palm_contact > 0.5)
+        assert not np.any(env.get_palm_contact_flags())
 
         zeros_dof = np.zeros((2, 16), dtype=np.float32)
         zeros_vec = np.zeros((2, 3), dtype=np.float32)

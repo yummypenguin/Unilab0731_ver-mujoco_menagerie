@@ -2,7 +2,8 @@
   <asset>
     <texture name="leap_ball_beach_texture" type="2d"
              file="textures/leap_ball_beach.png"/>
-    <mesh name="leap_ball_visual_mesh" file="leap_ball_visual.obj"
+    <!-- leap_hand.xml sets meshdir=assets/menagerie for the robot meshes. -->
+    <mesh name="leap_ball_visual_mesh" file="../leap_ball_visual.obj"
           scale="0.0335 0.0335 0.0335"/>
     <material name="leap_ball_material" texture="leap_ball_beach_texture"
               rgba="1 1 1 1" specular="0.2" shininess="0.3"/>

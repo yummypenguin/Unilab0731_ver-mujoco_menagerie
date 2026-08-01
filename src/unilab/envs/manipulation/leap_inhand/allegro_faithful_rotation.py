@@ -28,8 +28,6 @@ class LeapInhandBallAllegroRotationEnv(LeapInhandBallRotationEnv):
     """LEAP ball rotation with raw pose cost and palm-contact termination."""
 
     _cfg: LeapInhandBallAllegroRotationCfg
-    _PALM_CONTACT_SENSOR = "leap_palm_contact"
-
     def _compute_drop_event(self, ball_pos: np.ndarray) -> np.ndarray:
         return np.asarray(
             ball_pos[:, 2] < self._reward_cfg.reset_z_threshold,
@@ -38,11 +36,7 @@ class LeapInhandBallAllegroRotationEnv(LeapInhandBallRotationEnv):
 
     def _compute_terminated(self, ball_pos: np.ndarray) -> np.ndarray:
         del ball_pos
-        sensor = np.asarray(
-            self.get_sensor_data(self._PALM_CONTACT_SENSOR),
-            dtype=get_global_dtype(),
-        ).reshape(self._num_envs, -1)
-        return np.asarray(np.any(sensor > 0.5, axis=1), dtype=bool)
+        return self.get_palm_contact_flags()
 
     def _reward_drop(
         self,

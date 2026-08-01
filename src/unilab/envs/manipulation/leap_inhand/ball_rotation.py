@@ -32,7 +32,7 @@ class LeapInhandBallRotationCfg(AllegroRotationPPOCfg):
     )
     sim_dt: float = 1.0 / 120.0
     control_config: ControlConfig = field(
-        default_factory=lambda: ControlConfig(action_scale=1.0 / 24.0, kp=3.0, kd=0.1)
+        default_factory=lambda: ControlConfig(action_scale=1.0 / 24.0, kp=3.0, kd=0.01)
     )
     grasp_cache_path: str = "robots/leap_hand/caches/ball_grasp_s10_5k.npy"
     reset_source: str = "cache"
