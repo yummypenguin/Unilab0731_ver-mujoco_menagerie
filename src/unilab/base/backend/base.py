@@ -213,6 +213,22 @@ class SimBackend(abc.ABC):
             f"{self.__class__.__name__} does not expose geom-pair distances"
         )
 
+    def get_geom_pair_distances_for_qpos(
+        self,
+        qpos: np.ndarray,
+        geom_pairs: np.ndarray,
+        *,
+        max_distance: float,
+    ) -> np.ndarray:
+        """Return signed geom distances after static FK of explicit qpos rows.
+
+        This low-frequency validation API must not mutate live environment state.
+        The result has shape ``(len(qpos), len(geom_pairs))``.
+        """
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not expose qpos geom-pair distances"
+        )
+
     def get_contact_penetration_depths(
         self,
         env_ids: np.ndarray,

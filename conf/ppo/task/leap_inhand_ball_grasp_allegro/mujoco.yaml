@@ -36,6 +36,7 @@ env:
   grasp_quality_check: true
   grasp_min_contacts: 2
   grasp_max_fingertip_distance: 0.1
+  grasp_max_fingertip_surface_gap: 0.005
   termination_drop_distance: 0.005
 
   grasp_dedup_enabled: true

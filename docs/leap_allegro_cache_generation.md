@@ -33,6 +33,18 @@ The three online conditions are evaluated from the first control step:
    ball Z minus 0.005 m. With the current nominal pose this threshold is
    `0.664301098275159 - 0.005 = 0.659301098275159 m`.
 
+After timeout success, all four fingertip collision surfaces must also be
+strictly less than 0.005 m from the ball collision surface. A gap equal to
+0.005 m is rejected. This final-row gate uses signed MuJoCo geom distances for
+`index_tip_col`, `middle_tip_col`, `ring_tip_col`, and `thumb_tip_col` against
+`leap_object_col`.
+
+The online backend state is checked first for efficiency. After the accepted
+state is serialized to its exact 23D float32 cache row, MuJoCo runs static FK on
+that row and repeats the same strict 5 mm check before deduplication. This makes
+the generator publication gate operate on the same representation reloaded by
+the inspector.
+
 Thumb contact is not required, and palm contact is not counted. There is no
 warmup. An environment terminates immediately when any condition fails. The
 episode timeout is 2.5 seconds (50 control steps at `ctrl_dt = 0.05` seconds),
@@ -60,6 +72,8 @@ enter the cache and do not count toward the 50,000-row target.
 The post-generation inspector applies the same nominal-height dataset gate.
 Rows with ball Z less than or equal to `0.659301098275159 m` are rejected. This
 is a static cache validation step; physics replay validation is not required.
+It also runs static `mj_forward` for each row and enforces the same strict
+5 mm fingertip-surface gap without advancing simulation time.
 
 The output path is:
 

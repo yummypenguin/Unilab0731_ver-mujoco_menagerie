@@ -23,6 +23,7 @@ from unilab.envs.manipulation.leap_inhand.ball_grasp_allegro import (
     LeapAllegroGraspResetProvider,
     LeapInhandBallGraspAllegroCfg,
     LeapInhandBallGraspAllegroEnv,
+    fingertip_surface_gap_mask,
     quantized_grasp_key,
 )
 from unilab.envs.manipulation.leap_inhand.ball_grasp_gen import (
@@ -87,18 +88,35 @@ def _provider_env(*, noise: float = 0.25):
     )
 
 
+class _SerializedSurfaceBackend:
+    def get_geom_pair_distances_for_qpos(
+        self,
+        qpos,
+        geom_pairs,
+        *,
+        max_distance,
+    ) -> np.ndarray:
+        del max_distance
+        return np.zeros((len(qpos), len(geom_pairs)), dtype=np.float32)
+
+
 def _dedup_env(*, enabled: bool = True):
     env = object.__new__(LeapInhandBallGraspAllegroEnv)
     env._cfg = SimpleNamespace(
         grasp_dedup_enabled=enabled,
         grasp_dedup_joint_resolution=0.001,
         grasp_dedup_ball_position_resolution=0.0005,
+        grasp_max_fingertip_surface_gap=0.005,
     )
+    env._backend = _SerializedSurfaceBackend()
+    env._tip_object_geom_pairs = np.zeros((4, 2), dtype=np.int32)
     env._saved_grasp_keys = set()
     env._saved_grasping_states = []
     env._dedup_candidates = 0
     env._dedup_rejected = 0
     env._dedup_accepted = 0
+    env._serialized_surface_candidates = 0
+    env._serialized_surface_rejected = 0
     env._state = None
     return env
 
@@ -146,10 +164,7 @@ def _load_inspector_module():
 def test_registration_and_hydra_contract() -> None:
     registered = registry.list_registered_envs()
     assert "LeapInhandBallGraspAllegro" in registered
-    assert set(registered["LeapInhandBallGraspAllegro"]["available_backends"]) == {
-        "mujoco",
-        "motrix",
-    }
+    assert registered["LeapInhandBallGraspAllegro"]["available_backends"] == ["mujoco"]
 
     cfg = _compose_cfg()
     seed = np.asarray(cfg.env.grasp_seed_qpos, dtype=np.float64)
@@ -159,6 +174,7 @@ def test_registration_and_hydra_contract() -> None:
     np.testing.assert_array_equal(seed, SEED)
     assert np.linalg.norm(seed[19:23]) == pytest.approx(1.0)
     assert cfg.env.grasp_max_fingertip_distance == pytest.approx(0.1)
+    assert cfg.env.grasp_max_fingertip_surface_gap == pytest.approx(0.005)
     assert cfg.reward.reset_z_threshold == pytest.approx(0.0)
     assert cfg.env.max_episode_seconds == pytest.approx(2.5)
     assert cfg.env.grasp_dedup_joint_resolution == pytest.approx(0.001)
@@ -177,6 +193,7 @@ def test_registration_and_hydra_contract() -> None:
         ({"grasp_seed_qpos": [0.0] * 22}, "shape"),
         ({"grasp_seed_qpos": [0.0] * 23}, "non-zero"),
         ({"grasp_max_fingertip_distance": 0.0}, "positive"),
+        ({"grasp_max_fingertip_surface_gap": 0.0}, "positive"),
         ({"grasp_collection_target": 0}, "positive"),
         ({"termination_drop_distance": 0.0}, "positive"),
         ({"grasp_min_contacts": 5}, "within"),
@@ -336,6 +353,21 @@ def test_contact_count_allows_index_middle_without_thumb_and_ignores_palm() -> N
     assert "leap_palm_contact" not in env._CONTACT_SENSORS
 
 
+def test_fingertip_surface_gap_requires_all_four_strictly_below_5_mm() -> None:
+    valid = fingertip_surface_gap_mask(
+        np.asarray(
+            [
+                [0.0, 0.001, 0.004999, -0.001],
+                [0.0, 0.001, 0.005, -0.001],
+                [0.0, 0.001, np.nan, -0.001],
+            ]
+        ),
+        max_gap=0.005,
+    )
+
+    np.testing.assert_array_equal(valid, [True, False, False])
+
+
 def test_first_update_has_no_warmup_and_terminates(monkeypatch) -> None:
     env = object.__new__(LeapInhandBallGraspAllegroEnv)
     env._num_envs = 1
@@ -402,6 +434,39 @@ def test_dedup_rejects_same_batch_cross_batch_and_quaternion_only_rows() -> None
     assert env._dedup_rejected == 3
     assert len(env._saved_grasp_keys) == 1
     assert env.state.info["log"]["grasp/dedup_rejection_rate"] == pytest.approx(0.75)
+
+
+def test_serialized_surface_gate_rechecks_exact_float32_rows_before_dedup() -> None:
+    class RejectSecondRowBackend(_SerializedSurfaceBackend):
+        def get_geom_pair_distances_for_qpos(
+            self,
+            qpos,
+            geom_pairs,
+            *,
+            max_distance,
+        ) -> np.ndarray:
+            distances = super().get_geom_pair_distances_for_qpos(
+                qpos,
+                geom_pairs,
+                max_distance=max_distance,
+            )
+            distances[np.asarray(qpos)[:, 0] > 0.5, 0] = 0.005
+            return distances
+
+    env = _dedup_env()
+    env._backend = RejectSecondRowBackend()
+    first = _row()
+    second = _row()
+    second[0] = 1.0
+
+    kept = env._filter_grasp_rows(np.stack([first, second]))
+
+    assert kept.shape == (1, 23)
+    np.testing.assert_array_equal(kept[0], first)
+    assert env._serialized_surface_candidates == 2
+    assert env._serialized_surface_rejected == 1
+    assert env._dedup_candidates == 1
+    assert env._dedup_accepted == 1
 
 
 def test_dedup_quantization_cells_and_quaternion_exclusion() -> None:
@@ -510,7 +575,6 @@ def test_new_environment_does_not_define_strict_leap_paths() -> None:
     forbidden_attributes = {
         "grasp_require_thumb_contact",
         "grasp_warmup_seconds",
-        "grasp_max_fingertip_surface_gap",
         "grasp_max_ball_drift",
         "grasp_max_ball_linear_speed",
         "grasp_max_ball_angular_speed",
@@ -523,7 +587,6 @@ def test_new_environment_does_not_define_strict_leap_paths() -> None:
     cfg_fields = LeapInhandBallGraspAllegroCfg.__dataclass_fields__
     assert forbidden_attributes.isdisjoint(cfg_fields)
     assert "_strict_quality_mask" not in LeapInhandBallGraspAllegroEnv.__dict__
-    assert "_fingertip_surface_quality" not in LeapInhandBallGraspAllegroEnv.__dict__
     assert "_penetration_quality" not in LeapInhandBallGraspAllegroEnv.__dict__
     assert "replay_validate_grasp_cache_rows" not in LeapInhandBallGraspAllegroEnv.__dict__
     assert "update_state" not in LeapInhandBallGraspAllegroEnv.__dict__
@@ -534,7 +597,6 @@ def test_new_environment_does_not_define_strict_leap_paths() -> None:
     environment_source = inspect.getsource(LeapInhandBallGraspAllegroEnv)
     for forbidden_path in (
         "_backend.set_state",
-        "_fingertip_surface_quality",
         "_penetration_quality",
         "replay_validate_grasp_cache_rows",
         "_strict_quality_mask",

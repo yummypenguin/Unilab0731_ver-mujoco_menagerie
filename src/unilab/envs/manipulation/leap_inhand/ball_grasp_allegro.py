@@ -41,6 +41,32 @@ def quantized_grasp_key(
     return tuple(int(value) for value in np.concatenate([hand_key, ball_key]))
 
 
+def fingertip_surface_gap_mask(
+    signed_distances: np.ndarray,
+    *,
+    max_gap: float,
+) -> np.ndarray:
+    """Require all four fingertip collision surfaces strictly within ``max_gap``."""
+    raw_distances = np.asarray(signed_distances)
+    distance_dtype = (
+        raw_distances.dtype
+        if np.issubdtype(raw_distances.dtype, np.floating)
+        else np.dtype(np.float64)
+    )
+    distances = np.asarray(raw_distances, dtype=distance_dtype)
+    if distances.ndim != 2 or distances.shape[1] != 4:
+        raise ValueError(f"signed_distances must have shape (?, 4), got {distances.shape}")
+    if not np.isfinite(max_gap) or max_gap <= 0.0:
+        raise ValueError("max_gap must be positive and finite")
+    typed_max_gap = np.asarray(max_gap, dtype=distance_dtype).item()
+    surface_gaps = np.maximum(distances, np.asarray(0.0, dtype=distance_dtype))
+    return np.asarray(
+        np.all(np.isfinite(distances), axis=1)
+        & (np.max(surface_gaps, axis=1) < typed_max_gap),
+        dtype=bool,
+    )
+
+
 @registry.envcfg("LeapInhandBallGraspAllegro")
 @dataclass
 class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
@@ -56,6 +82,7 @@ class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
     grasp_min_contacts: int = 2
     grasp_seed_qpos: list[float] = field(default_factory=list)
     grasp_max_fingertip_distance: float = 0.1
+    grasp_max_fingertip_surface_gap: float = 0.005
     termination_drop_distance: float = 0.005
     grasp_dedup_enabled: bool = True
     grasp_dedup_joint_resolution: float = 0.001
@@ -77,6 +104,11 @@ class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
             raise ValueError("grasp_max_fingertip_distance must be positive and finite")
         if self.grasp_collection_target <= 0:
             raise ValueError("grasp_collection_target must be positive")
+        if (
+            not np.isfinite(self.grasp_max_fingertip_surface_gap)
+            or self.grasp_max_fingertip_surface_gap <= 0.0
+        ):
+            raise ValueError("grasp_max_fingertip_surface_gap must be positive and finite")
         if (
             not np.isfinite(self.termination_drop_distance)
             or self.termination_drop_distance <= 0.0
@@ -136,7 +168,6 @@ class LeapAllegroGraspResetProvider(AllegroRotationDomainRandomizationProvider):
 
 
 @registry.env("LeapInhandBallGraspAllegro", sim_backend="mujoco")
-@registry.env("LeapInhandBallGraspAllegro", sim_backend="motrix")
 class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
     """Allegro-equivalent physical acceptance plus final-row deduplication."""
 
@@ -147,6 +178,12 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
         "leap_ring_contact",
         "leap_thumb_contact",
     )
+    _FINGERTIP_GEOMS = (
+        "index_tip_col",
+        "middle_tip_col",
+        "ring_tip_col",
+        "thumb_tip_col",
+    )
 
     def __init__(
         self,
@@ -154,11 +191,22 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
         num_envs: int = 1,
         backend_type: str = "mujoco",
     ) -> None:
+        self._tip_object_geom_pairs: np.ndarray | None = None
         self._saved_grasp_keys: set[tuple[int, ...]] = set()
         self._dedup_candidates = 0
         self._dedup_rejected = 0
         self._dedup_accepted = 0
+        self._serialized_surface_candidates = 0
+        self._serialized_surface_rejected = 0
         super().__init__(cfg, num_envs=num_envs, backend_type=backend_type)
+        object_geom_id = self._backend.get_geom_id("leap_object_col")
+        self._tip_object_geom_pairs = np.asarray(
+            [
+                (self._backend.get_geom_id(name), object_geom_id)
+                for name in self._FINGERTIP_GEOMS
+            ],
+            dtype=np.int32,
+        )
 
     def _make_domain_randomization_provider(self) -> DomainRandomizationProvider:
         return LeapAllegroGraspResetProvider()
@@ -192,12 +240,61 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
             np.asarray(cond3, dtype=bool),
         )
 
+    def _surface_gap_quality(
+        self,
+        env_ids: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        if self._tip_object_geom_pairs is None:
+            raise RuntimeError("fingertip surface geom pairs were not initialized")
+        limit = float(self._cfg.grasp_max_fingertip_surface_gap)
+        signed_distances = self._backend.get_geom_pair_distances(
+            env_ids,
+            self._tip_object_geom_pairs,
+            max_distance=max(0.2, 2.0 * limit),
+        )
+        surface_gaps = np.maximum(np.asarray(signed_distances, dtype=np.float64), 0.0)
+        valid = fingertip_surface_gap_mask(signed_distances, max_gap=limit)
+        if self.state is not None:
+            log = self.state.info.get("log", {})
+            log["grasp/max_fingertip_surface_gap"] = float(
+                np.max(surface_gaps, initial=0.0)
+            )
+            log["grasp/fingertip_surface_valid"] = float(
+                np.mean(valid.astype(np.float32))
+            )
+            self.state.info["log"] = log
+        return valid, surface_gaps
+
+    def _check_grasp_quality(self, env_ids: np.ndarray) -> np.ndarray:
+        physical_valid = super()._check_grasp_quality(env_ids)
+        surface_valid, _ = self._surface_gap_quality(env_ids)
+        return np.asarray(physical_valid & surface_valid, dtype=bool)
+
     def _filter_grasp_rows(self, states: np.ndarray) -> np.ndarray:
         rows = np.asarray(states, dtype=np.float32)
         if rows.ndim != 2 or rows.shape[1] != 23:
             raise ValueError(f"Expected settled grasp rows with shape (?, 23), got {rows.shape}")
         if not np.isfinite(rows).all():
             raise ValueError("Settled grasp rows contain non-finite values")
+
+        if self._tip_object_geom_pairs is None:
+            raise RuntimeError("fingertip surface geom pairs were not initialized")
+        limit = float(self._cfg.grasp_max_fingertip_surface_gap)
+        serialized_distances = self._backend.get_geom_pair_distances_for_qpos(
+            rows,
+            self._tip_object_geom_pairs,
+            max_distance=max(0.2, 2.0 * limit),
+        )
+        serialized_surface_valid = fingertip_surface_gap_mask(
+            serialized_distances,
+            max_gap=limit,
+        )
+        self._serialized_surface_candidates += int(rows.shape[0])
+        self._serialized_surface_rejected += int(
+            np.count_nonzero(~serialized_surface_valid)
+        )
+        if not np.all(serialized_surface_valid):
+            rows = rows[np.flatnonzero(serialized_surface_valid)]
 
         self._dedup_candidates += int(rows.shape[0])
         if not self._cfg.grasp_dedup_enabled:
@@ -226,6 +323,16 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
             log["grasp/dedup_accepted"] = float(self._dedup_accepted)
             log["grasp/dedup_rejection_rate"] = float(
                 self._dedup_rejected / max(self._dedup_candidates, 1)
+            )
+            log["grasp/serialized_surface_candidates"] = float(
+                self._serialized_surface_candidates
+            )
+            log["grasp/serialized_surface_rejected"] = float(
+                self._serialized_surface_rejected
+            )
+            log["grasp/serialized_surface_rejection_rate"] = float(
+                self._serialized_surface_rejected
+                / max(self._serialized_surface_candidates, 1)
             )
             log["grasp/cache_size"] = float(self._total_saved_grasps())
             self.state.info["log"] = log

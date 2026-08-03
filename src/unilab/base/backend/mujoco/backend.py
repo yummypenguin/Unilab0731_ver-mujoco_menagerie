@@ -819,6 +819,44 @@ class MuJoCoBackend(SimBackend):
                 )
         return distances
 
+    def get_geom_pair_distances_for_qpos(
+        self,
+        qpos: np.ndarray,
+        geom_pairs: np.ndarray,
+        *,
+        max_distance: float,
+    ) -> np.ndarray:
+        poses = np.asarray(qpos, dtype=np.float64)
+        pairs = np.asarray(geom_pairs, dtype=np.int32)
+        model = self._model
+        if poses.ndim != 2 or poses.shape[1] != model.nq:
+            raise ValueError(f"qpos must have shape (?, {model.nq}), got {poses.shape}")
+        if not np.isfinite(poses).all():
+            raise ValueError("qpos contains non-finite values")
+        if pairs.ndim != 2 or pairs.shape[1] != 2:
+            raise ValueError(f"geom_pairs must have shape (?, 2), got {pairs.shape}")
+        if np.any(pairs < 0) or np.any(pairs >= model.ngeom):
+            raise ValueError("geom_pairs contains an invalid MuJoCo geom id")
+        if not np.isfinite(max_distance) or max_distance <= 0.0:
+            raise ValueError("max_distance must be positive and finite")
+
+        distances = np.empty((poses.shape[0], pairs.shape[0]), dtype=self._np_dtype)
+        data = mujoco.MjData(model)
+        for row_index, pose in enumerate(poses):
+            data.qpos[:] = pose
+            data.qvel[:] = 0.0
+            mujoco.mj_forward(model, data)
+            for pair_index, (geom1, geom2) in enumerate(pairs):
+                distances[row_index, pair_index] = mujoco.mj_geomDistance(
+                    model,
+                    data,
+                    int(geom1),
+                    int(geom2),
+                    float(max_distance),
+                    None,
+                )
+        return distances
+
     def get_contact_penetration_depths(
         self,
         env_ids: np.ndarray,

@@ -60,7 +60,7 @@ def test_0730_owner_is_independent_and_matches_allegro_reward_contract() -> None
         "pose_diff": -0.3,
         "torque": -0.1,
         "work": -2.0,
-        "drop": 0.0,
+        "drop": -10.0,
     }
     assert cfg.reward.angvel_clip_min == pytest.approx(-0.5)
     assert cfg.reward.angvel_clip_max == pytest.approx(0.5)

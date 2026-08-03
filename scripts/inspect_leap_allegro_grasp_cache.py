@@ -9,6 +9,81 @@ from pathlib import Path
 
 import numpy as np
 
+ROOT_DIR = Path(__file__).parent.parent
+DEFAULT_SCENE = (
+    ROOT_DIR / "src" / "unilab" / "assets" / "robots" / "leap_hand" / "scene_ball.xml"
+)
+FINGERTIP_GEOMS = (
+    "index_tip_col",
+    "middle_tip_col",
+    "ring_tip_col",
+    "thumb_tip_col",
+)
+
+
+def inspect_fingertip_surface_gaps(
+    rows: np.ndarray,
+    *,
+    scene_path: Path,
+    max_gap: float,
+) -> dict[str, object]:
+    """Run static FK and signed geom-distance checks without physics stepping."""
+    import mujoco
+
+    if not scene_path.is_file():
+        raise FileNotFoundError(f"scene does not exist: {scene_path}")
+    if not np.isfinite(max_gap) or max_gap <= 0.0:
+        raise ValueError("max_gap must be positive and finite")
+    model = mujoco.MjModel.from_xml_path(str(scene_path))
+    data = mujoco.MjData(model)
+    object_geom_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, "leap_object_col")
+    fingertip_geom_ids = [
+        mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_GEOM, name)
+        for name in FINGERTIP_GEOMS
+    ]
+    if object_geom_id < 0 or any(geom_id < 0 for geom_id in fingertip_geom_ids):
+        raise RuntimeError("scene is missing a fingertip or leap_object_col geom")
+
+    signed_distances = np.empty((rows.shape[0], 4), dtype=np.float64)
+    for row_index, row in enumerate(rows):
+        data.qpos[:23] = np.asarray(row, dtype=np.float64)
+        data.qvel[:] = 0.0
+        mujoco.mj_forward(model, data)
+        for finger_index, fingertip_geom_id in enumerate(fingertip_geom_ids):
+            signed_distances[row_index, finger_index] = mujoco.mj_geomDistance(
+                model,
+                data,
+                int(fingertip_geom_id),
+                int(object_geom_id),
+                max(0.2, 2.0 * max_gap),
+                None,
+            )
+
+    surface_gaps = np.maximum(signed_distances, 0.0)
+    row_max = np.max(surface_gaps, axis=1)
+    valid = np.all(np.isfinite(signed_distances), axis=1) & (row_max < max_gap)
+    rejected = np.flatnonzero(~valid)
+    per_finger_rejected = np.count_nonzero(
+        ~np.isfinite(signed_distances) | (surface_gaps >= max_gap),
+        axis=0,
+    )
+    return {
+        "fingertip_surface_gap_threshold": float(max_gap),
+        "fingertip_surface_gap_strictly_less": True,
+        "fingertip_surface_gap_valid": bool(np.all(valid)),
+        "fingertip_surface_gap_rejected_row_count": int(rejected.size),
+        "fingertip_surface_gap_rejected_row_indices_first_100": rejected[:100].tolist(),
+        "fingertip_surface_gap_per_finger_rejected_count": {
+            name: int(count)
+            for name, count in zip(FINGERTIP_GEOMS, per_finger_rejected, strict=True)
+        },
+        "fingertip_surface_gap_max": float(np.max(row_max, initial=0.0)),
+        "fingertip_surface_gap_percentiles": {
+            str(percentile): float(np.percentile(row_max, percentile))
+            for percentile in (50, 90, 95, 99)
+        },
+    }
+
 
 def _axis_stats(values: np.ndarray) -> dict[str, list[float]]:
     return {
@@ -27,6 +102,8 @@ def inspect_cache(
     ball_position_resolution: float,
     nominal_ball_z: float,
     max_drop_distance: float,
+    scene_path: Path | None = None,
+    max_fingertip_surface_gap: float = 0.005,
 ) -> dict[str, object]:
     if expected_rows <= 0:
         raise ValueError("expected_rows must be positive")
@@ -121,6 +198,14 @@ def inspect_cache(
         if np.unique(group_quaternions, axis=0).shape[0] > 1:
             quaternion_only_groups += 1
     report["quaternion_only_duplicate_group_count"] = quaternion_only_groups
+    if scene_path is not None:
+        report.update(
+            inspect_fingertip_surface_gaps(
+                rows,
+                scene_path=scene_path,
+                max_gap=max_fingertip_surface_gap,
+            )
+        )
     return report
 
 
@@ -132,6 +217,8 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--ball-position-resolution", type=float, default=0.0005)
     parser.add_argument("--nominal-ball-z", type=float, default=0.664301098275159)
     parser.add_argument("--max-drop-distance", type=float, default=0.005)
+    parser.add_argument("--scene", type=Path, default=DEFAULT_SCENE)
+    parser.add_argument("--max-fingertip-surface-gap", type=float, default=0.005)
     return parser.parse_args(argv)
 
 
@@ -144,6 +231,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         ball_position_resolution=args.ball_position_resolution,
         nominal_ball_z=args.nominal_ball_z,
         max_drop_distance=args.max_drop_distance,
+        scene_path=args.scene,
+        max_fingertip_surface_gap=args.max_fingertip_surface_gap,
     )
     print(json.dumps(report, indent=2, sort_keys=True))
     return int(
@@ -154,6 +243,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             and report.get("finite")
             and report.get("expected_row_count_pass")
             and report.get("height_valid")
+            and report.get("fingertip_surface_gap_valid")
             and report.get("quantized_duplicate_count") == 0
         )
     )

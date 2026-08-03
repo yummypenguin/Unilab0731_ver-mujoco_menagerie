@@ -62,6 +62,7 @@ def _measure(env: LeapInhandBallGraspAllegroEnv) -> dict[str, object]:
     distances = np.linalg.norm(env.get_fingertip_pos()[0] - ball_pos[None, :], axis=-1)
     flags = _contact_flags(env)
     cond1, cond2, cond3 = env._compute_grasp_conditions()
+    surface_valid, surface_gaps = env._surface_gap_quality(np.asarray([0], dtype=np.int32))
     initial_ball_z = float(np.asarray(env.state.info["initial_ball_z"])[0])
     drop_threshold = initial_ball_z - float(env.cfg.termination_drop_distance)
     return {
@@ -76,10 +77,16 @@ def _measure(env: LeapInhandBallGraspAllegroEnv) -> dict[str, object]:
         "initial_ball_z": initial_ball_z,
         "drop_distance": float(env.cfg.termination_drop_distance),
         "height_threshold": drop_threshold,
+        "fingertip_surface_gaps": surface_gaps[0].tolist(),
+        "max_fingertip_surface_gap": float(np.max(surface_gaps[0])),
+        "fingertip_surface_gap_threshold": float(
+            env.cfg.grasp_max_fingertip_surface_gap
+        ),
         "conditions": {
             "fingertip_distance": bool(cond1[0]),
             "contact_count": bool(cond2[0]),
             "height": bool(cond3[0]),
+            "fingertip_surface_gap": bool(surface_valid[0]),
         },
     }
 
@@ -94,6 +101,7 @@ def _build_cfg() -> LeapInhandBallGraspAllegroCfg:
         grasp_quality_check=True,
         grasp_min_contacts=2,
         grasp_max_fingertip_distance=0.1,
+        grasp_max_fingertip_surface_gap=0.005,
         termination_drop_distance=0.005,
         domain_rand=DomainRandConfig(
             randomize_base_mass=False,

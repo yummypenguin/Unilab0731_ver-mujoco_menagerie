@@ -469,10 +469,17 @@ def test_mujoco_geom_pair_distances_for_leap_fingertips():
     )
 
     distances = bkd.get_geom_pair_distances(env_ids, pairs, max_distance=0.2)
+    serialized_distances = bkd.get_geom_pair_distances_for_qpos(
+        qpos,
+        pairs,
+        max_distance=0.2,
+    )
 
     _shape(distances, NUM_ENVS, 2)
+    _shape(serialized_distances, NUM_ENVS, 2)
     assert np.all(np.isfinite(distances))
     np.testing.assert_allclose(distances[0], distances[1])
+    np.testing.assert_allclose(serialized_distances, distances)
 
 
 def test_mujoco_copy_body_state_matches_split_queries():
