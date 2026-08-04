@@ -39,7 +39,6 @@ htmlcov/
 .history/
 
 # Project specific
-logs/
 runs/
 run_config.json
 run_summary.json

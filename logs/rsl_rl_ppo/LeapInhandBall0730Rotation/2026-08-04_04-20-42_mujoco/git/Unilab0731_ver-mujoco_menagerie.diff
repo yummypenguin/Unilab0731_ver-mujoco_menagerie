@@ -1,0 +1,44 @@
+--- git commit ---
+1663babf526c4ccda00f84c532836e55465752b4
+
+
+--- git status ---
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conf/ppo/task/leap_inhand_ball_0730/mujoco.yaml
+	modified:   tests/envs/test_leap_inhand_0730.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/conf/ppo/task/leap_inhand_ball_0730/mujoco.yaml b/conf/ppo/task/leap_inhand_ball_0730/mujoco.yaml
+index e9285194..de0c66d3 100644
+--- a/conf/ppo/task/leap_inhand_ball_0730/mujoco.yaml
++++ b/conf/ppo/task/leap_inhand_ball_0730/mujoco.yaml
+@@ -43,7 +43,7 @@ reward:
+     work: -2.0
+     # Pre-ctrl_dt terminal penalty. The value logged as reward/drop is -10.0;
+     # the contribution returned to PPO is -10.0 * ctrl_dt = -0.5.
+-    drop: -10.0
++    drop: 0.0
+   angvel_clip_min: -0.5
+   angvel_clip_max: 0.5
+   # Compatibility field required by RewardConfigPPO. This task terminates from
+diff --git a/tests/envs/test_leap_inhand_0730.py b/tests/envs/test_leap_inhand_0730.py
+index 3c5f7233..b0eebdf8 100644
+--- a/tests/envs/test_leap_inhand_0730.py
++++ b/tests/envs/test_leap_inhand_0730.py
+@@ -60,7 +60,7 @@ def test_0730_owner_is_independent_and_matches_allegro_reward_contract() -> None
+         "pose_diff": -0.3,
+         "torque": -0.1,
+         "work": -2.0,
+-        "drop": -10.0,
++        "drop": 0.0,
+     }
+     assert cfg.reward.angvel_clip_min == pytest.approx(-0.5)
+     assert cfg.reward.angvel_clip_max == pytest.approx(0.5)
