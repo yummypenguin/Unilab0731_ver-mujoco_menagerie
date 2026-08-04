@@ -412,6 +412,7 @@ def create_rsl_rl_playback_session(
             runner = runner_cls(wrapped_env, train_cfg, log_dir=log_dir, device=device_name)
             runner.load(
                 checkpoint_path,
+                map_location=device_name,
                 load_cfg={
                     "actor": True,
                     "critic": False,

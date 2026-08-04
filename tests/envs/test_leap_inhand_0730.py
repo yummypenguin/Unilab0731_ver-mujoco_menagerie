@@ -19,19 +19,28 @@ from unilab.envs.manipulation.leap_inhand.ball_rotation import (
     LeapInhandBallRotationEnv,
 )
 from unilab.envs.manipulation.leap_inhand.ball_rotation_0730 import (
+    Leap0730RewardConfig,
     LeapBall0730ResetProvider,
     LeapInhandBall0730RotationCfg,
     LeapInhandBall0730RotationEnv,
+    apply_middle_contact_rotation_share,
 )
 from unilab.training import BackendAdapter, create_env
 
 ROOT = Path(__file__).parent.parent.parent
 CONF_DIR = ROOT / "conf" / "ppo"
+APPO_CONF_DIR = ROOT / "conf" / "appo"
 
 
 def _compose_cfg():
     GlobalHydra.instance().clear()
     with initialize_config_dir(config_dir=str(CONF_DIR), version_base="1.3"):
+        return compose("config", overrides=["task=leap_inhand_ball_0730/mujoco"])
+
+
+def _compose_appo_cfg():
+    GlobalHydra.instance().clear()
+    with initialize_config_dir(config_dir=str(APPO_CONF_DIR), version_base="1.3"):
         return compose("config", overrides=["task=leap_inhand_ball_0730/mujoco"])
 
 
@@ -64,6 +73,7 @@ def test_0730_owner_is_independent_and_matches_allegro_reward_contract() -> None
     }
     assert cfg.reward.angvel_clip_min == pytest.approx(-0.5)
     assert cfg.reward.angvel_clip_max == pytest.approx(0.5)
+    assert cfg.reward.middle_contact_rotation_fraction == pytest.approx(0.2)
     assert cfg.env.grasp_cache_path.endswith(
         "ball_grasp_allegro_new_physics_0731_50k.npy"
     )
@@ -98,6 +108,78 @@ def test_0730_owner_is_independent_and_matches_allegro_reward_contract() -> None
     assert "joint_dynamics:" not in owner
 
 
+def test_0730_appo_owner_preserves_task_contract_and_materializes_env() -> None:
+    ppo_cfg = _compose_cfg()
+    appo_cfg = _compose_appo_cfg()
+
+    assert appo_cfg.training.task_name == "LeapInhandBall0730Rotation"
+    assert appo_cfg.training.sim_backend == "mujoco"
+    assert appo_cfg.algo.algo == "appo"
+    assert appo_cfg.algo.num_envs == 2048
+    assert appo_cfg.algo.steps_per_env == 32
+    assert appo_cfg.algo.max_iterations == 5000
+    assert appo_cfg.algo.actor.obs_normalization is True
+    assert appo_cfg.algo.critic.obs_normalization is True
+    assert appo_cfg.algo.algorithm.learning_rate == pytest.approx(5e-4)
+    assert appo_cfg.algo.algorithm.entropy_coef == pytest.approx(0.0)
+    assert appo_cfg.training.replay_queue_size == 1
+    assert appo_cfg.training.device == "cpu"
+    assert appo_cfg.training.collector_device == "cpu"
+    assert appo_cfg.training.no_play is True
+    assert OmegaConf.to_container(appo_cfg.reward, resolve=True) == OmegaConf.to_container(
+        ppo_cfg.reward, resolve=True
+    )
+    assert appo_cfg.env.grasp_cache_path == ppo_cfg.env.grasp_cache_path
+    np.testing.assert_allclose(
+        appo_cfg.env.pose_diff_target_qpos,
+        ppo_cfg.env.pose_diff_target_qpos,
+    )
+    assert appo_cfg.env.termination_drop_distance == pytest.approx(0.03)
+    assert appo_cfg.env.control_config.action_scale == pytest.approx(1.0 / 24.0)
+    assert OmegaConf.select(appo_cfg, "env.scene.joint_dynamics") is None
+
+    owner_path = (
+        ROOT / "conf" / "appo" / "task" / "leap_inhand_ball_0730" / "mujoco.yaml"
+    )
+    owner = owner_path.read_text(encoding="utf-8")
+    assert "defaults:" not in owner
+    assert "joint_dynamics:" not in owner
+    assert "\n    kp:" not in owner
+    assert "\n    kd:" not in owner
+
+    env_override = BackendAdapter(
+        appo_cfg,
+        root_dir=ROOT,
+        algo_name="appo",
+    ).build_task_env_cfg_override()
+    env = create_env(
+        appo_cfg,
+        num_envs=2,
+        env_cfg_override=env_override,
+        sim_backend="mujoco",
+        task_name="LeapInhandBall0730Rotation",
+    )
+    try:
+        state = env.init_state()
+
+        assert isinstance(state.obs, dict)
+        assert env.action_space.shape == (16,)
+        assert env.obs_groups_spec == {"obs": 105}
+        np.testing.assert_allclose(
+            state.info["initial_ball_z"],
+            env.get_ball_pos()[:, 2],
+            atol=1e-6,
+        )
+        state = env.step(np.zeros((2, 16), dtype=np.float32))
+        assert np.isfinite(state.reward).all()
+        assert 0.0 <= state.info["log"]["contact/middle_rate"] <= 1.0
+        assert np.isfinite(
+            state.info["log"]["reward/middle_contact_rotation_adjustment"]
+        )
+    finally:
+        env.close()
+
+
 def test_0730_task_is_not_coupled_to_existing_leap_rotation_task() -> None:
     assert not issubclass(LeapInhandBall0730RotationCfg, LeapInhandBallRotationCfg)
     assert not issubclass(LeapInhandBall0730RotationEnv, LeapInhandBallRotationEnv)
@@ -108,12 +190,26 @@ def test_0730_task_is_not_coupled_to_existing_leap_rotation_task() -> None:
         "_reward_torque",
         "_reward_work",
         "_reward_drop",
-        "_compute_reward",
     ):
         assert reward_method not in LeapInhandBall0730RotationEnv.__dict__
         assert getattr(LeapInhandBall0730RotationEnv, reward_method) is getattr(
             AllegroRotationPPO, reward_method
         )
+    assert LeapInhandBall0730RotationEnv._compute_reward is not AllegroRotationPPO._compute_reward
+
+
+def test_middle_contact_is_required_for_only_part_of_positive_rotation_reward() -> None:
+    weighted_rotate = np.asarray([-0.625, 0.0, 0.625, 0.625], dtype=np.float32)
+    middle_contact = np.asarray([0.0, 0.0, 0.0, 1.0], dtype=np.float32)
+
+    adjusted, adjustment = apply_middle_contact_rotation_share(
+        weighted_rotate,
+        middle_contact,
+        fraction=0.2,
+    )
+
+    np.testing.assert_allclose(adjusted, [-0.625, 0.0, 0.5, 0.625])
+    np.testing.assert_allclose(adjustment, [0.0, 0.0, -0.125, 0.0])
 
 
 def test_0730_registry_is_mujoco_only() -> None:
@@ -203,4 +299,21 @@ def test_relative_drop_anchor_changes_when_reset_info_changes() -> None:
 def test_0730_config_rejects_invalid_drop_distance(distance: float) -> None:
     cfg = LeapInhandBall0730RotationCfg(termination_drop_distance=distance)
     with pytest.raises(ValueError, match="termination_drop_distance"):
+        cfg.validate()
+
+
+@pytest.mark.parametrize("fraction", [-0.01, 1.01, np.inf, np.nan])
+def test_0730_config_rejects_invalid_middle_contact_rotation_fraction(
+    fraction: float,
+) -> None:
+    reward = Leap0730RewardConfig(
+        scales={"rotate": 1.25},
+        angvel_clip_min=-0.5,
+        angvel_clip_max=0.5,
+        reset_z_threshold=0.0,
+        middle_contact_rotation_fraction=fraction,
+    )
+    cfg = LeapInhandBall0730RotationCfg(reward_config=reward)
+
+    with pytest.raises(ValueError, match="middle_contact_rotation_fraction"):
         cfg.validate()

@@ -220,7 +220,7 @@ def test_leap_scene_compiles_with_aligned_joint_and_actuator_order(scene_name: s
         } <= sensor_names
 
 
-def test_leap_mujoco_profile_matches_menagerie_joint_and_actuator_dynamics() -> None:
+def test_leap_mujoco_profile_uses_configured_joint_and_actuator_dynamics() -> None:
     mujoco = pytest.importorskip("mujoco")
     backend = MuJoCoBackend(
         SceneCfg(model_file=str(LEAP_ASSET_DIR / "scene_ball.xml")),

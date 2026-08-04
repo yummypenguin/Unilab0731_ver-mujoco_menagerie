@@ -129,8 +129,9 @@ def test_create_rsl_rl_playback_session_loads_checkpoint_and_runner_log_dir() ->
             captured["train_cfg"] = train_cfg
             captured["runner_device"] = device
 
-        def load(self, checkpoint, load_cfg):
+        def load(self, checkpoint, map_location, load_cfg):
             captured["checkpoint"] = checkpoint
+            captured["map_location"] = map_location
             captured["load_cfg"] = load_cfg
 
         def get_inference_policy(self, *, device):
@@ -169,6 +170,7 @@ def test_create_rsl_rl_playback_session_loads_checkpoint_and_runner_log_dir() ->
     assert checkpoint == "/tmp/model_10.pt"
     assert captured["runner_log_dir"].replace("\\", "/") == "/tmp/custom_ppo/MyTask/play_temp"
     assert captured["checkpoint"] == "/tmp/model_10.pt"
+    assert captured["map_location"] == "cpu"
     assert captured["train_cfg"]["runner"]["logger"] == "none"
 
 

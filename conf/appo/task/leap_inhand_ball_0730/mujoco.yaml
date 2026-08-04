@@ -2,22 +2,28 @@
 training:
   task_name: LeapInhandBall0730Rotation
   sim_backend: mujoco
+  play_steps: 200
   render_spacing: 0.5
   cam_distance: 1.2
   cam_lookat: [0.0, 0.0, 0.5]
   cam_elevation: -20.0
+  replay_queue_size: 1
+  device: cpu
+  collector_device: cpu
+  no_play: true
 
 algo:
-  # Short diagnostic budget; expand only after metrics and viewer agree.
+  # Full training budget; num_envs may still be overridden per launch.
   num_envs: 2048
-  num_steps_per_env: 8
-  max_iterations: 300
+  steps_per_env: 32
+  max_iterations: 5000
   save_interval: 25
   obs_groups:
-    actor: [policy]
-    critic: [policy]
+    actor:
+      policy: 0
+    critic:
+      policy: 0
   actor:
-    class_name: rsl_rl.models.MLPModel
     hidden_dims: [512, 256, 128]
     activation: elu
     obs_normalization: true
@@ -26,13 +32,24 @@ algo:
       init_std: 1.0
       std_type: scalar
   critic:
-    class_name: rsl_rl.models.MLPModel
     hidden_dims: [512, 256, 128]
     activation: elu
     obs_normalization: true
   algorithm:
     value_loss_coef: 4.0
+    entropy_coef: 0.0
+    learning_rate: 0.0005
     desired_kl: 0.02
+    adaptive_kl_factor: 2.0
+    adaptive_lr_factor: 1.5
+    num_learning_epochs: 5
+    num_mini_batches: 4
+    clip_param: 0.2
+    gamma: 0.99
+    lam: 0.95
+    max_grad_norm: 1.0
+    use_clipped_value_loss: true
+    schedule: adaptive
 
 reward:
   scales:
@@ -70,14 +87,13 @@ env:
     - 0.5369823550831088
     - 1.5294890485315962
     - -0.01798386011739139
-    - 0.27558019211759954
+    - 0.27558019211759154
     - 0.19821762108233876
     - 1.9245445859343515
     - 0.04788276935232176
     - -0.021885380331691334
     - 0.19524630120127295
-  # Terminate and apply reward/drop after the ball falls 30 mm from the
-  # selected cache row's initial height.
+  # Terminate after the ball falls 30 mm from the selected cache row's height.
   termination_drop_distance: 0.03
   noise_config:
     level: 0.0
