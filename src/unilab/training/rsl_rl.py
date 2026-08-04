@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import deque
 from copy import deepcopy
 from typing import Any
 
@@ -219,7 +220,52 @@ class RslRlVecEnvWrapper:
         self.episode_lengths = torch.zeros(self.num_envs, device=device)
         self.episode_length_buf = self.episode_lengths
         self.max_episode_length = np.ceil(env.cfg.max_episode_seconds / env.cfg.ctrl_dt)
+        self._episode_diagnostics_enabled = bool(
+            getattr(env, "enable_training_episode_diagnostics", False)
+        )
+        self._episode_length_seconds_history: deque[float] = deque(maxlen=100)
+        self._episode_termination_history: deque[float] = deque(maxlen=100)
         self.reset()
+
+    def _update_episode_diagnostics(
+        self,
+        *,
+        state: NpEnvState,
+        dones: torch.Tensor,
+    ) -> None:
+        if not self._episode_diagnostics_enabled:
+            return
+
+        done_idx = torch.nonzero(dones).flatten()
+        if len(done_idx) > 0:
+            completed_seconds = (
+                self.episode_lengths[done_idx] * float(self.cfg.ctrl_dt)
+            ).detach().cpu().tolist()
+            terminated = (
+                to_torch(state.terminated, self.device)
+                .bool()[done_idx]
+                .to(dtype=torch.float32)
+                .detach()
+                .cpu()
+                .tolist()
+            )
+            self._episode_length_seconds_history.extend(completed_seconds)
+            self._episode_termination_history.extend(terminated)
+
+        log = state.info.setdefault("log", {})
+        log["termination/rate"] = (
+            float(np.mean(self._episode_termination_history))
+            if self._episode_termination_history
+            else 0.0
+        )
+        log["episode/length_seconds"] = (
+            float(np.mean(self._episode_length_seconds_history))
+            if self._episode_length_seconds_history
+            else 0.0
+        )
+        log["episode/full_length_seconds"] = float(
+            self.max_episode_length * float(self.cfg.ctrl_dt)
+        )
 
     def _policy_obs(self, obs: dict[str, Any]) -> torch.Tensor:
         if self.policy_obs_mode == "actor":
@@ -271,6 +317,7 @@ class RslRlVecEnvWrapper:
 
         self.episode_returns += rewards
         self.episode_lengths += 1
+        self._update_episode_diagnostics(state=state, dones=dones)
 
         infos: dict[str, torch.Tensor | TensorDict | dict[str, Any]] = {}
         done_idx = torch.nonzero(dones).flatten()

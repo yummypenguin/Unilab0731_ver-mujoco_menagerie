@@ -106,3 +106,5 @@ src/unilab/assets/robots/**/tmp*.xml
 *.mov
 *.mkv
 *.webm
+node_modules/
+**/node_modules/

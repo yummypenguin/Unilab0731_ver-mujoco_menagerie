@@ -41,9 +41,8 @@ reward:
     pose_diff: -0.3
     torque: -0.1
     work: -2.0
-    # Pre-ctrl_dt terminal penalty. The value logged as reward/drop is -10.0;
-    # the contribution returned to PPO is -10.0 * ctrl_dt = -0.5.
-    drop: -10.0
+    # Disabled for now; the 30 mm cache-relative termination remains active.
+    drop: 0.0
   angvel_clip_min: -0.5
   angvel_clip_max: 0.5
   # Compatibility field required by RewardConfigPPO. This task terminates from
@@ -56,7 +55,27 @@ env:
   max_episode_seconds: 20.0
   gen_grasp: false
   grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy
-  termination_drop_distance: 0.005
+  # Fixed pose_diff target: the nominal hand pose used to generate this cache.
+  pose_diff_target_qpos:
+    - 1.5152045040427635
+    - 0.11430147259750476
+    - 0.2876406730815961
+    - 0.19280835997306603
+    - 1.4188457206477074
+    - 0.025681830807677088
+    - -0.26717932336688344
+    - 0.5369823550831088
+    - 1.5294890485315962
+    - -0.01798386011739139
+    - 0.27558019211759954
+    - 0.19821762108233876
+    - 1.9245445859343515
+    - 0.04788276935232176
+    - -0.021885380331691334
+    - 0.19524630120127295
+  # Terminate and apply reward/drop after the ball falls 30 mm from the
+  # selected cache row's initial height.
+  termination_drop_distance: 0.03
   noise_config:
     level: 0.0
     scale_joint_angle: 0.0

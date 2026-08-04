@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+import pytest
 import torch
 from tensordict import TensorDict
 
@@ -177,3 +178,47 @@ def test_rsl_rl_adapter_outputs_combined_dones_and_time_outs_alias():
 
     assert torch.equal(dones, torch.tensor([True, True, False]))
     assert torch.equal(infos["time_outs"], torch.tensor([False, True, False]))
+
+
+def test_rsl_rl_adapter_logs_opt_in_episode_diagnostics_in_seconds():
+    class FakeEnv:
+        enable_training_episode_diagnostics = True
+
+        def __init__(self):
+            self.num_envs = 3
+            self.cfg = type("Cfg", (), {"max_episode_seconds": 2.0, "ctrl_dt": 0.5})()
+            self.observation_space = type("Space", (), {"shape": (2,)})()
+            self.action_space = type("Space", (), {"shape": (1,)})()
+            self.obs_groups_spec = {"obs": 2}
+            self.state = type("State", (), {"obs": {"obs": torch.zeros(3, 2).numpy()}})()
+
+        def init_state(self):
+            pass
+
+        def reset(self, env_indices):
+            del env_indices
+            return {"obs": torch.zeros(3, 2).numpy()}, {}
+
+        def step(self, actions):
+            del actions
+            return type(
+                "StepState",
+                (),
+                {
+                    "obs": {"obs": torch.zeros(3, 2).numpy()},
+                    "reward": torch.zeros(3).numpy(),
+                    "terminated": torch.tensor([True, False, False]).numpy(),
+                    "truncated": torch.tensor([False, True, False]).numpy(),
+                    "info": {},
+                    "final_observation": None,
+                },
+            )()
+
+    wrapper = RslRlVecEnvWrapper(FakeEnv(), device="cpu", policy_obs_mode="actor")
+    wrapper.episode_lengths[:] = torch.tensor([1.0, 3.0, 0.0])
+
+    _, _, _, infos = wrapper.step(torch.zeros(3, 1))
+
+    assert infos["log"]["termination/rate"] == pytest.approx(0.5)
+    assert infos["log"]["episode/length_seconds"] == pytest.approx(1.5)
+    assert infos["log"]["episode/full_length_seconds"] == pytest.approx(2.0)

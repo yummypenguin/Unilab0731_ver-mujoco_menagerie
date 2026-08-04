@@ -38,7 +38,7 @@ def _compose_cfg():
 def _termination_env(initial_ball_z: np.ndarray):
     env = object.__new__(LeapInhandBall0730RotationEnv)
     env._num_envs = len(initial_ball_z)
-    env._cfg = SimpleNamespace(termination_drop_distance=0.005)
+    env._cfg = SimpleNamespace(termination_drop_distance=0.03)
     env._state = NpEnvState(
         obs={},
         reward=np.zeros(len(initial_ball_z)),
@@ -60,14 +60,35 @@ def test_0730_owner_is_independent_and_matches_allegro_reward_contract() -> None
         "pose_diff": -0.3,
         "torque": -0.1,
         "work": -2.0,
-        "drop": -10.0,
+        "drop": 0.0,
     }
     assert cfg.reward.angvel_clip_min == pytest.approx(-0.5)
     assert cfg.reward.angvel_clip_max == pytest.approx(0.5)
     assert cfg.env.grasp_cache_path.endswith(
         "ball_grasp_allegro_new_physics_0731_50k.npy"
     )
-    assert cfg.env.termination_drop_distance == pytest.approx(0.005)
+    np.testing.assert_allclose(
+        cfg.env.pose_diff_target_qpos,
+        [
+            1.5152045040427635,
+            0.11430147259750476,
+            0.2876406730815961,
+            0.19280835997306603,
+            1.4188457206477074,
+            0.025681830807677088,
+            -0.26717932336688344,
+            0.5369823550831088,
+            1.5294890485315962,
+            -0.01798386011739139,
+            0.27558019211759954,
+            0.19821762108233876,
+            1.9245445859343515,
+            0.04788276935232176,
+            -0.021885380331691334,
+            0.19524630120127295,
+        ],
+    )
+    assert cfg.env.termination_drop_distance == pytest.approx(0.03)
     assert cfg.env.max_episode_seconds == pytest.approx(20.0)
     assert OmegaConf.select(cfg, "env.scene.joint_dynamics") is None
     owner = (
@@ -100,6 +121,10 @@ def test_0730_registry_is_mujoco_only() -> None:
     assert registered["LeapInhandBall0730Rotation"]["available_backends"] == ["mujoco"]
 
 
+def test_0730_enables_training_episode_diagnostics() -> None:
+    assert LeapInhandBall0730RotationEnv.enable_training_episode_diagnostics is True
+
+
 def test_0730_mujoco_reset_records_cache_relative_drop_anchor() -> None:
     cfg = _compose_cfg()
     env_override = BackendAdapter(cfg, root_dir=ROOT, algo_name="ppo").build_task_env_cfg_override()
@@ -130,6 +155,9 @@ def test_reset_provider_records_each_cache_rows_initial_ball_height() -> None:
     ball_pos = np.asarray([[0.0, 0.0, 0.661], [0.0, 0.0, 0.674]])
     ball_quat = np.tile([1.0, 0.0, 0.0, 0.0], (2, 1))
     env = SimpleNamespace(
+        cfg=SimpleNamespace(
+            pose_diff_target_qpos=[0.25] * 16,
+        ),
         _dof_mid=np.zeros(16),
         _dof_range=np.ones(16),
         _NUM_LAG_STEPS=3,
@@ -140,12 +168,14 @@ def test_reset_provider_records_each_cache_rows_initial_ball_height() -> None:
     updates = provider._build_info_updates(env, hand, ball_pos, ball_quat)
 
     np.testing.assert_allclose(updates["initial_ball_z"], [0.661, 0.674])
+    np.testing.assert_allclose(updates["init_pose"], np.full((2, 16), 0.25))
+    np.testing.assert_allclose(updates["prev_ctrl"], hand)
     assert not np.shares_memory(updates["initial_ball_z"], ball_pos)
 
 
 def test_relative_drop_termination_uses_per_environment_initial_height() -> None:
     env = _termination_env(np.asarray([0.661, 0.674, 0.690]))
-    threshold = np.asarray(env.state.info["initial_ball_z"]) - 0.005
+    threshold = np.asarray(env.state.info["initial_ball_z"]) - 0.03
     ball_pos = np.asarray(
         [
             [0.0, 0.0, threshold[0] - 0.0001],
@@ -156,13 +186,13 @@ def test_relative_drop_termination_uses_per_environment_initial_height() -> None
 
     terminated = env._compute_terminated(ball_pos)
 
-    # First fell more than 5 mm; second is exactly at 5 mm; third fell less.
+    # First fell more than 30 mm; second is exactly at 30 mm; third fell less.
     np.testing.assert_array_equal(terminated, [True, True, False])
 
 
 def test_relative_drop_anchor_changes_when_reset_info_changes() -> None:
     env = _termination_env(np.asarray([0.661]))
-    ball_pos = np.asarray([[0.0, 0.0, 0.655]])
+    ball_pos = np.asarray([[0.0, 0.0, 0.630]])
     assert env._compute_terminated(ball_pos)[0]
 
     env.state.info["initial_ball_z"][:] = 0.659
