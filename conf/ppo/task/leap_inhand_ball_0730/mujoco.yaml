@@ -45,9 +45,6 @@ reward:
     drop: 0.0
   angvel_clip_min: -0.5
   angvel_clip_max: 0.5
-  # Keep 80% of positive rotation reward unconditional; the remaining 20%
-  # requires the middle fingertip to contact the ball.
-  middle_contact_rotation_fraction: 0.2
   # Compatibility field required by RewardConfigPPO. This task terminates from
   # each cache row's initial_ball_z minus env.termination_drop_distance.
   reset_z_threshold: 0.0
