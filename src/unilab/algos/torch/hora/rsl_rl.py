@@ -90,6 +90,15 @@ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
             contract while preserving HORA privileged observations.
         """
         actions_np = to_numpy(actions)
+        terminal_episode_priv_info: np.ndarray | None = None
+        if getattr(self.env, "episode_static_critic_info", False):
+            # LEAP HORA critic_info is sampled at reset and remains fixed for the
+            # episode. Snapshot it before step because autoreset replaces done rows.
+            state_before_step = self.env.state
+            if state_before_step is not None:
+                candidate = state_before_step.info.get("critic_info")
+                if isinstance(candidate, np.ndarray):
+                    terminal_episode_priv_info = candidate.copy()
         state = self.env.step(actions_np)
         rewards = to_torch(state.reward, self.device)
         dones = self._resolve_done(state)
@@ -111,7 +120,15 @@ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
                 truncated=to_numpy(infos["time_outs"]) if "time_outs" in infos else None,
             )
             if np.any(terminal_contract.timeout_terminal_mask) and final_observation is not None:
-                infos["time_out_bootstrap_obs"] = self._obs_to_tensordict(final_observation)
+                terminal_info = (
+                    {"critic_info": terminal_episode_priv_info}
+                    if terminal_episode_priv_info is not None
+                    else None
+                )
+                infos["time_out_bootstrap_obs"] = self._obs_to_tensordict(
+                    final_observation,
+                    terminal_info,
+                )
 
             self.episode_returns[done_idx] = 0
             self.episode_lengths[done_idx] = 0

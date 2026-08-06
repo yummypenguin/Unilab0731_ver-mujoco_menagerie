@@ -164,6 +164,7 @@ class LeapBall0730HoraResetProvider(LeapBall0730ResetProvider):
 class LeapInhandBall0730HoraRotationEnv(LeapInhandBall0730RotationEnv):
     """LEAP rotation task whose policy inputs are directly deployable on hardware."""
 
+    episode_static_critic_info = True
     _cfg: LeapInhandBall0730HoraRotationCfg
 
     def __init__(

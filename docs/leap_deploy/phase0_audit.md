@@ -2,7 +2,8 @@
 
 ## 稽核範圍與基線
 
-- Repository：`yummypenguin/Unilab0731_ver-mujoco_menagerie`
+- 目前 repository provenance：`yummypenguin/Unilab_0806`
+- Phase 0 歷史稽核來源：`yummypenguin/Unilab0731_ver-mujoco_menagerie`
 - 起始 branch：`main`
 - 起始 commit：`83f7d5fe21bf93bbc5d3ba149102c83364257ac2`
   (`83f7d5fe Add APPO training logs`)

@@ -1,6 +1,8 @@
+import contextlib
 import csv
 import datetime
 import hashlib
+import io
 import json
 import statistics
 import sys
@@ -55,7 +57,11 @@ except ImportError:
     sys.exit(1)
 
 
-def _patch_runner_action_std_logging(runner: Any) -> None:
+def _patch_runner_action_std_logging(
+    runner: Any,
+    *,
+    suppress_console: bool = False,
+) -> None:
     original_log = runner.logger.log
 
     def _safe_log(self, *args, **kwargs):
@@ -66,9 +72,23 @@ def _patch_runner_action_std_logging(runner: Any) -> None:
         else:
             std = torch.exp(dist.log_std_param)
         kwargs["action_std"] = std.detach().clone()
+        if suppress_console:
+            with contextlib.redirect_stdout(io.StringIO()):
+                return original_log(*args, **kwargs)
         return original_log(*args, **kwargs)
 
     runner.logger.log = _safe_log.__get__(runner.logger, type(runner.logger))
+
+
+def _resolve_rsl_rl_logger(log_backend: str) -> tuple[str, bool]:
+    """Map UniLab logging modes to RSL-RL while retaining checkpoint writes."""
+
+    normalized = str(log_backend).strip().lower()
+    if normalized == "no_print":
+        return "tensorboard", True
+    if normalized in {"tensorboard", "wandb"}:
+        return normalized, False
+    return "tensorboard", False
 
 
 def _backend_adapter(cfg: DictConfig) -> BackendAdapter:
@@ -524,10 +544,48 @@ def play_rsl_rl(cfg: DictConfig, device: str) -> str | None:
     ):
         runner.load(str(load_path), map_location=device)
     policy = runner.get_inference_policy(device=device)
+    num_steps = _resolve_play_num_steps(cfg)
+    play_render_mode = str(getattr(cfg.training, "play_render_mode", "auto")).lower()
+    if play_render_mode == "none":
+        if num_steps is None:
+            raise ValueError(
+                "Headless checkpoint reload requires a finite training.play_steps value."
+            )
+        actor_hash_before = _state_dict_sha256(policy.state_dict())
+        obs, _ = wrapped_env.reset()
+        try:
+            with torch.inference_mode():
+                for step_index in range(num_steps):
+                    actions = policy(obs)
+                    if not torch.isfinite(actions).all():
+                        raise FloatingPointError(
+                            f"Non-finite checkpoint-reload action at step {step_index}"
+                        )
+                    obs, rewards, _, _ = wrapped_env.step(actions)
+                    if not torch.isfinite(rewards).all():
+                        raise FloatingPointError(
+                            f"Non-finite checkpoint-reload reward at step {step_index}"
+                        )
+                    for key, value in obs.items():
+                        if isinstance(value, torch.Tensor) and not torch.isfinite(value).all():
+                            raise FloatingPointError(
+                                f"Non-finite checkpoint-reload observation {key!r} "
+                                f"at step {step_index}"
+                            )
+            actor_hash_after = _state_dict_sha256(policy.state_dict())
+            if actor_hash_before != actor_hash_after:
+                raise AssertionError("Headless checkpoint reload modified policy weights")
+            print(
+                f"Completed {num_steps} deterministic headless checkpoint-reload steps; "
+                "policy weights unchanged."
+            )
+            return None
+        finally:
+            wrapped_env.close()
+
     if EXPORT_POLICY:
         runner.export_policy_to_onnx(path=str(load_path_dir))
         runner.export_policy_to_jit(path=str(load_path_dir))
-    num_steps = _resolve_play_num_steps(cfg)
     output_video = Path(load_path_dir) / "play_video.mp4"
     playback_mode: str | None = None
 
@@ -864,8 +922,8 @@ def main(cfg: DictConfig) -> None:
             if "runner" not in train_cfg:
                 train_cfg["runner"] = {}
 
-            logger_type = (
-                cfg.training.logger if cfg.training.logger in ["tensorboard", "wandb"] else "none"
+            logger_type, suppress_console_log = _resolve_rsl_rl_logger(
+                str(cfg.training.logger)
             )
             train_cfg["runner"]["logger"] = logger_type
             train_cfg["logger"] = logger_type
@@ -887,7 +945,10 @@ def main(cfg: DictConfig) -> None:
                 Any,
                 OnPolicyRunner(cast(Any, wrapped_env), train_cfg, log_dir=log_dir, device=device),
             )
-            _patch_runner_action_std_logging(runner)
+            _patch_runner_action_std_logging(
+                runner,
+                suppress_console=suppress_console_log,
+            )
 
             if cfg.algo.load_run != "-1":
                 resume_path, _ = parse_checkpoint_path(cfg, root_dir=ROOT_DIR)
@@ -943,7 +1004,7 @@ def main(cfg: DictConfig) -> None:
                 tracker.update_summary(train_summary)
             env.close()
 
-        if should_run_playback(
+        if bool(cfg.training.play_only) or should_run_playback(
             play_only=cfg.training.play_only,
             no_play=cfg.training.no_play,
             play_render_mode=getattr(cfg.training, "play_render_mode", "auto"),
