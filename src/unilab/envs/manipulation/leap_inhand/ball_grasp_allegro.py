@@ -8,8 +8,8 @@ from typing import Any
 import numpy as np
 
 from unilab.base import registry
-from unilab.dtype_config import get_global_dtype
 from unilab.dr import DomainRandomizationProvider
+from unilab.dtype_config import get_global_dtype
 from unilab.envs.manipulation.allegro_inhand.grasp_gen import AllegroRotationGrasp
 from unilab.envs.manipulation.allegro_inhand.rotation import (
     AllegroRotationDomainRandomizationProvider,

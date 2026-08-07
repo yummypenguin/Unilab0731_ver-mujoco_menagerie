@@ -28,6 +28,11 @@ from .deploy_contract import (
     build_proprio_frame,
     validate_axis,
 )
+from .hora_diagnostics import (
+    compute_control_diagnostics,
+    compute_rotation_diagnostics,
+    validate_diagnostic_metrics,
+)
 from .hora_domain_randomization import (
     LeapHoraDomainRandomizationConfig,
     LeapHoraResetSamples,
@@ -61,7 +66,21 @@ class LeapInhandBall0730HoraRotationCfg(LeapInhandBall0730RotationCfg):
             )
         if self.critic_info_dim != PRIV_INFO_DIM:
             raise ValueError(f"critic_info_dim must be exactly {PRIV_INFO_DIM}")
-        validate_axis(self.rotation_axis_command)
+        try:
+            command_axis = validate_axis(self.rotation_axis_command)
+            reward_axis = validate_axis(self.rotation_axis)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "rotation_axis_command and rotation_axis must both be finite, "
+                f"non-zero 3D axes; rotation_axis_command={self.rotation_axis_command!r}, "
+                f"rotation_axis={self.rotation_axis!r}"
+            ) from exc
+        if not np.allclose(command_axis, reward_axis, atol=1e-6, rtol=0.0):
+            raise ValueError(
+                "rotation_axis_command must match rotation_axis after normalization; "
+                f"rotation_axis_command={self.rotation_axis_command!r}, "
+                f"rotation_axis={self.rotation_axis!r}"
+            )
         self.hora_domain_rand.validate()
 
 
@@ -195,9 +214,14 @@ class LeapInhandBall0730HoraRotationEnv(LeapInhandBall0730RotationEnv):
         state.info["observation_previous_target"] = np.asarray(
             previous_target, dtype=get_global_dtype()
         ).copy()
-        proposed_action = np.asarray(
-            np.clip(actions, -1.0, 1.0), dtype=get_global_dtype()
-        )
+        proposed_action = np.asarray(actions, dtype=get_global_dtype())
+        if proposed_action.shape != (actions.shape[0], self._num_action):
+            raise ValueError(
+                "actions must have shape "
+                f"{(actions.shape[0], self._num_action)}, got {proposed_action.shape}"
+            )
+        if not np.isfinite(proposed_action).all():
+            raise ValueError("actions must contain only finite values")
         expected_queue_shape = (actions.shape[0], 2, self._num_action)
         queue = np.asarray(
             state.info.get(
@@ -226,7 +250,40 @@ class LeapInhandBall0730HoraRotationEnv(LeapInhandBall0730RotationEnv):
         queue[:, 1] = proposed_action
         delayed_action = np.where(delay_steps[:, None] == 0, queue[:, 1], queue[:, 0])
         state.info["hora_action_queue"] = queue
-        return super().apply_action(delayed_action, state)
+        applied_target = super().apply_action(delayed_action, state)
+        state.info["hora_applied_raw_action"] = delayed_action.copy()
+        state.info["hora_applied_target"] = applied_target.copy()
+        return applied_target
+
+    def _update_reward_diagnostics(
+        self,
+        *,
+        info: dict[str, Any],
+        ball_angvel: np.ndarray,
+        should_log: bool,
+    ) -> None:
+        if not should_log:
+            return
+        applied_action = info.get("hora_applied_raw_action")
+        applied_target = info.get("hora_applied_target")
+        if applied_action is None or applied_target is None:
+            raise RuntimeError("HORA applied control diagnostics were not initialized")
+        metrics = compute_rotation_diagnostics(
+            ball_angvel,
+            self._rot_axis,
+            clip_min=self._reward_cfg.angvel_clip_min,
+            clip_max=self._reward_cfg.angvel_clip_max,
+        )
+        metrics.update(
+            compute_control_diagnostics(
+                applied_action,
+                applied_target,
+                self._ctrl_lower,
+                self._ctrl_upper,
+            )
+        )
+        validate_diagnostic_metrics(metrics)
+        info.setdefault("log", {}).update(metrics)
 
     def _initialize_hora_domain_randomization_assets(self) -> None:
         """Resolve all model metadata once on the cold initialization path."""

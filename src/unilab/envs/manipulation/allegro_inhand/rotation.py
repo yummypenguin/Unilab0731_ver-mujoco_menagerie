@@ -496,7 +496,23 @@ class AllegroRotationPPO(AllegroBaseEnv):
             log["reward/total"] = float(np.mean(reward))
 
         info["log"] = log
+        self._update_reward_diagnostics(
+            info=info,
+            ball_angvel=ball_angvel,
+            should_log=should_log,
+        )
         return reward * self._cfg.ctrl_dt
+
+    def _update_reward_diagnostics(
+        self,
+        *,
+        info: dict[str, Any],
+        ball_angvel: np.ndarray,
+        should_log: bool,
+    ) -> None:
+        """Allow task-owned diagnostics without changing reward computation."""
+
+        del info, ball_angvel, should_log
 
     def _compute_obs(
         self, info: dict[str, Any], dof_pos: np.ndarray, ball_pos: np.ndarray

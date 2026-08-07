@@ -54,6 +54,11 @@ def resolve_hora_ppo_wrapper_cls(
 class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
     """RSL-RL adapter that preserves HORA teacher-policy observation payloads."""
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self._termination_drop_count = 0
+        self._termination_truncation_count = 0
+        super().__init__(*args, **kwargs)
+
     def _obs_to_tensordict(
         self,
         obs: dict[str, Any],
@@ -105,6 +110,16 @@ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
 
         self.episode_returns += rewards
         self.episode_lengths += 1
+        self._update_episode_diagnostics(state=state, dones=dones)
+        self._termination_drop_count += int(np.count_nonzero(state.terminated))
+        self._termination_truncation_count += int(np.count_nonzero(state.truncated))
+        diagnostic_log = state.info.setdefault("log", {})
+        diagnostic_log["termination/drop_count"] = float(
+            self._termination_drop_count
+        )
+        diagnostic_log["termination/truncation_count"] = float(
+            self._termination_truncation_count
+        )
 
         infos: dict[str, torch.Tensor | TensorDict | dict[str, Any]] = {}
         done_idx = torch.nonzero(dones).flatten()
