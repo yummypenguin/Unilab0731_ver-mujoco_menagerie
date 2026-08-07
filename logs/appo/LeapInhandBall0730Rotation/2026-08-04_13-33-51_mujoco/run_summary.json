@@ -1,0 +1,13 @@
+{
+  "algo": "appo",
+  "task": "LeapInhandBall0730Rotation",
+  "sim_backend": "mujoco",
+  "log_dir": "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\appo\\LeapInhandBall0730Rotation\\2026-08-04_13-33-51_mujoco",
+  "start_time_utc": "2026-08-04T20:33:51.696101+00:00",
+  "end_time_utc": "2026-08-04T23:39:00.104782+00:00",
+  "wall_time_sec": 11107.869292499963,
+  "wandb_run_url": null,
+  "configured_seed": 1,
+  "configured_seed_source": "algo.seed",
+  "effective_seed": 1
+}

@@ -1,0 +1,709 @@
+--- git commit ---
+ec602a105fe379195a366c043e8ee4651eb6345d
+
+
+--- git status ---
+On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .gitignore
+	deleted:    "logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/events.out.tfevents.1786006256.\346\262\205\351\234\206.18616.0"
+	deleted:    logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/git/Unilab0731_ver-mujoco_menagerie.diff
+	deleted:    logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/model_0.pt
+	deleted:    logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/model_1.pt
+	deleted:    "logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/events.out.tfevents.1786006293.\346\262\205\351\234\206.21704.0"
+	deleted:    logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/git/Unilab0731_ver-mujoco_menagerie.diff
+	deleted:    logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/model_0.pt
+	deleted:    logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/model_1.pt
+	modified:   src/unilab/algos/torch/hora/rsl_rl.py
+	modified:   src/unilab/envs/manipulation/allegro_inhand/rotation.py
+	modified:   src/unilab/envs/manipulation/leap_inhand/ball_grasp_allegro.py
+	modified:   src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/evaluate_leap_hora_teacher.py
+	src/unilab/envs/manipulation/leap_inhand/hora_diagnostics.py
+	tests/leap_deploy/test_hora_teacher_diagnostics.py
+	tests/leap_deploy/test_hora_teacher_evaluator.py
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/.gitignore b/.gitignore
+index 4e714cd1..021b619b 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -40,6 +40,8 @@ htmlcov/
+ 
+ # Project specific
+ runs/
++# Generated training and evaluation outputs
++logs/
+ run_config.json
+ run_summary.json
+ .worktrees/
+diff --git "a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/events.out.tfevents.1786006256.\346\262\205\351\234\206.18616.0" "b/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/events.out.tfevents.1786006256.\346\262\205\351\234\206.18616.0"
+deleted file mode 100644
+index fbfa4b26..00000000
+--- "a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/events.out.tfevents.1786006256.\346\262\205\351\234\206.18616.0"
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:be2815cf2a5f464188f6e70b98464863cc278ce723b5ba7b59343d04549b91a2
+-size 2010
+diff --git a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/git/Unilab0731_ver-mujoco_menagerie.diff b/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/git/Unilab0731_ver-mujoco_menagerie.diff
+deleted file mode 100644
+index 5c012c52..00000000
+--- a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/git/Unilab0731_ver-mujoco_menagerie.diff
++++ /dev/null
+@@ -1,208 +0,0 @@
+---- git commit ---
+-a789f0213e232e3d485e136a6dae74a01e015bce
+-
+-
+---- git status ---
+-On branch main
+-Your branch is ahead of 'origin/main' by 1 commit.
+-  (use "git push" to publish your local commits)
+-
+-Changes not staged for commit:
+-  (use "git add <file>..." to update what will be committed)
+-  (use "git restore <file>..." to discard changes in working directory)
+-	modified:   scripts/train_rsl_rl.py
+-	modified:   src/unilab/algos/torch/hora/rsl_rl.py
+-	modified:   src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+-
+-Untracked files:
+-  (use "git add <file>..." to include in what will be committed)
+-	logs/hora_ppo/
+-	tests/leap_deploy/test_hora_teacher_runtime.py
+-
+-no changes added to commit (use "git add" and/or "git commit -a") 
+-
+-
+---- git diff ---
+-diff --git a/scripts/train_rsl_rl.py b/scripts/train_rsl_rl.py
+-index c495465a..0a498c7f 100644
+---- a/scripts/train_rsl_rl.py
+-+++ b/scripts/train_rsl_rl.py
+-@@ -1,6 +1,8 @@
+- import csv
+-+import contextlib
+- import datetime
+- import hashlib
+-+import io
+- import json
+- import statistics
+- import sys
+-@@ -55,7 +57,11 @@ except ImportError:
+-     sys.exit(1)
+- 
+- 
+--def _patch_runner_action_std_logging(runner: Any) -> None:
+-+def _patch_runner_action_std_logging(
+-+    runner: Any,
+-+    *,
+-+    suppress_console: bool = False,
+-+) -> None:
+-     original_log = runner.logger.log
+- 
+-     def _safe_log(self, *args, **kwargs):
+-@@ -66,11 +72,25 @@ def _patch_runner_action_std_logging(runner: Any) -> None:
+-         else:
+-             std = torch.exp(dist.log_std_param)
+-         kwargs["action_std"] = std.detach().clone()
+-+        if suppress_console:
+-+            with contextlib.redirect_stdout(io.StringIO()):
+-+                return original_log(*args, **kwargs)
+-         return original_log(*args, **kwargs)
+- 
+-     runner.logger.log = _safe_log.__get__(runner.logger, type(runner.logger))
+- 
+- 
+-+def _resolve_rsl_rl_logger(log_backend: str) -> tuple[str, bool]:
+-+    """Map UniLab logging modes to RSL-RL while retaining checkpoint writes."""
+-+
+-+    normalized = str(log_backend).strip().lower()
+-+    if normalized == "no_print":
+-+        return "tensorboard", True
+-+    if normalized in {"tensorboard", "wandb"}:
+-+        return normalized, False
+-+    return "tensorboard", False
+-+
+-+
+- def _backend_adapter(cfg: DictConfig) -> BackendAdapter:
+-     return BackendAdapter(
+-         cfg,
+-@@ -524,10 +544,48 @@ def play_rsl_rl(cfg: DictConfig, device: str) -> str | None:
+-     ):
+-         runner.load(str(load_path), map_location=device)
+-     policy = runner.get_inference_policy(device=device)
+-+    num_steps = _resolve_play_num_steps(cfg)
+-+    play_render_mode = str(getattr(cfg.training, "play_render_mode", "auto")).lower()
+-+    if play_render_mode == "none":
+-+        if num_steps is None:
+-+            raise ValueError(
+-+                "Headless checkpoint reload requires a finite training.play_steps value."
+-+            )
+-+        actor_hash_before = _state_dict_sha256(policy.state_dict())
+-+        obs, _ = wrapped_env.reset()
+-+        try:
+-+            with torch.inference_mode():
+-+                for step_index in range(num_steps):
+-+                    actions = policy(obs)
+-+                    if not torch.isfinite(actions).all():
+-+                        raise FloatingPointError(
+-+                            f"Non-finite checkpoint-reload action at step {step_index}"
+-+                        )
+-+                    obs, rewards, _, _ = wrapped_env.step(actions)
+-+                    if not torch.isfinite(rewards).all():
+-+                        raise FloatingPointError(
+-+                            f"Non-finite checkpoint-reload reward at step {step_index}"
+-+                        )
+-+                    for key, value in obs.items():
+-+                        if isinstance(value, torch.Tensor) and not torch.isfinite(value).all():
+-+                            raise FloatingPointError(
+-+                                f"Non-finite checkpoint-reload observation {key!r} "
+-+                                f"at step {step_index}"
+-+                            )
+-+            actor_hash_after = _state_dict_sha256(policy.state_dict())
+-+            if actor_hash_before != actor_hash_after:
+-+                raise AssertionError("Headless checkpoint reload modified policy weights")
+-+            print(
+-+                f"Completed {num_steps} deterministic headless checkpoint-reload steps; "
+-+                "policy weights unchanged."
+-+            )
+-+            return None
+-+        finally:
+-+            wrapped_env.close()
+-+
+-     if EXPORT_POLICY:
+-         runner.export_policy_to_onnx(path=str(load_path_dir))
+-         runner.export_policy_to_jit(path=str(load_path_dir))
+--    num_steps = _resolve_play_num_steps(cfg)
+-     output_video = Path(load_path_dir) / "play_video.mp4"
+-     playback_mode: str | None = None
+- 
+-@@ -864,8 +922,8 @@ def main(cfg: DictConfig) -> None:
+-             if "runner" not in train_cfg:
+-                 train_cfg["runner"] = {}
+- 
+--            logger_type = (
+--                cfg.training.logger if cfg.training.logger in ["tensorboard", "wandb"] else "none"
+-+            logger_type, suppress_console_log = _resolve_rsl_rl_logger(
+-+                str(cfg.training.logger)
+-             )
+-             train_cfg["runner"]["logger"] = logger_type
+-             train_cfg["logger"] = logger_type
+-@@ -887,7 +945,10 @@ def main(cfg: DictConfig) -> None:
+-                 Any,
+-                 OnPolicyRunner(cast(Any, wrapped_env), train_cfg, log_dir=log_dir, device=device),
+-             )
+--            _patch_runner_action_std_logging(runner)
+-+            _patch_runner_action_std_logging(
+-+                runner,
+-+                suppress_console=suppress_console_log,
+-+            )
+- 
+-             if cfg.algo.load_run != "-1":
+-                 resume_path, _ = parse_checkpoint_path(cfg, root_dir=ROOT_DIR)
+-@@ -943,7 +1004,7 @@ def main(cfg: DictConfig) -> None:
+-                 tracker.update_summary(train_summary)
+-             env.close()
+- 
+--        if should_run_playback(
+-+        if bool(cfg.training.play_only) or should_run_playback(
+-             play_only=cfg.training.play_only,
+-             no_play=cfg.training.no_play,
+-             play_render_mode=getattr(cfg.training, "play_render_mode", "auto"),
+-diff --git a/src/unilab/algos/torch/hora/rsl_rl.py b/src/unilab/algos/torch/hora/rsl_rl.py
+-index 12800d3b..e11537b2 100644
+---- a/src/unilab/algos/torch/hora/rsl_rl.py
+-+++ b/src/unilab/algos/torch/hora/rsl_rl.py
+-@@ -90,6 +90,15 @@ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
+-             contract while preserving HORA privileged observations.
+-         """
+-         actions_np = to_numpy(actions)
+-+        terminal_episode_priv_info: np.ndarray | None = None
+-+        if getattr(self.env, "episode_static_critic_info", False):
+-+            # LEAP HORA critic_info is sampled at reset and remains fixed for the
+-+            # episode. Snapshot it before step because autoreset replaces done rows.
+-+            state_before_step = self.env.state
+-+            if state_before_step is not None:
+-+                candidate = state_before_step.info.get("critic_info")
+-+                if isinstance(candidate, np.ndarray):
+-+                    terminal_episode_priv_info = candidate.copy()
+-         state = self.env.step(actions_np)
+-         rewards = to_torch(state.reward, self.device)
+-         dones = self._resolve_done(state)
+-@@ -111,7 +120,15 @@ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
+-                 truncated=to_numpy(infos["time_outs"]) if "time_outs" in infos else None,
+-             )
+-             if np.any(terminal_contract.timeout_terminal_mask) and final_observation is not None:
+--                infos["time_out_bootstrap_obs"] = self._obs_to_tensordict(final_observation)
+-+                terminal_info = (
+-+                    {"critic_info": terminal_episode_priv_info}
+-+                    if terminal_episode_priv_info is not None
+-+                    else None
+-+                )
+-+                infos["time_out_bootstrap_obs"] = self._obs_to_tensordict(
+-+                    final_observation,
+-+                    terminal_info,
+-+                )
+- 
+-             self.episode_returns[done_idx] = 0
+-             self.episode_lengths[done_idx] = 0
+-diff --git a/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py b/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+-index b52d2c25..a433338f 100644
+---- a/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+-+++ b/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+-@@ -164,6 +164,7 @@ class LeapBall0730HoraResetProvider(LeapBall0730ResetProvider):
+- class LeapInhandBall0730HoraRotationEnv(LeapInhandBall0730RotationEnv):
+-     """LEAP rotation task whose policy inputs are directly deployable on hardware."""
+- 
+-+    episode_static_critic_info = True
+-     _cfg: LeapInhandBall0730HoraRotationCfg
+- 
+-     def __init__(
+\ No newline at end of file
+diff --git a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/model_0.pt b/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/model_0.pt
+deleted file mode 100644
+index a179d7d4..00000000
+--- a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/model_0.pt
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:999c386907f8559796cf6917e5d249ba59b736d7ed839cbb30eae277088b77be
+-size 3168843
+diff --git a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/model_1.pt b/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/model_1.pt
+deleted file mode 100644
+index c8bface7..00000000
+--- a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-50-54_mujoco/model_1.pt
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:c39aa84730ffe8d975d0fabc5271bc8ecbeb6571357089c6844050044e688b25
+-size 3168843
+diff --git "a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/events.out.tfevents.1786006293.\346\262\205\351\234\206.21704.0" "b/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/events.out.tfevents.1786006293.\346\262\205\351\234\206.21704.0"
+deleted file mode 100644
+index b3cdfffd..00000000
+--- "a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/events.out.tfevents.1786006293.\346\262\205\351\234\206.21704.0"
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:72f6aff9de99e98c456be1903a73f30ac9cde022fd2c88666e7f1c8aaa13b698
+-size 2010
+diff --git a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/git/Unilab0731_ver-mujoco_menagerie.diff b/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/git/Unilab0731_ver-mujoco_menagerie.diff
+deleted file mode 100644
+index 5c012c52..00000000
+--- a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/git/Unilab0731_ver-mujoco_menagerie.diff
++++ /dev/null
+@@ -1,208 +0,0 @@
+---- git commit ---
+-a789f0213e232e3d485e136a6dae74a01e015bce
+-
+-
+---- git status ---
+-On branch main
+-Your branch is ahead of 'origin/main' by 1 commit.
+-  (use "git push" to publish your local commits)
+-
+-Changes not staged for commit:
+-  (use "git add <file>..." to update what will be committed)
+-  (use "git restore <file>..." to discard changes in working directory)
+-	modified:   scripts/train_rsl_rl.py
+-	modified:   src/unilab/algos/torch/hora/rsl_rl.py
+-	modified:   src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+-
+-Untracked files:
+-  (use "git add <file>..." to include in what will be committed)
+-	logs/hora_ppo/
+-	tests/leap_deploy/test_hora_teacher_runtime.py
+-
+-no changes added to commit (use "git add" and/or "git commit -a") 
+-
+-
+---- git diff ---
+-diff --git a/scripts/train_rsl_rl.py b/scripts/train_rsl_rl.py
+-index c495465a..0a498c7f 100644
+---- a/scripts/train_rsl_rl.py
+-+++ b/scripts/train_rsl_rl.py
+-@@ -1,6 +1,8 @@
+- import csv
+-+import contextlib
+- import datetime
+- import hashlib
+-+import io
+- import json
+- import statistics
+- import sys
+-@@ -55,7 +57,11 @@ except ImportError:
+-     sys.exit(1)
+- 
+- 
+--def _patch_runner_action_std_logging(runner: Any) -> None:
+-+def _patch_runner_action_std_logging(
+-+    runner: Any,
+-+    *,
+-+    suppress_console: bool = False,
+-+) -> None:
+-     original_log = runner.logger.log
+- 
+-     def _safe_log(self, *args, **kwargs):
+-@@ -66,11 +72,25 @@ def _patch_runner_action_std_logging(runner: Any) -> None:
+-         else:
+-             std = torch.exp(dist.log_std_param)
+-         kwargs["action_std"] = std.detach().clone()
+-+        if suppress_console:
+-+            with contextlib.redirect_stdout(io.StringIO()):
+-+                return original_log(*args, **kwargs)
+-         return original_log(*args, **kwargs)
+- 
+-     runner.logger.log = _safe_log.__get__(runner.logger, type(runner.logger))
+- 
+- 
+-+def _resolve_rsl_rl_logger(log_backend: str) -> tuple[str, bool]:
+-+    """Map UniLab logging modes to RSL-RL while retaining checkpoint writes."""
+-+
+-+    normalized = str(log_backend).strip().lower()
+-+    if normalized == "no_print":
+-+        return "tensorboard", True
+-+    if normalized in {"tensorboard", "wandb"}:
+-+        return normalized, False
+-+    return "tensorboard", False
+-+
+-+
+- def _backend_adapter(cfg: DictConfig) -> BackendAdapter:
+-     return BackendAdapter(
+-         cfg,
+-@@ -524,10 +544,48 @@ def play_rsl_rl(cfg: DictConfig, device: str) -> str | None:
+-     ):
+-         runner.load(str(load_path), map_location=device)
+-     policy = runner.get_inference_policy(device=device)
+-+    num_steps = _resolve_play_num_steps(cfg)
+-+    play_render_mode = str(getattr(cfg.training, "play_render_mode", "auto")).lower()
+-+    if play_render_mode == "none":
+-+        if num_steps is None:
+-+            raise ValueError(
+-+                "Headless checkpoint reload requires a finite training.play_steps value."
+-+            )
+-+        actor_hash_before = _state_dict_sha256(policy.state_dict())
+-+        obs, _ = wrapped_env.reset()
+-+        try:
+-+            with torch.inference_mode():
+-+                for step_index in range(num_steps):
+-+                    actions = policy(obs)
+-+                    if not torch.isfinite(actions).all():
+-+                        raise FloatingPointError(
+-+                            f"Non-finite checkpoint-reload action at step {step_index}"
+-+                        )
+-+                    obs, rewards, _, _ = wrapped_env.step(actions)
+-+                    if not torch.isfinite(rewards).all():
+-+                        raise FloatingPointError(
+-+                            f"Non-finite checkpoint-reload reward at step {step_index}"
+-+                        )
+-+                    for key, value in obs.items():
+-+                        if isinstance(value, torch.Tensor) and not torch.isfinite(value).all():
+-+                            raise FloatingPointError(
+-+                                f"Non-finite checkpoint-reload observation {key!r} "
+-+                                f"at step {step_index}"
+-+                            )
+-+            actor_hash_after = _state_dict_sha256(policy.state_dict())
+-+            if actor_hash_before != actor_hash_after:
+-+                raise AssertionError("Headless checkpoint reload modified policy weights")
+-+            print(
+-+                f"Completed {num_steps} deterministic headless checkpoint-reload steps; "
+-+                "policy weights unchanged."
+-+            )
+-+            return None
+-+        finally:
+-+            wrapped_env.close()
+-+
+-     if EXPORT_POLICY:
+-         runner.export_policy_to_onnx(path=str(load_path_dir))
+-         runner.export_policy_to_jit(path=str(load_path_dir))
+--    num_steps = _resolve_play_num_steps(cfg)
+-     output_video = Path(load_path_dir) / "play_video.mp4"
+-     playback_mode: str | None = None
+- 
+-@@ -864,8 +922,8 @@ def main(cfg: DictConfig) -> None:
+-             if "runner" not in train_cfg:
+-                 train_cfg["runner"] = {}
+- 
+--            logger_type = (
+--                cfg.training.logger if cfg.training.logger in ["tensorboard", "wandb"] else "none"
+-+            logger_type, suppress_console_log = _resolve_rsl_rl_logger(
+-+                str(cfg.training.logger)
+-             )
+-             train_cfg["runner"]["logger"] = logger_type
+-             train_cfg["logger"] = logger_type
+-@@ -887,7 +945,10 @@ def main(cfg: DictConfig) -> None:
+-                 Any,
+-                 OnPolicyRunner(cast(Any, wrapped_env), train_cfg, log_dir=log_dir, device=device),
+-             )
+--            _patch_runner_action_std_logging(runner)
+-+            _patch_runner_action_std_logging(
+-+                runner,
+-+                suppress_console=suppress_console_log,
+-+            )
+- 
+-             if cfg.algo.load_run != "-1":
+-                 resume_path, _ = parse_checkpoint_path(cfg, root_dir=ROOT_DIR)
+-@@ -943,7 +1004,7 @@ def main(cfg: DictConfig) -> None:
+-                 tracker.update_summary(train_summary)
+-             env.close()
+- 
+--        if should_run_playback(
+-+        if bool(cfg.training.play_only) or should_run_playback(
+-             play_only=cfg.training.play_only,
+-             no_play=cfg.training.no_play,
+-             play_render_mode=getattr(cfg.training, "play_render_mode", "auto"),
+-diff --git a/src/unilab/algos/torch/hora/rsl_rl.py b/src/unilab/algos/torch/hora/rsl_rl.py
+-index 12800d3b..e11537b2 100644
+---- a/src/unilab/algos/torch/hora/rsl_rl.py
+-+++ b/src/unilab/algos/torch/hora/rsl_rl.py
+-@@ -90,6 +90,15 @@ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
+-             contract while preserving HORA privileged observations.
+-         """
+-         actions_np = to_numpy(actions)
+-+        terminal_episode_priv_info: np.ndarray | None = None
+-+        if getattr(self.env, "episode_static_critic_info", False):
+-+            # LEAP HORA critic_info is sampled at reset and remains fixed for the
+-+            # episode. Snapshot it before step because autoreset replaces done rows.
+-+            state_before_step = self.env.state
+-+            if state_before_step is not None:
+-+                candidate = state_before_step.info.get("critic_info")
+-+                if isinstance(candidate, np.ndarray):
+-+                    terminal_episode_priv_info = candidate.copy()
+-         state = self.env.step(actions_np)
+-         rewards = to_torch(state.reward, self.device)
+-         dones = self._resolve_done(state)
+-@@ -111,7 +120,15 @@ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
+-                 truncated=to_numpy(infos["time_outs"]) if "time_outs" in infos else None,
+-             )
+-             if np.any(terminal_contract.timeout_terminal_mask) and final_observation is not None:
+--                infos["time_out_bootstrap_obs"] = self._obs_to_tensordict(final_observation)
+-+                terminal_info = (
+-+                    {"critic_info": terminal_episode_priv_info}
+-+                    if terminal_episode_priv_info is not None
+-+                    else None
+-+                )
+-+                infos["time_out_bootstrap_obs"] = self._obs_to_tensordict(
+-+                    final_observation,
+-+                    terminal_info,
+-+                )
+- 
+-             self.episode_returns[done_idx] = 0
+-             self.episode_lengths[done_idx] = 0
+-diff --git a/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py b/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+-index b52d2c25..a433338f 100644
+---- a/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+-+++ b/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+-@@ -164,6 +164,7 @@ class LeapBall0730HoraResetProvider(LeapBall0730ResetProvider):
+- class LeapInhandBall0730HoraRotationEnv(LeapInhandBall0730RotationEnv):
+-     """LEAP rotation task whose policy inputs are directly deployable on hardware."""
+- 
+-+    episode_static_critic_info = True
+-     _cfg: LeapInhandBall0730HoraRotationCfg
+- 
+-     def __init__(
+\ No newline at end of file
+diff --git a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/model_0.pt b/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/model_0.pt
+deleted file mode 100644
+index bd77e026..00000000
+--- a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/model_0.pt
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:4d7660ebe95cff8609fe8eb91bc0bbeee5499c729c046cb52e2fa04ffdb9813d
+-size 3168843
+diff --git a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/model_1.pt b/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/model_1.pt
+deleted file mode 100644
+index af8a9b4c..00000000
+--- a/logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-06_01-51-31_mujoco/model_1.pt
++++ /dev/null
+@@ -1,3 +0,0 @@
+-version https://git-lfs.github.com/spec/v1
+-oid sha256:6a182edea0fee6b55400771fd442bcc48d55efc2a8af1a1edacb2635284ab143
+-size 3168843
+diff --git a/src/unilab/algos/torch/hora/rsl_rl.py b/src/unilab/algos/torch/hora/rsl_rl.py
+index e11537b2..309b580d 100644
+--- a/src/unilab/algos/torch/hora/rsl_rl.py
++++ b/src/unilab/algos/torch/hora/rsl_rl.py
+@@ -54,6 +54,11 @@ def resolve_hora_ppo_wrapper_cls(
+ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
+     """RSL-RL adapter that preserves HORA teacher-policy observation payloads."""
+ 
++    def __init__(self, *args: Any, **kwargs: Any) -> None:
++        self._termination_drop_count = 0
++        self._termination_truncation_count = 0
++        super().__init__(*args, **kwargs)
++
+     def _obs_to_tensordict(
+         self,
+         obs: dict[str, Any],
+@@ -105,6 +110,16 @@ class HoraRslRlVecEnvWrapper(RslRlVecEnvWrapper):
+ 
+         self.episode_returns += rewards
+         self.episode_lengths += 1
++        self._update_episode_diagnostics(state=state, dones=dones)
++        self._termination_drop_count += int(np.count_nonzero(state.terminated))
++        self._termination_truncation_count += int(np.count_nonzero(state.truncated))
++        diagnostic_log = state.info.setdefault("log", {})
++        diagnostic_log["termination/drop_count"] = float(
++            self._termination_drop_count
++        )
++        diagnostic_log["termination/truncation_count"] = float(
++            self._termination_truncation_count
++        )
+ 
+         infos: dict[str, torch.Tensor | TensorDict | dict[str, Any]] = {}
+         done_idx = torch.nonzero(dones).flatten()
+diff --git a/src/unilab/envs/manipulation/allegro_inhand/rotation.py b/src/unilab/envs/manipulation/allegro_inhand/rotation.py
+index c5298f48..8c5cabcf 100644
+--- a/src/unilab/envs/manipulation/allegro_inhand/rotation.py
++++ b/src/unilab/envs/manipulation/allegro_inhand/rotation.py
+@@ -496,8 +496,24 @@ class AllegroRotationPPO(AllegroBaseEnv):
+             log["reward/total"] = float(np.mean(reward))
+ 
+         info["log"] = log
++        self._update_reward_diagnostics(
++            info=info,
++            ball_angvel=ball_angvel,
++            should_log=should_log,
++        )
+         return reward * self._cfg.ctrl_dt
+ 
++    def _update_reward_diagnostics(
++        self,
++        *,
++        info: dict[str, Any],
++        ball_angvel: np.ndarray,
++        should_log: bool,
++    ) -> None:
++        """Allow task-owned diagnostics without changing reward computation."""
++
++        del info, ball_angvel, should_log
++
+     def _compute_obs(
+         self, info: dict[str, Any], dof_pos: np.ndarray, ball_pos: np.ndarray
+     ) -> dict[str, np.ndarray]:
+diff --git a/src/unilab/envs/manipulation/leap_inhand/ball_grasp_allegro.py b/src/unilab/envs/manipulation/leap_inhand/ball_grasp_allegro.py
+index 1659599a..894e319f 100644
+--- a/src/unilab/envs/manipulation/leap_inhand/ball_grasp_allegro.py
++++ b/src/unilab/envs/manipulation/leap_inhand/ball_grasp_allegro.py
+@@ -8,8 +8,8 @@ from typing import Any
+ import numpy as np
+ 
+ from unilab.base import registry
+-from unilab.dtype_config import get_global_dtype
+ from unilab.dr import DomainRandomizationProvider
++from unilab.dtype_config import get_global_dtype
+ from unilab.envs.manipulation.allegro_inhand.grasp_gen import AllegroRotationGrasp
+ from unilab.envs.manipulation.allegro_inhand.rotation import (
+     AllegroRotationDomainRandomizationProvider,
+diff --git a/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py b/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+index a433338f..c3e0b2f9 100644
+--- a/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
++++ b/src/unilab/envs/manipulation/leap_inhand/ball_rotation_0730_hora.py
+@@ -28,6 +28,11 @@ from .deploy_contract import (
+     build_proprio_frame,
+     validate_axis,
+ )
++from .hora_diagnostics import (
++    compute_control_diagnostics,
++    compute_rotation_diagnostics,
++    validate_diagnostic_metrics,
++)
+ from .hora_domain_randomization import (
+     LeapHoraDomainRandomizationConfig,
+     LeapHoraResetSamples,
+@@ -61,7 +66,21 @@ class LeapInhandBall0730HoraRotationCfg(LeapInhandBall0730RotationCfg):
+             )
+         if self.critic_info_dim != PRIV_INFO_DIM:
+             raise ValueError(f"critic_info_dim must be exactly {PRIV_INFO_DIM}")
+-        validate_axis(self.rotation_axis_command)
++        try:
++            command_axis = validate_axis(self.rotation_axis_command)
++            reward_axis = validate_axis(self.rotation_axis)
++        except (TypeError, ValueError) as exc:
++            raise ValueError(
++                "rotation_axis_command and rotation_axis must both be finite, "
++                f"non-zero 3D axes; rotation_axis_command={self.rotation_axis_command!r}, "
++                f"rotation_axis={self.rotation_axis!r}"
++            ) from exc
++        if not np.allclose(command_axis, reward_axis, atol=1e-6, rtol=0.0):
++            raise ValueError(
++                "rotation_axis_command must match rotation_axis after normalization; "
++                f"rotation_axis_command={self.rotation_axis_command!r}, "
++                f"rotation_axis={self.rotation_axis!r}"
++            )
+         self.hora_domain_rand.validate()
+ 
+ 
+@@ -195,9 +214,14 @@ class LeapInhandBall0730HoraRotationEnv(LeapInhandBall0730RotationEnv):
+         state.info["observation_previous_target"] = np.asarray(
+             previous_target, dtype=get_global_dtype()
+         ).copy()
+-        proposed_action = np.asarray(
+-            np.clip(actions, -1.0, 1.0), dtype=get_global_dtype()
+-        )
++        proposed_action = np.asarray(actions, dtype=get_global_dtype())
++        if proposed_action.shape != (actions.shape[0], self._num_action):
++            raise ValueError(
++                "actions must have shape "
++                f"{(actions.shape[0], self._num_action)}, got {proposed_action.shape}"
++            )
++        if not np.isfinite(proposed_action).all():
++            raise ValueError("actions must contain only finite values")
+         expected_queue_shape = (actions.shape[0], 2, self._num_action)
+         queue = np.asarray(
+             state.info.get(
+@@ -226,7 +250,40 @@ class LeapInhandBall0730HoraRotationEnv(LeapInhandBall0730RotationEnv):
+         queue[:, 1] = proposed_action
+         delayed_action = np.where(delay_steps[:, None] == 0, queue[:, 1], queue[:, 0])
+         state.info["hora_action_queue"] = queue
+-        return super().apply_action(delayed_action, state)
++        applied_target = super().apply_action(delayed_action, state)
++        state.info["hora_applied_raw_action"] = delayed_action.copy()
++        state.info["hora_applied_target"] = applied_target.copy()
++        return applied_target
++
++    def _update_reward_diagnostics(
++        self,
++        *,
++        info: dict[str, Any],
++        ball_angvel: np.ndarray,
++        should_log: bool,
++    ) -> None:
++        if not should_log:
++            return
++        applied_action = info.get("hora_applied_raw_action")
++        applied_target = info.get("hora_applied_target")
++        if applied_action is None or applied_target is None:
++            raise RuntimeError("HORA applied control diagnostics were not initialized")
++        metrics = compute_rotation_diagnostics(
++            ball_angvel,
++            self._rot_axis,
++            clip_min=self._reward_cfg.angvel_clip_min,
++            clip_max=self._reward_cfg.angvel_clip_max,
++        )
++        metrics.update(
++            compute_control_diagnostics(
++                applied_action,
++                applied_target,
++                self._ctrl_lower,
++                self._ctrl_upper,
++            )
++        )
++        validate_diagnostic_metrics(metrics)
++        info.setdefault("log", {}).update(metrics)
+ 
+     def _initialize_hora_domain_randomization_assets(self) -> None:
+         """Resolve all model metadata once on the cold initialization path."""

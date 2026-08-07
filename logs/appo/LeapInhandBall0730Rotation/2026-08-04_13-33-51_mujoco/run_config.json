@@ -1,0 +1,273 @@
+{
+  "run": {
+    "algo": "appo",
+    "task": "LeapInhandBall0730Rotation",
+    "sim_backend": "mujoco",
+    "device": "cpu",
+    "collector_device": "cpu",
+    "log_dir": "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\appo\\LeapInhandBall0730Rotation\\2026-08-04_13-33-51_mujoco",
+    "start_time_utc": "2026-08-04T20:33:51.696101+00:00",
+    "hostname": "\u6c85\u9706",
+    "user": "timli",
+    "git": {
+      "commit": "965bd267b52eb812987c8f0d5da5a9cf59c5393f",
+      "branch": "main",
+      "dirty": true
+    },
+    "hardware": {
+      "platform": "Windows-11-10.0.26200-SP0",
+      "chip": "16",
+      "cpu_total_cores": "Intel(R) Core(TM) Ultra 9 185H",
+      "cpu_performance_cores": "unknown",
+      "cpu_efficiency_cores": "unknown",
+      "gpu_name": "unknown",
+      "memory": "31.7 GB"
+    },
+    "wandb": {
+      "project": "unilab",
+      "entity": null,
+      "name": "appo__LeapInhandBall0730Rotation__2026-08-04_13-33-51_mujoco",
+      "group": "LeapInhandBall0730Rotation",
+      "job_type": "appo",
+      "tags": [
+        "appo",
+        "LeapInhandBall0730Rotation",
+        "mujoco",
+        "user-timli"
+      ],
+      "notes": null,
+      "mode": null
+    },
+    "configured_seed": 1,
+    "configured_seed_source": "algo.seed",
+    "effective_seed": 1
+  },
+  "config": {
+    "algo": {
+      "algo": "appo",
+      "algo_log_name": "appo",
+      "seed": 1,
+      "num_envs": 1024,
+      "steps_per_env": 32,
+      "max_iterations": 5000,
+      "save_interval": 25,
+      "load_run": "-1",
+      "obs_groups": {
+        "actor": {
+          "policy": 0
+        },
+        "critic": {
+          "policy": 0
+        }
+      },
+      "actor": {
+        "class_name": "rsl_rl.models.MLPModel",
+        "hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "activation": "elu",
+        "obs_normalization": true,
+        "distribution_cfg": {
+          "class_name": "rsl_rl.modules.distribution.GaussianDistribution",
+          "init_std": 1.0,
+          "std_type": "scalar"
+        }
+      },
+      "critic": {
+        "class_name": "rsl_rl.models.MLPModel",
+        "hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "activation": "elu",
+        "obs_normalization": true
+      },
+      "algorithm": {
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "clip_param": 0.2,
+        "gamma": 0.99,
+        "lam": 0.95,
+        "value_loss_coef": 4.0,
+        "entropy_coef": 0.0,
+        "learning_rate": 0.0005,
+        "max_grad_norm": 1.0,
+        "use_clipped_value_loss": true,
+        "schedule": "adaptive",
+        "desired_kl": 0.02,
+        "adaptive_kl_factor": 2.0,
+        "adaptive_lr_factor": 1.5,
+        "optimizer": "adam",
+        "tau": 1.0,
+        "target_update_freq": 1,
+        "vtrace_clip_rho": 1.0,
+        "vtrace_clip_c": 1.0,
+        "enable_compile": false
+      }
+    },
+    "training": {
+      "task_name": "LeapInhandBall0730Rotation",
+      "device": "cpu",
+      "collector_device": "cpu",
+      "logger": "tensorboard",
+      "wandb_project": "unilab",
+      "wandb_entity": null,
+      "wandb_group": null,
+      "wandb_job_type": null,
+      "wandb_name": null,
+      "wandb_tags": [],
+      "wandb_notes": null,
+      "wandb_mode": null,
+      "sim_backend": "mujoco",
+      "nan_guard": {
+        "enabled": true,
+        "buffer_size": 100,
+        "max_envs_to_dump": 5,
+        "output_dir": null
+      },
+      "log_root": null,
+      "log_dir": null,
+      "play_only": false,
+      "no_play": true,
+      "sim2sim_strict": true,
+      "play_render_mode": "auto",
+      "play_env_num": 16,
+      "play_steps": 200,
+      "cam_distance": 1.2,
+      "cam_elevation": -20.0,
+      "cam_azimuth": 90.0,
+      "cam_tracking": false,
+      "cam_tracking_env_idx": 0,
+      "cam_tracking_extra_envs": 2,
+      "replay_queue_size": 1,
+      "render_spacing": 0.5,
+      "cam_lookat": [
+        0.0,
+        0.0,
+        0.5
+      ]
+    },
+    "interactive": {
+      "action_mode": "zero",
+      "policy_obs_mode": "auto",
+      "show_target_bodies": false,
+      "show_reward_debug": false,
+      "target_show_axes": false,
+      "target_body_names": "",
+      "target_max_bodies": 0,
+      "target_marker_radius": 0.02,
+      "target_axis_length": 0.08,
+      "target_marker_alpha": 0.75,
+      "reward_debug_show_velocity": false,
+      "reward_debug_lin_vel_scale": 0.08,
+      "reward_debug_ang_vel_scale": 0.05,
+      "reward_debug_show_connectors": false,
+      "reward_debug_show_global_anchor": false,
+      "camera_follow_body": true,
+      "camera_focus_body_name": "",
+      "camera_height_offset": 0.15,
+      "camera_distance": null,
+      "camera_elevation": null,
+      "camera_azimuth": null,
+      "use_env_visual_model": true,
+      "show_reward_values": false,
+      "reward_value_keys": "",
+      "reward_value_max_terms": 12,
+      "speed": 1.0,
+      "start_paused": false,
+      "keyboard": false,
+      "keyboard_step_lin": 0.1,
+      "keyboard_step_ang": 0.2,
+      "show_object_rotation": true,
+      "rotation_body_name": "leap_object"
+    },
+    "env": {
+      "post_step_forward_sensor": false,
+      "adaptive_chunk_size": true,
+      "chunk_size": null,
+      "sim_dt": 0.005,
+      "ctrl_dt": 0.05,
+      "max_episode_seconds": 20.0,
+      "gen_grasp": false,
+      "grasp_cache_path": "robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy",
+      "pose_diff_target_qpos": [
+        1.5152045040427635,
+        0.11430147259750476,
+        0.2876406730815961,
+        0.19280835997306603,
+        1.4188457206477074,
+        0.025681830807677088,
+        -0.26717932336688344,
+        0.5369823550831088,
+        1.5294890485315962,
+        -0.01798386011739139,
+        0.27558019211759155,
+        0.19821762108233876,
+        1.9245445859343515,
+        0.04788276935232176,
+        -0.021885380331691334,
+        0.19524630120127295
+      ],
+      "termination_drop_distance": 0.03,
+      "noise_config": {
+        "level": 0.0,
+        "scale_joint_angle": 0.0
+      },
+      "control_config": {
+        "action_scale": 0.041666666666666664
+      },
+      "domain_rand": {
+        "randomize_base_mass": false,
+        "random_com": false,
+        "randomize_gravity": false,
+        "push_robots": false,
+        "joint_noise": 0.0,
+        "ball_vel_noise": 0.0,
+        "ball_z_offset": 0.0
+      }
+    },
+    "reward": {
+      "scales": {
+        "rotate": 1.25,
+        "obj_linvel": -0.3,
+        "pose_diff": -0.3,
+        "torque": -0.1,
+        "work": -2.0,
+        "drop": 0.0
+      },
+      "angvel_clip_min": -0.5,
+      "angvel_clip_max": 0.5,
+      "middle_contact_rotation_fraction": 0.2,
+      "reset_z_threshold": 0.0
+    },
+    "play_profile": {
+      "enabled": true,
+      "env": {
+        "render_spacing": 2.0
+      }
+    }
+  },
+  "contract_snapshot": {
+    "algo.obs_groups": {
+      "actor": {
+        "policy": 0
+      },
+      "critic": {
+        "policy": 0
+      }
+    },
+    "env.control_config.action_scale": 0.041666666666666664,
+    "reward.scales": {
+      "rotate": 1.25,
+      "obj_linvel": -0.3,
+      "pose_diff": -0.3,
+      "torque": -0.1,
+      "work": -2.0,
+      "drop": 0.0
+    },
+    "env.ctrl_dt": 0.05
+  }
+}

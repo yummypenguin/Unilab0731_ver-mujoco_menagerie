@@ -1,0 +1,381 @@
+{
+  "run": {
+    "algo": "ppo",
+    "task": "LeapInhandBall0730HoraRotation",
+    "sim_backend": "mujoco",
+    "device": "cpu",
+    "collector_device": null,
+    "log_dir": "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\hora_ppo\\LeapInhandBall0730HoraRotation\\2026-08-06_03-07-49_mujoco",
+    "start_time_utc": "2026-08-06T10:07:49.463744+00:00",
+    "hostname": "\u6c85\u9706",
+    "user": "timli",
+    "git": {
+      "commit": "ec602a105fe379195a366c043e8ee4651eb6345d",
+      "branch": "main",
+      "dirty": true
+    },
+    "hardware": {
+      "platform": "Windows-11-10.0.26200-SP0",
+      "chip": "16",
+      "cpu_total_cores": "Intel(R) Core(TM) Ultra 9 185H",
+      "cpu_performance_cores": "unknown",
+      "cpu_efficiency_cores": "unknown",
+      "gpu_name": "unknown",
+      "memory": "31.7 GB"
+    },
+    "wandb": {
+      "project": "unilab",
+      "entity": null,
+      "name": "ppo__LeapInhandBall0730HoraRotation__2026-08-06_03-07-49_mujoco",
+      "group": "LeapInhandBall0730HoraRotation",
+      "job_type": "ppo",
+      "tags": [
+        "ppo",
+        "LeapInhandBall0730HoraRotation",
+        "mujoco",
+        "user-timli"
+      ],
+      "notes": null,
+      "mode": null
+    },
+    "configured_seed": 1,
+    "configured_seed_source": "algo.seed",
+    "effective_seed": 1
+  },
+  "config": {
+    "algo": {
+      "algo": "ppo",
+      "algo_log_name": "hora_ppo",
+      "seed": 1,
+      "num_envs": 2048,
+      "num_steps_per_env": 8,
+      "max_iterations": 50,
+      "save_interval": 10,
+      "empirical_normalization": false,
+      "runner_class_name": "OnPolicyRunner",
+      "obs_groups": {
+        "default": [
+          "policy"
+        ],
+        "actor": [
+          "actor"
+        ],
+        "critic": [
+          "actor"
+        ]
+      },
+      "experiment_name": "test",
+      "run_name": "",
+      "resume": false,
+      "load_run": "-1",
+      "checkpoint": -1,
+      "load_mode": "resume",
+      "resume_path": null,
+      "policy": {
+        "init_noise_std": 1.0,
+        "actor_hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "critic_hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "activation": "elu",
+        "class_name": "ActorCritic"
+      },
+      "algorithm": {
+        "class_name": "unilab.algos.torch.hora:HoraPPO",
+        "value_loss_coef": 4.0,
+        "use_clipped_value_loss": true,
+        "clip_param": 0.2,
+        "entropy_coef": 0.01,
+        "num_learning_epochs": 5,
+        "num_mini_batches": 4,
+        "learning_rate": 0.001,
+        "schedule": "adaptive",
+        "gamma": 0.99,
+        "lam": 0.95,
+        "desired_kl": 0.02,
+        "target_kl_stop": null,
+        "max_grad_norm": 1.0,
+        "adaptive_kl_beta": 0.9,
+        "adaptive_lr_growth": 1.1,
+        "adaptive_lr_decay": 1.2,
+        "adaptive_lr_update_interval": 5,
+        "metrics_interval": 8,
+        "finite_check_interval": 8,
+        "enable_compile": false,
+        "warmup_strict_iters": 10,
+        "warmup_metrics_interval": 2,
+        "warmup_finite_check_interval": 2,
+        "disable_finite_checks": true
+      },
+      "actor": {
+        "class_name": "unilab.algos.torch.hora:HoraActorModel",
+        "hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "activation": "elu",
+        "obs_normalization": true,
+        "distribution_cfg": {
+          "class_name": "GaussianDistribution",
+          "init_std": 1.0,
+          "std_type": "scalar"
+        },
+        "priv_info_embed_dim": 9,
+        "priv_mlp_hidden_dims": [
+          256,
+          128,
+          9
+        ]
+      },
+      "critic": {
+        "class_name": "unilab.algos.torch.hora:HoraCriticModel",
+        "hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "activation": "elu",
+        "obs_normalization": true,
+        "priv_info_embed_dim": 9,
+        "priv_mlp_hidden_dims": [
+          256,
+          128,
+          9
+        ]
+      },
+      "runtime_impl": "hora_ppo",
+      "runtime_resolver": "unilab.algos.torch.hora.rsl_rl:resolve_hora_ppo_runtime"
+    },
+    "training": {
+      "task_name": "LeapInhandBall0730HoraRotation",
+      "device": null,
+      "logger": "no_print",
+      "wandb_project": "unilab",
+      "wandb_entity": null,
+      "wandb_group": null,
+      "wandb_job_type": null,
+      "wandb_name": null,
+      "wandb_tags": [],
+      "wandb_notes": null,
+      "wandb_mode": null,
+      "sim_backend": "mujoco",
+      "nan_guard": {
+        "enabled": true,
+        "buffer_size": 100,
+        "max_envs_to_dump": 5,
+        "output_dir": null
+      },
+      "play_only": false,
+      "eval_only": false,
+      "no_play": true,
+      "sim2sim_strict": true,
+      "play_render_mode": "auto",
+      "play_env_num": 16,
+      "render_spacing": 0.5,
+      "play_steps": 200,
+      "cam_distance": 1.2,
+      "cam_elevation": -20.0,
+      "cam_azimuth": 90.0,
+      "cam_lookat": [
+        0.0,
+        0.0,
+        0.5
+      ],
+      "cam_tracking": false,
+      "cam_tracking_env_idx": 0,
+      "cam_tracking_extra_envs": 2,
+      "log_root": null,
+      "num_timesteps": null,
+      "log_dir": null
+    },
+    "evaluation": {
+      "num_envs": 4096,
+      "num_steps": 1800,
+      "deterministic": true,
+      "write_tensorboard": true,
+      "output_dir": null
+    },
+    "interactive": {
+      "action_mode": "policy",
+      "policy_obs_mode": "actor",
+      "show_target_bodies": false,
+      "show_reward_debug": false,
+      "target_show_axes": false,
+      "target_body_names": "",
+      "target_max_bodies": 0,
+      "target_marker_radius": 0.02,
+      "target_axis_length": 0.08,
+      "target_marker_alpha": 0.75,
+      "reward_debug_show_velocity": false,
+      "reward_debug_lin_vel_scale": 0.08,
+      "reward_debug_ang_vel_scale": 0.05,
+      "reward_debug_show_connectors": false,
+      "reward_debug_show_global_anchor": false,
+      "camera_follow_body": true,
+      "camera_focus_body_name": "",
+      "camera_height_offset": 0.15,
+      "camera_distance": null,
+      "camera_elevation": null,
+      "camera_azimuth": null,
+      "use_env_visual_model": true,
+      "show_object_rotation": true,
+      "rotation_body_name": "leap_object",
+      "show_reward_values": false,
+      "reward_value_keys": "",
+      "reward_value_max_terms": 12,
+      "show_phase": false,
+      "phase_info_key": "",
+      "phase_step_info_key": "",
+      "phase_names": [],
+      "speed": 1.0,
+      "start_paused": false,
+      "keyboard": false,
+      "keyboard_step_lin": 0.1,
+      "keyboard_step_ang": 0.2
+    },
+    "viser": {
+      "port": 8080,
+      "env_idx": 0,
+      "display_mode": "all",
+      "max_envs": 16
+    },
+    "env": {
+      "post_step_forward_sensor": false,
+      "adaptive_chunk_size": true,
+      "chunk_size": null,
+      "sim_dt": 0.005,
+      "ctrl_dt": 0.05,
+      "max_episode_seconds": 20.0,
+      "gen_grasp": false,
+      "grasp_cache_path": "robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy",
+      "pose_diff_target_qpos": [
+        1.5152045040427635,
+        0.11430147259750476,
+        0.2876406730815961,
+        0.19280835997306603,
+        1.4188457206477074,
+        0.025681830807677088,
+        -0.26717932336688344,
+        0.5369823550831088,
+        1.5294890485315962,
+        -0.01798386011739139,
+        0.27558019211759954,
+        0.19821762108233876,
+        1.9245445859343515,
+        0.04788276935232176,
+        -0.021885380331691334,
+        0.19524630120127295
+      ],
+      "termination_drop_distance": 0.03,
+      "noise_config": {
+        "level": 0.0,
+        "scale_joint_angle": 0.0
+      },
+      "control_config": {
+        "action_scale": 0.041666666666666664
+      },
+      "domain_rand": {
+        "randomize_base_mass": false,
+        "random_com": false,
+        "randomize_gravity": false,
+        "push_robots": false,
+        "joint_noise": 0.0,
+        "ball_vel_noise": 0.0,
+        "ball_z_offset": 0.0
+      },
+      "actor_history_len": 3,
+      "proprio_history_len": 30,
+      "critic_info_dim": 9,
+      "rotation_axis_command": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "hora_domain_rand": {
+        "enabled": true,
+        "randomize_object_mass": true,
+        "object_mass_ratio_lower": 0.9,
+        "object_mass_ratio_upper": 1.1,
+        "randomize_object_friction": true,
+        "object_friction_scale_lower": 0.8,
+        "object_friction_scale_upper": 1.2,
+        "randomize_object_com": true,
+        "object_com_offset_lower": [
+          -0.001,
+          -0.001,
+          -0.001
+        ],
+        "object_com_offset_upper": [
+          0.001,
+          0.001,
+          0.001
+        ],
+        "randomize_gravity_direction": true,
+        "gravity_tilt_max_deg": 3.0,
+        "joint_measurement_noise_rad": 0.003,
+        "action_delay_min_steps": 0,
+        "action_delay_max_steps": 1
+      }
+    },
+    "reward": {
+      "scales": {
+        "rotate": 1.25,
+        "obj_linvel": -0.3,
+        "pose_diff": -0.3,
+        "torque": -0.1,
+        "work": -2.0,
+        "drop": 0.0
+      },
+      "angvel_clip_min": -0.5,
+      "angvel_clip_max": 0.5,
+      "reset_z_threshold": 0.0
+    },
+    "play_profile": {
+      "enabled": true,
+      "env": {
+        "render_spacing": 2.0
+      }
+    }
+  },
+  "contract_snapshot": {
+    "algo.obs_groups": {
+      "default": [
+        "policy"
+      ],
+      "actor": [
+        "actor"
+      ],
+      "critic": [
+        "actor"
+      ]
+    },
+    "env.control_config.action_scale": 0.041666666666666664,
+    "algo.policy.actor_hidden_dims": [
+      512,
+      256,
+      128
+    ],
+    "algo.policy.critic_hidden_dims": [
+      512,
+      256,
+      128
+    ],
+    "algo.empirical_normalization": false,
+    "reward.scales": {
+      "rotate": 1.25,
+      "obj_linvel": -0.3,
+      "pose_diff": -0.3,
+      "torque": -0.1,
+      "work": -2.0,
+      "drop": 0.0
+    },
+    "env.ctrl_dt": 0.05
+  }
+}

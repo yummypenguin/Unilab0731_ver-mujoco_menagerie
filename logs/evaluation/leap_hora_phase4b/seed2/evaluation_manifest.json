@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_dir": "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\hora_ppo\\LeapInhandBall0730HoraRotation\\2026-08-06_03-13-58_mujoco",
+  "checkpoints": [
+    "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\hora_ppo\\LeapInhandBall0730HoraRotation\\2026-08-06_03-13-58_mujoco\\model_10.pt",
+    "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\hora_ppo\\LeapInhandBall0730HoraRotation\\2026-08-06_03-13-58_mujoco\\model_20.pt",
+    "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\hora_ppo\\LeapInhandBall0730HoraRotation\\2026-08-06_03-13-58_mujoco\\model_30.pt",
+    "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\hora_ppo\\LeapInhandBall0730HoraRotation\\2026-08-06_03-13-58_mujoco\\model_40.pt",
+    "D:\\Unilab0731_ver-mujoco_menagerie\\logs\\hora_ppo\\LeapInhandBall0730HoraRotation\\2026-08-06_03-13-58_mujoco\\model_49.pt"
+  ],
+  "suites": [
+    "nominal",
+    "train_dr"
+  ],
+  "seeds": [
+    101,
+    202,
+    303
+  ],
+  "num_envs": 256,
+  "num_steps": 800,
+  "deterministic": true,
+  "render": false,
+  "export": false,
+  "ranking": [
+    "termination_rate ascending",
+    "rotation_axis_speed_mean descending",
+    "episode_duration_mean descending",
+    "rotation_reverse_rate ascending",
+    "episode_return_mean descending"
+  ],
+  "row_count": 30
+}
