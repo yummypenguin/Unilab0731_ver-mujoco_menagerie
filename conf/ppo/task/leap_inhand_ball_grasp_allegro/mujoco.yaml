@@ -29,10 +29,14 @@ env:
   gen_grasp: true
   reset_source: home
   max_episode_seconds: 2.5
+  # One run generates one physical-scale bucket. HORA parity collection commands
+  # override both this value and grasp_cache_path explicitly.
+  object_scale: 1.0
 
   grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy
   grasp_collection_target: 50000
   grasp_auto_save: true
+  grasp_auto_save_interval: 1000
   grasp_quality_check: true
   grasp_min_contacts: 2
   grasp_max_fingertip_distance: 0.1

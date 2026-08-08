@@ -3,12 +3,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 
+from unilab.assets import ASSETS_ROOT_PATH
 from unilab.base import registry
-from unilab.dr import DomainRandomizationProvider
+from unilab.dr import (
+    DomainRandomizationProvider,
+    GeomSizeOverride,
+    InitRandomizationPlan,
+    ModelVariantSpec,
+)
 from unilab.dtype_config import get_global_dtype
 from unilab.envs.manipulation.allegro_inhand.grasp_gen import AllegroRotationGrasp
 from unilab.envs.manipulation.allegro_inhand.rotation import (
@@ -61,8 +68,7 @@ def fingertip_surface_gap_mask(
     typed_max_gap = np.asarray(max_gap, dtype=distance_dtype).item()
     surface_gaps = np.maximum(distances, np.asarray(0.0, dtype=distance_dtype))
     return np.asarray(
-        np.all(np.isfinite(distances), axis=1)
-        & (np.max(surface_gaps, axis=1) < typed_max_gap),
+        np.all(np.isfinite(distances), axis=1) & (np.max(surface_gaps, axis=1) < typed_max_gap),
         dtype=bool,
     )
 
@@ -73,11 +79,10 @@ class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
     """Configuration for Allegro-lifecycle LEAP grasp collection."""
 
     gen_grasp: bool = True
-    grasp_cache_path: str = (
-        "robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy"
-    )
+    grasp_cache_path: str = "robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy"
     grasp_collection_target: int = 50_000
     grasp_auto_save: bool = True
+    grasp_auto_save_interval: int = 1_000
     grasp_quality_check: bool = True
     grasp_min_contacts: int = 2
     grasp_seed_qpos: list[float] = field(default_factory=list)
@@ -87,6 +92,10 @@ class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
     grasp_dedup_enabled: bool = True
     grasp_dedup_joint_resolution: float = 0.001
     grasp_dedup_ball_position_resolution: float = 0.0005
+    # One collection run owns exactly one physical object scale. The output
+    # cache path must be selected explicitly by the launch command so scale
+    # buckets can never overwrite or silently share one cache.
+    object_scale: float = 1.0
 
     def validate(self) -> None:
         super().validate()
@@ -109,10 +118,7 @@ class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
             or self.grasp_max_fingertip_surface_gap <= 0.0
         ):
             raise ValueError("grasp_max_fingertip_surface_gap must be positive and finite")
-        if (
-            not np.isfinite(self.termination_drop_distance)
-            or self.termination_drop_distance <= 0.0
-        ):
+        if not np.isfinite(self.termination_drop_distance) or self.termination_drop_distance <= 0.0:
             raise ValueError("termination_drop_distance must be positive and finite")
         if not 0 <= self.grasp_min_contacts <= 4:
             raise ValueError("grasp_min_contacts must be within [0, 4]")
@@ -126,10 +132,31 @@ class LeapInhandBallGraspAllegroCfg(LeapInhandBallRotationCfg):
             or self.grasp_dedup_ball_position_resolution <= 0.0
         ):
             raise ValueError("grasp_dedup_ball_position_resolution must be positive and finite")
+        if not np.isfinite(self.object_scale) or self.object_scale <= 0.0:
+            raise ValueError("object_scale must be positive and finite")
 
 
 class LeapAllegroGraspResetProvider(AllegroRotationDomainRandomizationProvider):
     """Sample LEAP hand proposals around the task-owned 23D nominal seed."""
+
+    def build_init_randomization_plan(self, env: Any) -> InitRandomizationPlan:
+        """Compile one ball-size model variant for this collection run."""
+
+        scale = float(env.cfg.object_scale)
+        base_size = np.asarray(env._backend.get_geom_size("leap_object_col"), dtype=np.float64)
+        return InitRandomizationPlan(
+            model_assignments=np.zeros(env._num_envs, dtype=np.int32),
+            model_variants=(
+                ModelVariantSpec(
+                    geom_size_overrides=(
+                        GeomSizeOverride(
+                            geom_name="leap_object_col",
+                            size=tuple(np.asarray(base_size * scale, dtype=np.float64)),
+                        ),
+                    )
+                ),
+            ),
+        )
 
     def _sample_reset_state(
         self, env: Any, num_reset: int
@@ -201,12 +228,40 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
         super().__init__(cfg, num_envs=num_envs, backend_type=backend_type)
         object_geom_id = self._backend.get_geom_id("leap_object_col")
         self._tip_object_geom_pairs = np.asarray(
-            [
-                (self._backend.get_geom_id(name), object_geom_id)
-                for name in self._FINGERTIP_GEOMS
-            ],
+            [(self._backend.get_geom_id(name), object_geom_id) for name in self._FINGERTIP_GEOMS],
             dtype=np.int32,
         )
+        self._restore_partial_grasp_cache()
+
+    def _restore_partial_grasp_cache(self) -> None:
+        """Resume an interrupted scale-cache collection from its atomic autosave."""
+
+        if not bool(self._cfg.grasp_auto_save):
+            return
+        cache_file = Path(self._cfg.grasp_cache_path)
+        if not cache_file.is_absolute():
+            cache_file = ASSETS_ROOT_PATH / cache_file
+        if not cache_file.exists():
+            return
+
+        rows = np.asarray(np.load(cache_file), dtype=np.float32)
+        if rows.ndim != 2 or rows.shape[1] != self._NUM_HAND_DOF + 7:
+            raise ValueError(f"Cannot resume invalid LEAP grasp cache shape {rows.shape}")
+        target = int(self._cfg.grasp_collection_target)
+        if target > 0:
+            rows = rows[:target]
+        self._saved_grasping_states = [rows.copy()]
+        self._last_grasp_auto_save_total = int(rows.shape[0])
+        self._grasp_cache_saved = True
+        for row in rows:
+            self._saved_grasp_keys.add(
+                quantized_grasp_key(
+                    row,
+                    joint_resolution=float(self._cfg.grasp_dedup_joint_resolution),
+                    ball_position_resolution=float(self._cfg.grasp_dedup_ball_position_resolution),
+                )
+            )
+        print(f"[Leap grasp cache] Resumed {rows.shape[0]} rows from {cache_file}")
 
     def _make_domain_randomization_provider(self) -> DomainRandomizationProvider:
         return LeapAllegroGraspResetProvider()
@@ -222,9 +277,7 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
             dtype=get_global_dtype(),
         )
         if initial_ball_z.shape != (self._num_envs,):
-            raise RuntimeError(
-                "initial_ball_z must be initialized for every environment at reset"
-            )
+            raise RuntimeError("initial_ball_z must be initialized for every environment at reset")
 
         cond1 = np.all(
             np.linalg.norm(fingertip_pos - ball_pos[:, None, :], axis=-1)
@@ -256,12 +309,8 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
         valid = fingertip_surface_gap_mask(signed_distances, max_gap=limit)
         if self.state is not None:
             log = self.state.info.get("log", {})
-            log["grasp/max_fingertip_surface_gap"] = float(
-                np.max(surface_gaps, initial=0.0)
-            )
-            log["grasp/fingertip_surface_valid"] = float(
-                np.mean(valid.astype(np.float32))
-            )
+            log["grasp/max_fingertip_surface_gap"] = float(np.max(surface_gaps, initial=0.0))
+            log["grasp/fingertip_surface_valid"] = float(np.mean(valid.astype(np.float32)))
             self.state.info["log"] = log
         return valid, surface_gaps
 
@@ -290,9 +339,7 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
             max_gap=limit,
         )
         self._serialized_surface_candidates += int(rows.shape[0])
-        self._serialized_surface_rejected += int(
-            np.count_nonzero(~serialized_surface_valid)
-        )
+        self._serialized_surface_rejected += int(np.count_nonzero(~serialized_surface_valid))
         if not np.all(serialized_surface_valid):
             rows = rows[np.flatnonzero(serialized_surface_valid)]
 
@@ -324,15 +371,10 @@ class LeapInhandBallGraspAllegroEnv(AllegroRotationGrasp, LeapHandBaseEnv):
             log["grasp/dedup_rejection_rate"] = float(
                 self._dedup_rejected / max(self._dedup_candidates, 1)
             )
-            log["grasp/serialized_surface_candidates"] = float(
-                self._serialized_surface_candidates
-            )
-            log["grasp/serialized_surface_rejected"] = float(
-                self._serialized_surface_rejected
-            )
+            log["grasp/serialized_surface_candidates"] = float(self._serialized_surface_candidates)
+            log["grasp/serialized_surface_rejected"] = float(self._serialized_surface_rejected)
             log["grasp/serialized_surface_rejection_rate"] = float(
-                self._serialized_surface_rejected
-                / max(self._serialized_surface_candidates, 1)
+                self._serialized_surface_rejected / max(self._serialized_surface_candidates, 1)
             )
             log["grasp/cache_size"] = float(self._total_saved_grasps())
             self.state.info["log"] = log

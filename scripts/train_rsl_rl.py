@@ -372,8 +372,7 @@ def _assert_state_cycle_evaluation_contract(cfg: DictConfig, num_obs: int) -> No
     pose_tracking_scale = float(cfg.reward.pose_tracking_scale)
     if not np.isfinite(pose_tracking_scale) or pose_tracking_scale <= 0.0:
         raise AssertionError(
-            "Expected a finite positive state-cycle pose tracking scale, "
-            f"got {pose_tracking_scale}"
+            f"Expected a finite positive state-cycle pose tracking scale, got {pose_tracking_scale}"
         )
     assert float(cfg.reward.rotation_progress_scale) == 3.0
     assert float(cfg.reward.rotation_target_axis_speed_rad_s) == 0.50
@@ -396,13 +395,7 @@ def _evaluation_output_dir(
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     mode = "deterministic" if bool(cfg.evaluation.deterministic) else "stochastic"
     name = f"{load_path_dir.name}_{load_path.stem}_instrumented_{mode}_{timestamp}"
-    return (
-        ROOT_DIR
-        / "logs"
-        / "evaluation"
-        / str(cfg.training.task_name)
-        / name
-    )
+    return ROOT_DIR / "logs" / "evaluation" / str(cfg.training.task_name) / name
 
 
 def _required_state_cycle_evaluation_keys() -> set[str]:
@@ -697,14 +690,8 @@ def evaluate_rsl_rl(cfg: DictConfig, device: str) -> Path:
         print(f"Resolved evaluation checkpoint:\n{load_path}\n")
         print("Resolved state-cycle task config:")
         print(f"Pose tracking scale: {pose_tracking_scale:.2f}")
-        print(
-            f"Ready->A timeout: {ready_seconds:.1f} s / "
-            f"{round(ready_seconds / ctrl_dt)} steps"
-        )
-        print(
-            f"A->B timeout:     {a_to_b_seconds:.1f} s / "
-            f"{round(a_to_b_seconds / ctrl_dt)} steps"
-        )
+        print(f"Ready->A timeout: {ready_seconds:.1f} s / {round(ready_seconds / ctrl_dt)} steps")
+        print(f"A->B timeout:     {a_to_b_seconds:.1f} s / {round(a_to_b_seconds / ctrl_dt)} steps")
         print(
             f"B->Ready timeout: {b_to_ready_seconds:.1f} s / "
             f"{round(b_to_ready_seconds / ctrl_dt)} steps\n"
@@ -731,9 +718,7 @@ def evaluate_rsl_rl(cfg: DictConfig, device: str) -> Path:
                 rewards_np = rewards.detach().cpu().numpy()
                 dones_np = dones.detach().cpu().numpy().astype(bool)
                 if not np.isfinite(rewards_np).all():
-                    raise FloatingPointError(
-                        f"Non-finite evaluation reward at step {step_index}"
-                    )
+                    raise FloatingPointError(f"Non-finite evaluation reward at step {step_index}")
                 episode_returns += rewards_np
                 episode_lengths += 1
                 if np.any(dones_np):
@@ -753,8 +738,7 @@ def evaluate_rsl_rl(cfg: DictConfig, device: str) -> Path:
                         scalar = float(value)
                         if not np.isfinite(scalar):
                             raise FloatingPointError(
-                                f"Non-finite evaluation metric {key!r} "
-                                f"at step {step_index}"
+                                f"Non-finite evaluation metric {key!r} at step {step_index}"
                             )
                         row[str(key)] = scalar
                     metric_rows.append(row)
@@ -805,9 +789,7 @@ def evaluate_rsl_rl(cfg: DictConfig, device: str) -> Path:
             json.dumps(summary, indent=2, ensure_ascii=False, allow_nan=False),
             encoding="utf-8",
         )
-        fieldnames = ["evaluation_step"] + sorted(
-            present_keys - {"evaluation_step"}
-        )
+        fieldnames = ["evaluation_step"] + sorted(present_keys - {"evaluation_step"})
         with (output_dir / "eval_step_metrics.csv").open(
             "w",
             encoding="utf-8",
@@ -922,9 +904,7 @@ def main(cfg: DictConfig) -> None:
             if "runner" not in train_cfg:
                 train_cfg["runner"] = {}
 
-            logger_type, suppress_console_log = _resolve_rsl_rl_logger(
-                str(cfg.training.logger)
-            )
+            logger_type, suppress_console_log = _resolve_rsl_rl_logger(str(cfg.training.logger))
             train_cfg["runner"]["logger"] = logger_type
             train_cfg["logger"] = logger_type
 
@@ -945,6 +925,8 @@ def main(cfg: DictConfig) -> None:
                 Any,
                 OnPolicyRunner(cast(Any, wrapped_env), train_cfg, log_dir=log_dir, device=device),
             )
+            if not bool(OmegaConf.select(cfg, "training.capture_git_state", default=True)):
+                runner.logger.git_status_repos = []
             _patch_runner_action_std_logging(
                 runner,
                 suppress_console=suppress_console_log,

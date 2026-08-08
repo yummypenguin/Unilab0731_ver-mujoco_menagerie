@@ -331,7 +331,11 @@ class SharpaInhandRotationDRProvider(DomainRandomizationProvider):
         gravity = env._sample_reset_gravity(num_reset)
         p_gain, d_gain = self._sample_reset_pd_gains(env, num_reset, dtype=get_global_dtype())
         grasp_cache = self._load_grasp_cache(env)
-        sampled_pose = sample_scale_grasp_caches(grasp_cache, env.scale_ids[env_ids])
+        sampled_pose = sample_scale_grasp_caches(
+            grasp_cache,
+            env.scale_ids[env_ids],
+            expected_width=env._num_action + 7,
+        )
 
         hand_qpos = sampled_pose[:, : env._num_action]
         object_pos = sampled_pose[:, env._num_action : env._num_action + 3]
@@ -1100,14 +1104,25 @@ class SharpaInhandRotationEnv(SharpaInhandBaseEnv):
             Array with shape ``(batch_size, 7)`` containing the default object
             position and quaternion loaded from the backend/model init qpos.
         """
-        object_pos = np.broadcast_to(
-            np.asarray(self._init_qpos[self._obj_pos_slice], dtype=self._np_dtype),
-            (batch_size, 3),
-        ).copy()
-        object_quat = np.broadcast_to(
-            np.asarray(self._init_qpos[self._obj_quat_slice], dtype=self._np_dtype),
-            (batch_size, 4),
-        ).copy()
+        configured_pose = np.asarray(self._cfg.default_object_pose, dtype=self._np_dtype)
+        if configured_pose.size:
+            if configured_pose.shape != (7,):
+                raise ValueError(
+                    f"default_object_pose must have shape (7,), got {configured_pose.shape}"
+                )
+            if not np.isfinite(configured_pose).all():
+                raise ValueError("default_object_pose must contain only finite values")
+            object_pos = np.broadcast_to(configured_pose[:3], (batch_size, 3)).copy()
+            object_quat = np.broadcast_to(configured_pose[3:], (batch_size, 4)).copy()
+        else:
+            object_pos = np.broadcast_to(
+                np.asarray(self._init_qpos[self._obj_pos_slice], dtype=self._np_dtype),
+                (batch_size, 3),
+            ).copy()
+            object_quat = np.broadcast_to(
+                np.asarray(self._init_qpos[self._obj_quat_slice], dtype=self._np_dtype),
+                (batch_size, 4),
+            ).copy()
         return np.concatenate([object_pos, object_quat], axis=1).astype(self._np_dtype)
 
     def _build_object_pos_anchor(
@@ -1495,6 +1510,20 @@ class SharpaInhandRotationEnv(SharpaInhandBaseEnv):
             object_angvel=object_angvel,
             torques=virtual_torques,
         )
+
+        diagnostic_names = tuple(self._cfg.tactile_diagnostic_names)
+        if diagnostic_names:
+            if len(diagnostic_names) != self._num_tactile:
+                raise ValueError(
+                    "tactile_diagnostic_names must match the tactile channel count: "
+                    f"{len(diagnostic_names)} vs {self._num_tactile}"
+                )
+            contact_active = tactile > float(self._cfg.obs.contact_threshold)
+            log = state.info.setdefault("log", {})
+            for tactile_id, name in enumerate(diagnostic_names):
+                log[f"diagnostic/contact_ratio/{name}"] = float(
+                    np.mean(contact_active[:, tactile_id])
+                )
 
         reset_height_lower = np.asarray(
             state.info.get(

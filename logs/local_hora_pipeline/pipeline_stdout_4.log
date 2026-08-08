@@ -1,0 +1,2012 @@
+2026-08-08T11:01:35.6462293-07:00 pipeline_started
+2026-08-08T11:01:35.6632297-07:00 cache_start scale=0.8 path=D:\Unilab0731_ver-mujoco_menagerie\src\unilab\assets\robots\leap_hand\caches\ball_grasp_allegro_new_physics_0731_50k_0.8.npy
+Using device: cpu
+[2026-08-08 11:01:44,472][unilab.base.backend.mujoco.chunk_tuner][INFO] - chunk_size benchmark: default(=2)=13.42ms, 1=13.96ms, 2=14.62ms, 3=15.05ms, 4=15.83ms, 6=15.90ms, 7=16.36ms, 13=16.99ms, 23=17.11ms, 24=17.60ms -> chosen=None(=2)
+[2026-08-08 11:01:44,522][unilab.base.backend.mujoco.chunk_tuner][WARNING] - chunk_size cache write failed: [Errno 13] Permission denied: 'C:\\Users\\timli\\.cache\\unilab\\chunk_size.json.tmp.38840'
+--------------------------------------------------------------------------------
+Resolved observation sets: 
+	 default :  ['policy']
+	 actor :  ['policy']
+	 critic :  ['policy']
+--------------------------------------------------------------------------------
+Actor Model: MLPModel(
+  (obs_normalizer): EmpiricalNormalization()
+  (distribution): GaussianDistribution()
+  (mlp): MLP(
+    (0): Linear(in_features=105, out_features=512, bias=True)
+    (1): ELU(alpha=1.0)
+    (2): Linear(in_features=512, out_features=256, bias=True)
+    (3): ELU(alpha=1.0)
+    (4): Linear(in_features=256, out_features=128, bias=True)
+    (5): ELU(alpha=1.0)
+    (6): Linear(in_features=128, out_features=16, bias=True)
+  )
+)
+Critic Model: MLPModel(
+  (obs_normalizer): EmpiricalNormalization()
+  (mlp): MLP(
+    (0): Linear(in_features=105, out_features=512, bias=True)
+    (1): ELU(alpha=1.0)
+    (2): Linear(in_features=512, out_features=256, bias=True)
+    (3): ELU(alpha=1.0)
+    (4): Linear(in_features=256, out_features=128, bias=True)
+    (5): ELU(alpha=1.0)
+    (6): Linear(in_features=128, out_features=1, bias=True)
+  )
+)
+################################################################################
+[1m                          Learning iteration 0/1000000                          [0m 
+
+                            Total steps: 8192 
+                       Steps per second: 6512 
+                        Collection time: 0.514s 
+                          Learning time: 0.744s 
+                        Mean value loss: 0.0020
+                    Mean surrogate loss: 0.0310
+                      Mean entropy loss: 22.7133
+                            Mean reward: 0.00
+                    Mean episode length: 1.03
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9108
+                            grasp/cond2: 0.0953
+                            grasp/cond3: 0.7091
+                            grasp/valid: 0.0852
+                       grasp/cache_size: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.26s
+                           Time elapsed: 00:00:01
+                                    ETA: 13:25:46
+
+################################################################################
+[1m                          Learning iteration 1/1000000                          [0m 
+
+                            Total steps: 16384 
+                       Steps per second: 6716 
+                        Collection time: 0.446s 
+                          Learning time: 0.774s 
+                        Mean value loss: 0.0003
+                    Mean surrogate loss: 0.0340
+                      Mean entropy loss: 22.7153
+                            Mean reward: 0.00
+                    Mean episode length: 1.02
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9263
+                            grasp/cond2: 0.1675
+                            grasp/cond3: 0.7281
+                            grasp/valid: 0.1595
+                       grasp/cache_size: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.22s
+                           Time elapsed: 00:00:02
+                                    ETA: 08:07:33
+
+################################################################################
+[1m                          Learning iteration 2/1000000                          [0m 
+
+                            Total steps: 24576 
+                       Steps per second: 6820 
+                        Collection time: 0.449s 
+                          Learning time: 0.752s 
+                        Mean value loss: 0.0001
+                    Mean surrogate loss: 0.0267
+                      Mean entropy loss: 22.7161
+                            Mean reward: 0.00
+                    Mean episode length: 1.10
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9336
+                            grasp/cond2: 0.2443
+                            grasp/cond3: 0.7448
+                            grasp/valid: 0.2357
+                       grasp/cache_size: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.20s
+                           Time elapsed: 00:00:03
+                                    ETA: 04:37:23
+
+################################################################################
+[1m                          Learning iteration 3/1000000                          [0m 
+
+                            Total steps: 32768 
+                       Steps per second: 6720 
+                        Collection time: 0.442s 
+                          Learning time: 0.777s 
+                        Mean value loss: 0.0001
+                    Mean surrogate loss: 0.0187
+                      Mean entropy loss: 22.7171
+                            Mean reward: 0.00
+                    Mean episode length: 1.08
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9318
+                            grasp/cond2: 0.2938
+                            grasp/cond3: 0.7743
+                            grasp/valid: 0.2887
+                       grasp/cache_size: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.22s
+                           Time elapsed: 00:00:04
+                                    ETA: 04:07:03
+
+################################################################################
+[1m                          Learning iteration 4/1000000                          [0m 
+
+                            Total steps: 40960 
+                       Steps per second: 6571 
+                        Collection time: 0.428s 
+                          Learning time: 0.819s 
+                        Mean value loss: 0.0001
+                    Mean surrogate loss: 0.0100
+                      Mean entropy loss: 22.7178
+                            Mean reward: 0.00
+                    Mean episode length: 1.04
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9431
+                            grasp/cond2: 0.3538
+                            grasp/cond3: 0.7819
+                            grasp/valid: 0.3459
+                       grasp/cache_size: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.25s
+                           Time elapsed: 00:00:06
+                                    ETA: 05:21:10
+
+################################################################################
+[1m                          Learning iteration 5/1000000                          [0m 
+
+                            Total steps: 49152 
+                       Steps per second: 7315 
+                        Collection time: 0.417s 
+                          Learning time: 0.703s 
+                        Mean value loss: 0.0001
+                    Mean surrogate loss: 0.0064
+                      Mean entropy loss: 22.7187
+                            Mean reward: 0.00
+                    Mean episode length: 1.06
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9470
+                            grasp/cond2: 0.4171
+                            grasp/cond3: 0.8082
+                            grasp/valid: 0.4108
+                       grasp/cache_size: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.12s
+                           Time elapsed: 00:00:07
+                                    ETA: 00:18:17
+
+################################################################################
+[1m                          Learning iteration 6/1000000                          [0m 
+
+                            Total steps: 57344 
+                       Steps per second: 5970 
+                        Collection time: 0.566s 
+                          Learning time: 0.806s 
+                        Mean value loss: 0.0001
+                    Mean surrogate loss: -0.0032
+                      Mean entropy loss: 22.7251
+                            Mean reward: 0.00
+                    Mean episode length: 1.50
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9535
+                            grasp/cond2: 0.4612
+                            grasp/cond3: 0.8071
+                            grasp/valid: 0.4563
+                       grasp/cache_size: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.37s
+                           Time elapsed: 00:00:08
+                                    ETA: 06:42:22
+
+################################################################################
+[1m                          Learning iteration 7/1000000                          [0m 
+
+                            Total steps: 65536 
+                       Steps per second: 6089 
+                        Collection time: 0.591s 
+                          Learning time: 0.754s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0103
+                      Mean entropy loss: 22.7444
+                            Mean reward: 0.00
+                    Mean episode length: 1.51
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9504
+                            grasp/cond2: 0.4255
+                            grasp/cond3: 0.8082
+                            grasp/valid: 0.4171
+                       grasp/cache_size: 1.2500
+        grasp/max_fingertip_surface_gap: 0.0331
+          grasp/fingertip_surface_valid: 0.0417
+--------------------------------------------------------------------------------
+                         Iteration time: 1.35s
+                           Time elapsed: 00:00:09
+                                    ETA: 10:34:35
+
+################################################################################
+[1m                          Learning iteration 8/1000000                          [0m 
+
+                            Total steps: 73728 
+                       Steps per second: 5839 
+                        Collection time: 0.602s 
+                          Learning time: 0.801s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0233
+                      Mean entropy loss: 22.7543
+                            Mean reward: 0.00
+                    Mean episode length: 1.03
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9470
+                            grasp/cond2: 0.4106
+                            grasp/cond3: 0.8121
+                            grasp/valid: 0.4042
+                       grasp/cache_size: 2.8750
+        grasp/max_fingertip_surface_gap: 0.0363
+          grasp/fingertip_surface_valid: 0.0417
+                 grasp/dedup_candidates: 2.8000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 2.8000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 2.8000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.40s
+                           Time elapsed: 00:00:11
+                                    ETA: 15:21:51
+
+################################################################################
+[1m                          Learning iteration 9/1000000                          [0m 
+
+                            Total steps: 81920 
+                       Steps per second: 5909 
+                        Collection time: 0.579s 
+                          Learning time: 0.807s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0174
+                      Mean entropy loss: 22.7580
+                            Mean reward: 0.00
+                    Mean episode length: 1.06
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9457
+                            grasp/cond2: 0.3917
+                            grasp/cond3: 0.8021
+                            grasp/valid: 0.3846
+                       grasp/cache_size: 3.3750
+        grasp/max_fingertip_surface_gap: 0.0427
+          grasp/fingertip_surface_valid: 0.0104
+--------------------------------------------------------------------------------
+                         Iteration time: 1.39s
+                           Time elapsed: 00:00:12
+                                    ETA: 18:43:58
+
+################################################################################
+[1m                         Learning iteration 10/1000000                          [0m 
+
+                            Total steps: 90112 
+                       Steps per second: 5606 
+                        Collection time: 0.618s 
+                          Learning time: 0.844s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0045
+                      Mean entropy loss: 22.7610
+                            Mean reward: 0.00
+                    Mean episode length: 1.08
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9475
+                            grasp/cond2: 0.3961
+                            grasp/cond3: 0.8113
+                            grasp/valid: 0.3889
+                       grasp/cache_size: 4.0000
+        grasp/max_fingertip_surface_gap: 0.0368
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.46s
+                           Time elapsed: 00:00:14
+                                    ETA: 23:22:57
+
+################################################################################
+[1m                         Learning iteration 11/1000000                          [0m 
+
+                            Total steps: 98304 
+                       Steps per second: 5868 
+                        Collection time: 0.588s 
+                          Learning time: 0.808s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0027
+                      Mean entropy loss: 22.7644
+                            Mean reward: 0.00
+                    Mean episode length: 1.06
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9465
+                            grasp/cond2: 0.4073
+                            grasp/cond3: 0.8070
+                            grasp/valid: 0.4019
+                       grasp/cache_size: 4.6250
+        grasp/max_fingertip_surface_gap: 0.0379
+          grasp/fingertip_surface_valid: 0.0208
+--------------------------------------------------------------------------------
+                         Iteration time: 1.40s
+                           Time elapsed: 00:00:15
+                                    ETA: 01:44:50
+
+################################################################################
+[1m                         Learning iteration 12/1000000                          [0m 
+
+                            Total steps: 106496 
+                       Steps per second: 5732 
+                        Collection time: 0.595s 
+                          Learning time: 0.834s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0035
+                      Mean entropy loss: 22.7676
+                            Mean reward: 0.00
+                    Mean episode length: 1.54
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9498
+                            grasp/cond2: 0.4233
+                            grasp/cond3: 0.8165
+                            grasp/valid: 0.4172
+                       grasp/cache_size: 5.0000
+        grasp/max_fingertip_surface_gap: 0.0396
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.43s
+                           Time elapsed: 00:00:17
+                                    ETA: 04:27:17
+
+################################################################################
+[1m                         Learning iteration 13/1000000                          [0m 
+
+                            Total steps: 114688 
+                       Steps per second: 5479 
+                        Collection time: 0.610s 
+                          Learning time: 0.885s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0017
+                      Mean entropy loss: 22.7700
+                            Mean reward: 0.00
+                    Mean episode length: 1.04
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9475
+                            grasp/cond2: 0.4395
+                            grasp/cond3: 0.8226
+                            grasp/valid: 0.4342
+                       grasp/cache_size: 5.3750
+        grasp/max_fingertip_surface_gap: 0.0389
+          grasp/fingertip_surface_valid: 0.0208
+--------------------------------------------------------------------------------
+                         Iteration time: 1.49s
+                           Time elapsed: 00:00:18
+                                    ETA: 08:05:00
+
+################################################################################
+[1m                         Learning iteration 14/1000000                          [0m 
+
+                            Total steps: 122880 
+                       Steps per second: 5836 
+                        Collection time: 0.585s 
+                          Learning time: 0.819s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0047
+                      Mean entropy loss: 22.7727
+                            Mean reward: 0.00
+                    Mean episode length: 1.57
+                        Mean action std: 1.00
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9453
+                            grasp/cond2: 0.4410
+                            grasp/cond3: 0.8287
+                            grasp/valid: 0.4354
+                       grasp/cache_size: 6.3750
+        grasp/max_fingertip_surface_gap: 0.0376
+          grasp/fingertip_surface_valid: 0.0357
+--------------------------------------------------------------------------------
+                         Iteration time: 1.40s
+                           Time elapsed: 00:00:19
+                                    ETA: 09:32:10
+
+################################################################################
+[1m                         Learning iteration 15/1000000                          [0m 
+
+                            Total steps: 131072 
+                       Steps per second: 5364 
+                        Collection time: 0.613s 
+                          Learning time: 0.914s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: -0.0014
+                      Mean entropy loss: 22.7847
+                            Mean reward: 0.00
+                    Mean episode length: 2.02
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9510
+                            grasp/cond2: 0.4374
+                            grasp/cond3: 0.8195
+                            grasp/valid: 0.4323
+                       grasp/cache_size: 9.1250
+        grasp/max_fingertip_surface_gap: 0.0372
+          grasp/fingertip_surface_valid: 0.0283
+--------------------------------------------------------------------------------
+                         Iteration time: 1.53s
+                           Time elapsed: 00:00:21
+                                    ETA: 12:57:08
+
+################################################################################
+[1m                         Learning iteration 16/1000000                          [0m 
+
+                            Total steps: 139264 
+                       Steps per second: 5705 
+                        Collection time: 0.614s 
+                          Learning time: 0.822s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0177
+                      Mean entropy loss: 22.8123
+                            Mean reward: 0.00
+                    Mean episode length: 2.53
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9553
+                            grasp/cond2: 0.4381
+                            grasp/cond3: 0.8124
+                            grasp/valid: 0.4320
+                       grasp/cache_size: 11.0000
+        grasp/max_fingertip_surface_gap: 0.0381
+          grasp/fingertip_surface_valid: 0.0125
+                 grasp/dedup_candidates: 11.0000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 11.0000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 11.0000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.44s
+                           Time elapsed: 00:00:22
+                                    ETA: 14:28:33
+
+################################################################################
+[1m                         Learning iteration 17/1000000                          [0m 
+
+                            Total steps: 147456 
+                       Steps per second: 5337 
+                        Collection time: 0.676s 
+                          Learning time: 0.858s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0235
+                      Mean entropy loss: 22.8202
+                            Mean reward: 0.00
+                    Mean episode length: 2.98
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9521
+                            grasp/cond2: 0.4189
+                            grasp/cond3: 0.8035
+                            grasp/valid: 0.4143
+                       grasp/cache_size: 11.3750
+        grasp/max_fingertip_surface_gap: 0.0437
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.53s
+                           Time elapsed: 00:00:24
+                                    ETA: 17:21:22
+
+################################################################################
+[1m                         Learning iteration 18/1000000                          [0m 
+
+                            Total steps: 155648 
+                       Steps per second: 5300 
+                        Collection time: 0.625s 
+                          Learning time: 0.921s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0248
+                      Mean entropy loss: 22.8211
+                            Mean reward: 0.00
+                    Mean episode length: 1.57
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9452
+                            grasp/cond2: 0.4077
+                            grasp/cond3: 0.8046
+                            grasp/valid: 0.3998
+                       grasp/cache_size: 12.0000
+        grasp/max_fingertip_surface_gap: 0.0373
+          grasp/fingertip_surface_valid: 0.0000
+                 grasp/dedup_candidates: 12.0000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 12.0000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 12.0000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.55s
+                           Time elapsed: 00:00:25
+                                    ETA: 20:05:28
+
+################################################################################
+[1m                         Learning iteration 19/1000000                          [0m 
+
+                            Total steps: 163840 
+                       Steps per second: 5165 
+                        Collection time: 0.657s 
+                          Learning time: 0.929s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0121
+                      Mean entropy loss: 22.8220
+                            Mean reward: 0.00
+                    Mean episode length: 2.06
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9415
+                            grasp/cond2: 0.4025
+                            grasp/cond3: 0.8098
+                            grasp/valid: 0.3961
+                       grasp/cache_size: 12.0000
+        grasp/max_fingertip_surface_gap: 0.0370
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.59s
+                           Time elapsed: 00:00:27
+                                    ETA: 23:06:43
+
+################################################################################
+[1m                         Learning iteration 20/1000000                          [0m 
+
+                            Total steps: 172032 
+                       Steps per second: 5283 
+                        Collection time: 0.672s 
+                          Learning time: 0.878s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0072
+                      Mean entropy loss: 22.8230
+                            Mean reward: 0.00
+                    Mean episode length: 2.06
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9399
+                            grasp/cond2: 0.4093
+                            grasp/cond3: 0.8173
+                            grasp/valid: 0.4021
+                       grasp/cache_size: 13.7500
+        grasp/max_fingertip_surface_gap: 0.0342
+          grasp/fingertip_surface_valid: 0.1111
+--------------------------------------------------------------------------------
+                         Iteration time: 1.55s
+                           Time elapsed: 00:00:29
+                                    ETA: 01:22:41
+
+################################################################################
+[1m                         Learning iteration 21/1000000                          [0m 
+
+                            Total steps: 180224 
+                       Steps per second: 5345 
+                        Collection time: 0.638s 
+                          Learning time: 0.894s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0065
+                      Mean entropy loss: 22.8240
+                            Mean reward: 0.00
+                    Mean episode length: 1.56
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9497
+                            grasp/cond2: 0.4177
+                            grasp/cond3: 0.8143
+                            grasp/valid: 0.4088
+                       grasp/cache_size: 14.8750
+        grasp/max_fingertip_surface_gap: 0.0319
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.53s
+                           Time elapsed: 00:00:30
+                                    ETA: 03:12:40
+
+################################################################################
+[1m                         Learning iteration 22/1000000                          [0m 
+
+                            Total steps: 188416 
+                       Steps per second: 5251 
+                        Collection time: 0.682s 
+                          Learning time: 0.878s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0019
+                      Mean entropy loss: 22.8259
+                            Mean reward: 0.00
+                    Mean episode length: 1.06
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9490
+                            grasp/cond2: 0.4248
+                            grasp/cond3: 0.8137
+                            grasp/valid: 0.4171
+                       grasp/cache_size: 15.1250
+        grasp/max_fingertip_surface_gap: 0.0375
+          grasp/fingertip_surface_valid: 0.0208
+--------------------------------------------------------------------------------
+                         Iteration time: 1.56s
+                           Time elapsed: 00:00:32
+                                    ETA: 05:12:56
+
+################################################################################
+[1m                         Learning iteration 23/1000000                          [0m 
+
+                            Total steps: 196608 
+                       Steps per second: 5486 
+                        Collection time: 0.628s 
+                          Learning time: 0.865s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0064
+                      Mean entropy loss: 22.8364
+                            Mean reward: 0.00
+                    Mean episode length: 2.01
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9479
+                            grasp/cond2: 0.4260
+                            grasp/cond3: 0.8123
+                            grasp/valid: 0.4198
+                       grasp/cache_size: 16.0000
+        grasp/max_fingertip_surface_gap: 0.0386
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.49s
+                           Time elapsed: 00:00:33
+                                    ETA: 06:16:43
+
+################################################################################
+[1m                         Learning iteration 24/1000000                          [0m 
+
+                            Total steps: 204800 
+                       Steps per second: 5549 
+                        Collection time: 0.631s 
+                          Learning time: 0.845s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0073
+                      Mean entropy loss: 22.8523
+                            Mean reward: 0.00
+                    Mean episode length: 1.05
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9514
+                            grasp/cond2: 0.4203
+                            grasp/cond3: 0.8082
+                            grasp/valid: 0.4135
+                       grasp/cache_size: 17.6250
+        grasp/max_fingertip_surface_gap: 0.0474
+          grasp/fingertip_surface_valid: 0.0625
+                 grasp/dedup_candidates: 17.5714
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 17.5714
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 17.5714
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.48s
+                           Time elapsed: 00:00:35
+                                    ETA: 07:04:05
+
+################################################################################
+[1m                         Learning iteration 25/1000000                          [0m 
+
+                            Total steps: 212992 
+                       Steps per second: 5047 
+                        Collection time: 0.679s 
+                          Learning time: 0.944s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0090
+                      Mean entropy loss: 22.8680
+                            Mean reward: 0.00
+                    Mean episode length: 1.55
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9449
+                            grasp/cond2: 0.4193
+                            grasp/cond3: 0.8177
+                            grasp/valid: 0.4124
+                       grasp/cache_size: 19.6250
+        grasp/max_fingertip_surface_gap: 0.0438
+          grasp/fingertip_surface_valid: 0.0000
+                 grasp/dedup_candidates: 19.5714
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 19.5714
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 19.5714
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.62s
+                           Time elapsed: 00:00:36
+                                    ETA: 09:21:57
+
+################################################################################
+[1m                         Learning iteration 26/1000000                          [0m 
+
+                            Total steps: 221184 
+                       Steps per second: 5567 
+                        Collection time: 0.620s 
+                          Learning time: 0.852s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0102
+                      Mean entropy loss: 22.8832
+                            Mean reward: 0.00
+                    Mean episode length: 1.55
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9464
+                            grasp/cond2: 0.4181
+                            grasp/cond3: 0.8164
+                            grasp/valid: 0.4104
+                       grasp/cache_size: 20.6250
+        grasp/max_fingertip_surface_gap: 0.0416
+          grasp/fingertip_surface_valid: 0.0227
+--------------------------------------------------------------------------------
+                         Iteration time: 1.47s
+                           Time elapsed: 00:00:38
+                                    ETA: 09:56:02
+
+################################################################################
+[1m                         Learning iteration 27/1000000                          [0m 
+
+                            Total steps: 229376 
+                       Steps per second: 5412 
+                        Collection time: 0.640s 
+                          Learning time: 0.873s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0088
+                      Mean entropy loss: 22.9009
+                            Mean reward: 0.00
+                    Mean episode length: 1.03
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9463
+                            grasp/cond2: 0.4093
+                            grasp/cond3: 0.8096
+                            grasp/valid: 0.4026
+                       grasp/cache_size: 21.6250
+        grasp/max_fingertip_surface_gap: 0.0441
+          grasp/fingertip_surface_valid: 0.0179
+--------------------------------------------------------------------------------
+                         Iteration time: 1.51s
+                           Time elapsed: 00:00:39
+                                    ETA: 10:52:42
+
+################################################################################
+[1m                         Learning iteration 28/1000000                          [0m 
+
+                            Total steps: 237568 
+                       Steps per second: 5186 
+                        Collection time: 0.690s 
+                          Learning time: 0.889s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0211
+                      Mean entropy loss: 22.9159
+                            Mean reward: 0.00
+                    Mean episode length: 1.57
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9421
+                            grasp/cond2: 0.4019
+                            grasp/cond3: 0.8103
+                            grasp/valid: 0.3962
+                       grasp/cache_size: 22.6250
+        grasp/max_fingertip_surface_gap: 0.0331
+          grasp/fingertip_surface_valid: 0.0250
+--------------------------------------------------------------------------------
+                         Iteration time: 1.58s
+                           Time elapsed: 00:00:41
+                                    ETA: 12:23:28
+
+################################################################################
+[1m                         Learning iteration 29/1000000                          [0m 
+
+                            Total steps: 245760 
+                       Steps per second: 5412 
+                        Collection time: 0.668s 
+                          Learning time: 0.845s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0043
+                      Mean entropy loss: 22.9306
+                            Mean reward: 0.00
+                    Mean episode length: 2.11
+                        Mean action std: 1.01
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9503
+                            grasp/cond2: 0.4028
+                            grasp/cond3: 0.7981
+                            grasp/valid: 0.3950
+                       grasp/cache_size: 23.8750
+        grasp/max_fingertip_surface_gap: 0.0388
+          grasp/fingertip_surface_valid: 0.0208
+--------------------------------------------------------------------------------
+                         Iteration time: 1.51s
+                           Time elapsed: 00:00:42
+                                    ETA: 13:11:29
+
+################################################################################
+[1m                         Learning iteration 30/1000000                          [0m 
+
+                            Total steps: 253952 
+                       Steps per second: 5421 
+                        Collection time: 0.656s 
+                          Learning time: 0.855s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0052
+                      Mean entropy loss: 22.9439
+                            Mean reward: 0.00
+                    Mean episode length: 2.03
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9514
+                            grasp/cond2: 0.4003
+                            grasp/cond3: 0.8015
+                            grasp/valid: 0.3951
+                       grasp/cache_size: 25.5000
+        grasp/max_fingertip_surface_gap: 0.0345
+          grasp/fingertip_surface_valid: 0.0208
+                 grasp/dedup_candidates: 25.8000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 25.8000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 25.8000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.51s
+                           Time elapsed: 00:00:44
+                                    ETA: 13:55:01
+
+################################################################################
+[1m                         Learning iteration 31/1000000                          [0m 
+
+                            Total steps: 262144 
+                       Steps per second: 5098 
+                        Collection time: 0.668s 
+                          Learning time: 0.939s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0096
+                      Mean entropy loss: 22.9546
+                            Mean reward: 0.00
+                    Mean episode length: 2.02
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9463
+                            grasp/cond2: 0.4121
+                            grasp/cond3: 0.8110
+                            grasp/valid: 0.4043
+                       grasp/cache_size: 26.0000
+        grasp/max_fingertip_surface_gap: 0.0458
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.61s
+                           Time elapsed: 00:00:46
+                                    ETA: 15:25:39
+
+################################################################################
+[1m                         Learning iteration 32/1000000                          [0m 
+
+                            Total steps: 270336 
+                       Steps per second: 5122 
+                        Collection time: 0.730s 
+                          Learning time: 0.869s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0050
+                      Mean entropy loss: 22.9664
+                            Mean reward: 0.00
+                    Mean episode length: 1.50
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9443
+                            grasp/cond2: 0.4131
+                            grasp/cond3: 0.8145
+                            grasp/valid: 0.4062
+                       grasp/cache_size: 26.5000
+        grasp/max_fingertip_surface_gap: 0.0441
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.60s
+                           Time elapsed: 00:00:47
+                                    ETA: 16:47:01
+
+################################################################################
+[1m                         Learning iteration 33/1000000                          [0m 
+
+                            Total steps: 278528 
+                       Steps per second: 5567 
+                        Collection time: 0.638s 
+                          Learning time: 0.833s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0081
+                      Mean entropy loss: 22.9755
+                            Mean reward: 0.00
+                    Mean episode length: 2.51
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9473
+                            grasp/cond2: 0.4302
+                            grasp/cond3: 0.8096
+                            grasp/valid: 0.4214
+                       grasp/cache_size: 29.0000
+        grasp/max_fingertip_surface_gap: 0.0407
+          grasp/fingertip_surface_valid: 0.0714
+                 grasp/dedup_candidates: 29.0000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 29.0000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 29.0000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.47s
+                           Time elapsed: 00:00:49
+                                    ETA: 17:00:58
+
+################################################################################
+[1m                         Learning iteration 34/1000000                          [0m 
+
+                            Total steps: 286720 
+                       Steps per second: 5229 
+                        Collection time: 0.640s 
+                          Learning time: 0.926s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0048
+                      Mean entropy loss: 22.9832
+                            Mean reward: 0.00
+                    Mean episode length: 1.56
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9580
+                            grasp/cond2: 0.4482
+                            grasp/cond3: 0.8096
+                            grasp/valid: 0.4385
+                       grasp/cache_size: 29.5000
+        grasp/max_fingertip_surface_gap: 0.0411
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.57s
+                           Time elapsed: 00:00:50
+                                    ETA: 17:59:28
+
+################################################################################
+[1m                         Learning iteration 35/1000000                          [0m 
+
+                            Total steps: 294912 
+                       Steps per second: 5341 
+                        Collection time: 0.666s 
+                          Learning time: 0.867s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0074
+                      Mean entropy loss: 22.9941
+                            Mean reward: 0.00
+                    Mean episode length: 2.48
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9473
+                            grasp/cond2: 0.4302
+                            grasp/cond3: 0.8193
+                            grasp/valid: 0.4238
+                       grasp/cache_size: 31.0000
+        grasp/max_fingertip_surface_gap: 0.0338
+          grasp/fingertip_surface_valid: 0.0455
+                 grasp/dedup_candidates: 31.0000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 31.0000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 31.0000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.53s
+                           Time elapsed: 00:00:52
+                                    ETA: 18:39:27
+
+################################################################################
+[1m                         Learning iteration 36/1000000                          [0m 
+
+                            Total steps: 303104 
+                       Steps per second: 5572 
+                        Collection time: 0.634s 
+                          Learning time: 0.836s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0081
+                      Mean entropy loss: 23.0070
+                            Mean reward: 0.00
+                    Mean episode length: 2.03
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9480
+                            grasp/cond2: 0.4148
+                            grasp/cond3: 0.8115
+                            grasp/valid: 0.4109
+                       grasp/cache_size: 32.0000
+        grasp/max_fingertip_surface_gap: 0.0425
+          grasp/fingertip_surface_valid: 0.0227
+--------------------------------------------------------------------------------
+                         Iteration time: 1.47s
+                           Time elapsed: 00:00:53
+                                    ETA: 18:48:39
+
+################################################################################
+[1m                         Learning iteration 37/1000000                          [0m 
+
+                            Total steps: 311296 
+                       Steps per second: 5111 
+                        Collection time: 0.717s 
+                          Learning time: 0.886s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0019
+                      Mean entropy loss: 23.0173
+                            Mean reward: 0.00
+                    Mean episode length: 2.51
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9481
+                            grasp/cond2: 0.4257
+                            grasp/cond3: 0.8116
+                            grasp/valid: 0.4207
+                       grasp/cache_size: 34.6250
+        grasp/max_fingertip_surface_gap: 0.0375
+          grasp/fingertip_surface_valid: 0.0429
+                 grasp/dedup_candidates: 34.5000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 34.5000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 34.5000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.60s
+                           Time elapsed: 00:00:55
+                                    ETA: 19:55:29
+
+################################################################################
+[1m                         Learning iteration 38/1000000                          [0m 
+
+                            Total steps: 319488 
+                       Steps per second: 5047 
+                        Collection time: 0.715s 
+                          Learning time: 0.908s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0065
+                      Mean entropy loss: 23.0276
+                            Mean reward: 0.00
+                    Mean episode length: 1.05
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9508
+                            grasp/cond2: 0.4252
+                            grasp/cond3: 0.8160
+                            grasp/valid: 0.4197
+                       grasp/cache_size: 35.0000
+        grasp/max_fingertip_surface_gap: 0.0387
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.62s
+                           Time elapsed: 00:00:56
+                                    ETA: 21:07:38
+
+################################################################################
+[1m                         Learning iteration 39/1000000                          [0m 
+
+                            Total steps: 327680 
+                       Steps per second: 5034 
+                        Collection time: 0.730s 
+                          Learning time: 0.897s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0086
+                      Mean entropy loss: 23.0422
+                            Mean reward: 0.00
+                    Mean episode length: 1.06
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9457
+                            grasp/cond2: 0.4171
+                            grasp/cond3: 0.8064
+                            grasp/valid: 0.4098
+                       grasp/cache_size: 36.0000
+        grasp/max_fingertip_surface_gap: 0.0417
+          grasp/fingertip_surface_valid: 0.0156
+                 grasp/dedup_candidates: 36.0000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 36.0000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 36.0000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.63s
+                           Time elapsed: 00:00:58
+                                    ETA: 22:17:55
+
+################################################################################
+[1m                         Learning iteration 40/1000000                          [0m 
+
+                            Total steps: 335872 
+                       Steps per second: 5467 
+                        Collection time: 0.634s 
+                          Learning time: 0.864s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0060
+                      Mean entropy loss: 23.0570
+                            Mean reward: 0.00
+                    Mean episode length: 2.03
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9480
+                            grasp/cond2: 0.4165
+                            grasp/cond3: 0.8118
+                            grasp/valid: 0.4097
+                       grasp/cache_size: 36.2500
+        grasp/max_fingertip_surface_gap: 0.0355
+          grasp/fingertip_surface_valid: 0.0208
+--------------------------------------------------------------------------------
+                         Iteration time: 1.50s
+                           Time elapsed: 00:01:00
+                                    ETA: 22:32:22
+
+################################################################################
+[1m                         Learning iteration 41/1000000                          [0m 
+
+                            Total steps: 344064 
+                       Steps per second: 5263 
+                        Collection time: 0.681s 
+                          Learning time: 0.875s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0034
+                      Mean entropy loss: 23.0704
+                            Mean reward: 0.00
+                    Mean episode length: 1.03
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9493
+                            grasp/cond2: 0.4303
+                            grasp/cond3: 0.8097
+                            grasp/valid: 0.4260
+                       grasp/cache_size: 37.5000
+        grasp/max_fingertip_surface_gap: 0.0344
+          grasp/fingertip_surface_valid: 0.0312
+--------------------------------------------------------------------------------
+                         Iteration time: 1.56s
+                           Time elapsed: 00:01:01
+                                    ETA: 23:09:07
+
+################################################################################
+[1m                         Learning iteration 42/1000000                          [0m 
+
+                            Total steps: 352256 
+                       Steps per second: 5406 
+                        Collection time: 0.654s 
+                          Learning time: 0.861s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0012
+                      Mean entropy loss: 23.0828
+                            Mean reward: 0.00
+                    Mean episode length: 2.00
+                        Mean action std: 1.02
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9462
+                            grasp/cond2: 0.4398
+                            grasp/cond3: 0.8206
+                            grasp/valid: 0.4314
+                       grasp/cache_size: 39.7500
+        grasp/max_fingertip_surface_gap: 0.0441
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.52s
+                           Time elapsed: 00:01:03
+                                    ETA: 23:28:16
+
+################################################################################
+[1m                         Learning iteration 43/1000000                          [0m 
+
+                            Total steps: 360448 
+                       Steps per second: 5298 
+                        Collection time: 0.692s 
+                          Learning time: 0.854s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0068
+                      Mean entropy loss: 23.0978
+                            Mean reward: 0.00
+                    Mean episode length: 1.53
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9487
+                            grasp/cond2: 0.4445
+                            grasp/cond3: 0.8162
+                            grasp/valid: 0.4391
+                       grasp/cache_size: 40.0000
+        grasp/max_fingertip_surface_gap: 0.0481
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.55s
+                           Time elapsed: 00:01:04
+                                    ETA: 23:58:10
+
+################################################################################
+[1m                         Learning iteration 44/1000000                          [0m 
+
+                            Total steps: 368640 
+                       Steps per second: 5047 
+                        Collection time: 0.689s 
+                          Learning time: 0.934s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0051
+                      Mean entropy loss: 23.1130
+                            Mean reward: 0.00
+                    Mean episode length: 1.02
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9468
+                            grasp/cond2: 0.4343
+                            grasp/cond3: 0.8105
+                            grasp/valid: 0.4285
+                       grasp/cache_size: 40.3750
+        grasp/max_fingertip_surface_gap: 0.0371
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.62s
+                           Time elapsed: 00:01:06
+                                    ETA: 00:55:14
+
+################################################################################
+[1m                         Learning iteration 45/1000000                          [0m 
+
+                            Total steps: 376832 
+                       Steps per second: 5396 
+                        Collection time: 0.680s 
+                          Learning time: 0.838s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0033
+                      Mean entropy loss: 23.1224
+                            Mean reward: 0.00
+                    Mean episode length: 1.54
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9507
+                            grasp/cond2: 0.4329
+                            grasp/cond3: 0.8145
+                            grasp/valid: 0.4280
+                       grasp/cache_size: 41.0000
+        grasp/max_fingertip_surface_gap: 0.0357
+          grasp/fingertip_surface_valid: 0.0000
+                 grasp/dedup_candidates: 41.0000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 41.0000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 41.0000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.52s
+                           Time elapsed: 00:01:07
+                                    ETA: 01:11:47
+
+################################################################################
+[1m                         Learning iteration 46/1000000                          [0m 
+
+                            Total steps: 385024 
+                       Steps per second: 5171 
+                        Collection time: 0.716s 
+                          Learning time: 0.868s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0057
+                      Mean entropy loss: 23.1312
+                            Mean reward: 0.00
+                    Mean episode length: 2.06
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9471
+                            grasp/cond2: 0.4197
+                            grasp/cond3: 0.8152
+                            grasp/valid: 0.4142
+                       grasp/cache_size: 41.0000
+        grasp/max_fingertip_surface_gap: 0.0406
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.58s
+                           Time elapsed: 00:01:09
+                                    ETA: 01:51:03
+
+################################################################################
+[1m                         Learning iteration 47/1000000                          [0m 
+
+                            Total steps: 393216 
+                       Steps per second: 4955 
+                        Collection time: 0.707s 
+                          Learning time: 0.946s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0048
+                      Mean entropy loss: 23.1418
+                            Mean reward: 0.00
+                    Mean episode length: 1.05
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9526
+                            grasp/cond2: 0.4237
+                            grasp/cond3: 0.8199
+                            grasp/valid: 0.4183
+                       grasp/cache_size: 41.0000
+        grasp/max_fingertip_surface_gap: 0.0358
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.65s
+                           Time elapsed: 00:01:11
+                                    ETA: 02:52:39
+
+################################################################################
+[1m                         Learning iteration 48/1000000                          [0m 
+
+                            Total steps: 401408 
+                       Steps per second: 5278 
+                        Collection time: 0.706s 
+                          Learning time: 0.846s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0004
+                      Mean entropy loss: 23.1539
+                            Mean reward: 0.00
+                    Mean episode length: 1.54
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9490
+                            grasp/cond2: 0.4238
+                            grasp/cond3: 0.8114
+                            grasp/valid: 0.4150
+                       grasp/cache_size: 41.8750
+        grasp/max_fingertip_surface_gap: 0.0403
+          grasp/fingertip_surface_valid: 0.0282
+--------------------------------------------------------------------------------
+                         Iteration time: 1.55s
+                           Time elapsed: 00:01:12
+                                    ETA: 03:17:24
+
+################################################################################
+[1m                         Learning iteration 49/1000000                          [0m 
+
+                            Total steps: 409600 
+                       Steps per second: 5289 
+                        Collection time: 0.684s 
+                          Learning time: 0.865s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0049
+                      Mean entropy loss: 23.1657
+                            Mean reward: 0.00
+                    Mean episode length: 1.99
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9532
+                            grasp/cond2: 0.4268
+                            grasp/cond3: 0.8127
+                            grasp/valid: 0.4200
+                       grasp/cache_size: 44.0000
+        grasp/max_fingertip_surface_gap: 0.0399
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.55s
+                           Time elapsed: 00:01:14
+                                    ETA: 03:40:05
+
+################################################################################
+[1m                         Learning iteration 50/1000000                          [0m 
+
+                            Total steps: 417792 
+                       Steps per second: 4989 
+                        Collection time: 0.715s 
+                          Learning time: 0.927s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0014
+                      Mean entropy loss: 23.1799
+                            Mean reward: 0.00
+                    Mean episode length: 3.00
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9460
+                            grasp/cond2: 0.4316
+                            grasp/cond3: 0.8219
+                            grasp/valid: 0.4265
+                       grasp/cache_size: 47.5000
+        grasp/max_fingertip_surface_gap: 0.0372
+          grasp/fingertip_surface_valid: 0.0901
+                 grasp/dedup_candidates: 47.4000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 47.4000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 47.4000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.64s
+                           Time elapsed: 00:01:15
+                                    ETA: 04:32:19
+
+################################################################################
+[1m                         Learning iteration 51/1000000                          [0m 
+
+                            Total steps: 425984 
+                       Steps per second: 3928 
+                        Collection time: 0.658s 
+                          Learning time: 1.427s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0053
+                      Mean entropy loss: 23.1938
+                            Mean reward: 0.00
+                    Mean episode length: 3.56
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9482
+                            grasp/cond2: 0.4320
+                            grasp/cond3: 0.8123
+                            grasp/valid: 0.4263
+                       grasp/cache_size: 50.1250
+        grasp/max_fingertip_surface_gap: 0.0375
+          grasp/fingertip_surface_valid: 0.0253
+                 grasp/dedup_candidates: 50.5000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 50.5000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 50.5000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 2.09s
+                           Time elapsed: 00:01:17
+                                    ETA: 07:44:41
+
+################################################################################
+[1m                         Learning iteration 52/1000000                          [0m 
+
+                            Total steps: 434176 
+                       Steps per second: 5183 
+                        Collection time: 0.676s 
+                          Learning time: 0.904s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0035
+                      Mean entropy loss: 23.2072
+                            Mean reward: 0.00
+                    Mean episode length: 1.55
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9480
+                            grasp/cond2: 0.4305
+                            grasp/cond3: 0.8171
+                            grasp/valid: 0.4240
+                       grasp/cache_size: 51.0000
+        grasp/max_fingertip_surface_gap: 0.0411
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.58s
+                           Time elapsed: 00:01:19
+                                    ETA: 08:10:56
+
+################################################################################
+[1m                         Learning iteration 53/1000000                          [0m 
+
+                            Total steps: 442368 
+                       Steps per second: 4868 
+                        Collection time: 0.704s 
+                          Learning time: 0.978s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0063
+                      Mean entropy loss: 23.2198
+                            Mean reward: 0.00
+                    Mean episode length: 2.02
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9475
+                            grasp/cond2: 0.4263
+                            grasp/cond3: 0.8170
+                            grasp/valid: 0.4194
+                       grasp/cache_size: 51.5000
+        grasp/max_fingertip_surface_gap: 0.0455
+          grasp/fingertip_surface_valid: 0.0104
+--------------------------------------------------------------------------------
+                         Iteration time: 1.68s
+                           Time elapsed: 00:01:21
+                                    ETA: 09:07:44
+
+################################################################################
+[1m                         Learning iteration 54/1000000                          [0m 
+
+                            Total steps: 450560 
+                       Steps per second: 4896 
+                        Collection time: 0.705s 
+                          Learning time: 0.968s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0014
+                      Mean entropy loss: 23.2309
+                            Mean reward: 0.00
+                    Mean episode length: 2.02
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9460
+                            grasp/cond2: 0.4156
+                            grasp/cond3: 0.8069
+                            grasp/valid: 0.4081
+                       grasp/cache_size: 53.0000
+        grasp/max_fingertip_surface_gap: 0.0387
+          grasp/fingertip_surface_valid: 0.0335
+--------------------------------------------------------------------------------
+                         Iteration time: 1.67s
+                           Time elapsed: 00:01:22
+                                    ETA: 09:59:38
+
+################################################################################
+[1m                         Learning iteration 55/1000000                          [0m 
+
+                            Total steps: 458752 
+                       Steps per second: 5235 
+                        Collection time: 0.659s 
+                          Learning time: 0.906s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0107
+                      Mean entropy loss: 23.2414
+                            Mean reward: 0.00
+                    Mean episode length: 2.05
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9484
+                            grasp/cond2: 0.3999
+                            grasp/cond3: 0.7990
+                            grasp/valid: 0.3923
+                       grasp/cache_size: 56.8750
+        grasp/max_fingertip_surface_gap: 0.0364
+          grasp/fingertip_surface_valid: 0.0335
+                 grasp/dedup_candidates: 56.5000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 56.5000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 56.5000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.56s
+                           Time elapsed: 00:01:24
+                                    ETA: 10:17:27
+
+################################################################################
+[1m                         Learning iteration 56/1000000                          [0m 
+
+                            Total steps: 466944 
+                       Steps per second: 5209 
+                        Collection time: 0.648s 
+                          Learning time: 0.924s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0115
+                      Mean entropy loss: 23.2495
+                            Mean reward: 0.00
+                    Mean episode length: 1.58
+                        Mean action std: 1.03
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9457
+                            grasp/cond2: 0.4031
+                            grasp/cond3: 0.8019
+                            grasp/valid: 0.3960
+                       grasp/cache_size: 57.0000
+        grasp/max_fingertip_surface_gap: 0.0342
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.57s
+                           Time elapsed: 00:01:25
+                                    ETA: 10:36:54
+
+################################################################################
+[1m                         Learning iteration 57/1000000                          [0m 
+
+                            Total steps: 475136 
+                       Steps per second: 5024 
+                        Collection time: 0.733s 
+                          Learning time: 0.898s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0042
+                      Mean entropy loss: 23.2544
+                            Mean reward: 0.00
+                    Mean episode length: 1.00
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9515
+                            grasp/cond2: 0.4010
+                            grasp/cond3: 0.8047
+                            grasp/valid: 0.3958
+                       grasp/cache_size: 57.1250
+        grasp/max_fingertip_surface_gap: 0.0334
+          grasp/fingertip_surface_valid: 0.0156
+--------------------------------------------------------------------------------
+                         Iteration time: 1.63s
+                           Time elapsed: 00:01:27
+                                    ETA: 11:12:21
+
+################################################################################
+[1m                         Learning iteration 58/1000000                          [0m 
+
+                            Total steps: 483328 
+                       Steps per second: 5082 
+                        Collection time: 0.697s 
+                          Learning time: 0.915s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0076
+                      Mean entropy loss: 23.2652
+                            Mean reward: 0.00
+                    Mean episode length: 1.04
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9460
+                            grasp/cond2: 0.4011
+                            grasp/cond3: 0.7957
+                            grasp/valid: 0.3953
+                       grasp/cache_size: 58.5000
+        grasp/max_fingertip_surface_gap: 0.0377
+          grasp/fingertip_surface_valid: 0.0139
+                 grasp/dedup_candidates: 58.5000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 58.5000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 58.5000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.61s
+                           Time elapsed: 00:01:29
+                                    ETA: 11:41:19
+
+################################################################################
+[1m                         Learning iteration 59/1000000                          [0m 
+
+                            Total steps: 491520 
+                       Steps per second: 4987 
+                        Collection time: 0.717s 
+                          Learning time: 0.925s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0035
+                      Mean entropy loss: 23.2763
+                            Mean reward: 0.00
+                    Mean episode length: 1.05
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9437
+                            grasp/cond2: 0.4036
+                            grasp/cond3: 0.8086
+                            grasp/valid: 0.3966
+                       grasp/cache_size: 59.7500
+        grasp/max_fingertip_surface_gap: 0.0364
+          grasp/fingertip_surface_valid: 0.0278
+--------------------------------------------------------------------------------
+                         Iteration time: 1.64s
+                           Time elapsed: 00:01:30
+                                    ETA: 12:17:48
+
+################################################################################
+[1m                         Learning iteration 60/1000000                          [0m 
+
+                            Total steps: 499712 
+                       Steps per second: 5264 
+                        Collection time: 0.650s 
+                          Learning time: 0.906s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0030
+                      Mean entropy loss: 23.2870
+                            Mean reward: 0.00
+                    Mean episode length: 1.50
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9463
+                            grasp/cond2: 0.4030
+                            grasp/cond3: 0.8053
+                            grasp/valid: 0.3962
+                       grasp/cache_size: 60.0000
+        grasp/max_fingertip_surface_gap: 0.0333
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.56s
+                           Time elapsed: 00:01:32
+                                    ETA: 12:29:30
+
+################################################################################
+[1m                         Learning iteration 61/1000000                          [0m 
+
+                            Total steps: 507904 
+                       Steps per second: 5175 
+                        Collection time: 0.657s 
+                          Learning time: 0.925s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0040
+                      Mean entropy loss: 23.2964
+                            Mean reward: 0.00
+                    Mean episode length: 2.49
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9434
+                            grasp/cond2: 0.4103
+                            grasp/cond3: 0.8149
+                            grasp/valid: 0.4030
+                       grasp/cache_size: 60.7500
+        grasp/max_fingertip_surface_gap: 0.0416
+          grasp/fingertip_surface_valid: 0.0139
+--------------------------------------------------------------------------------
+                         Iteration time: 1.58s
+                           Time elapsed: 00:01:33
+                                    ETA: 12:48:01
+
+################################################################################
+[1m                         Learning iteration 62/1000000                          [0m 
+
+                            Total steps: 516096 
+                       Steps per second: 4901 
+                        Collection time: 0.679s 
+                          Learning time: 0.992s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0054
+                      Mean entropy loss: 23.3067
+                            Mean reward: 0.00
+                    Mean episode length: 1.51
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9465
+                            grasp/cond2: 0.4117
+                            grasp/cond3: 0.8112
+                            grasp/valid: 0.4030
+                       grasp/cache_size: 61.2500
+        grasp/max_fingertip_surface_gap: 0.0372
+          grasp/fingertip_surface_valid: 0.0083
+--------------------------------------------------------------------------------
+                         Iteration time: 1.67s
+                           Time elapsed: 00:01:35
+                                    ETA: 13:29:22
+
+################################################################################
+[1m                         Learning iteration 63/1000000                          [0m 
+
+                            Total steps: 524288 
+                       Steps per second: 4756 
+                        Collection time: 0.752s 
+                          Learning time: 0.971s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0041
+                      Mean entropy loss: 23.3196
+                            Mean reward: 0.00
+                    Mean episode length: 1.50
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9482
+                            grasp/cond2: 0.4172
+                            grasp/cond3: 0.8149
+                            grasp/valid: 0.4116
+                       grasp/cache_size: 62.8750
+        grasp/max_fingertip_surface_gap: 0.0332
+          grasp/fingertip_surface_valid: 0.0156
+--------------------------------------------------------------------------------
+                         Iteration time: 1.72s
+                           Time elapsed: 00:01:37
+                                    ETA: 14:22:41
+
+################################################################################
+[1m                         Learning iteration 64/1000000                          [0m 
+
+                            Total steps: 532480 
+                       Steps per second: 5106 
+                        Collection time: 0.665s 
+                          Learning time: 0.940s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0008
+                      Mean entropy loss: 23.3330
+                            Mean reward: 0.00
+                    Mean episode length: 1.51
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9442
+                            grasp/cond2: 0.4272
+                            grasp/cond3: 0.8145
+                            grasp/valid: 0.4209
+                       grasp/cache_size: 63.3750
+        grasp/max_fingertip_surface_gap: 0.0398
+          grasp/fingertip_surface_valid: 0.0458
+--------------------------------------------------------------------------------
+                         Iteration time: 1.60s
+                           Time elapsed: 00:01:38
+                                    ETA: 14:44:06
+
+################################################################################
+[1m                         Learning iteration 65/1000000                          [0m 
+
+                            Total steps: 540672 
+                       Steps per second: 4525 
+                        Collection time: 0.752s 
+                          Learning time: 1.059s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0017
+                      Mean entropy loss: 23.3461
+                            Mean reward: 0.00
+                    Mean episode length: 3.02
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9471
+                            grasp/cond2: 0.4379
+                            grasp/cond3: 0.8268
+                            grasp/valid: 0.4302
+                       grasp/cache_size: 65.2500
+        grasp/max_fingertip_surface_gap: 0.0379
+          grasp/fingertip_surface_valid: 0.0312
+--------------------------------------------------------------------------------
+                         Iteration time: 1.81s
+                           Time elapsed: 00:01:40
+                                    ETA: 15:56:50
+
+################################################################################
+[1m                         Learning iteration 66/1000000                          [0m 
+
+                            Total steps: 548864 
+                       Steps per second: 4596 
+                        Collection time: 0.756s 
+                          Learning time: 1.026s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0026
+                      Mean entropy loss: 23.3577
+                            Mean reward: 0.00
+                    Mean episode length: 1.54
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9475
+                            grasp/cond2: 0.4304
+                            grasp/cond3: 0.8158
+                            grasp/valid: 0.4247
+                       grasp/cache_size: 67.1250
+        grasp/max_fingertip_surface_gap: 0.0383
+          grasp/fingertip_surface_valid: 0.0104
+--------------------------------------------------------------------------------
+                         Iteration time: 1.78s
+                           Time elapsed: 00:01:42
+                                    ETA: 17:00:28
+
+################################################################################
+[1m                         Learning iteration 67/1000000                          [0m 
+
+                            Total steps: 557056 
+                       Steps per second: 4620 
+                        Collection time: 0.716s 
+                          Learning time: 1.057s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0044
+                      Mean entropy loss: 23.3697
+                            Mean reward: 0.00
+                    Mean episode length: 1.53
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9463
+                            grasp/cond2: 0.4213
+                            grasp/cond3: 0.8069
+                            grasp/valid: 0.4138
+                       grasp/cache_size: 69.3750
+        grasp/max_fingertip_surface_gap: 0.0361
+          grasp/fingertip_surface_valid: 0.0281
+                 grasp/dedup_candidates: 69.6667
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 69.6667
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 69.6667
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.77s
+                           Time elapsed: 00:01:44
+                                    ETA: 17:59:59
+
+################################################################################
+[1m                         Learning iteration 68/1000000                          [0m 
+
+                            Total steps: 565248 
+                       Steps per second: 4273 
+                        Collection time: 0.728s 
+                          Learning time: 1.189s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0003
+                      Mean entropy loss: 23.3831
+                            Mean reward: 0.00
+                    Mean episode length: 1.54
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9442
+                            grasp/cond2: 0.4138
+                            grasp/cond3: 0.8142
+                            grasp/valid: 0.4064
+                       grasp/cache_size: 70.6250
+        grasp/max_fingertip_surface_gap: 0.0377
+          grasp/fingertip_surface_valid: 0.0417
+--------------------------------------------------------------------------------
+                         Iteration time: 1.92s
+                           Time elapsed: 00:01:46
+                                    ETA: 19:32:32
+
+################################################################################
+[1m                         Learning iteration 69/1000000                          [0m 
+
+                            Total steps: 573440 
+                       Steps per second: 5179 
+                        Collection time: 0.660s 
+                          Learning time: 0.921s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0023
+                      Mean entropy loss: 23.3956
+                            Mean reward: 0.00
+                    Mean episode length: 1.08
+                        Mean action std: 1.04
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9551
+                            grasp/cond2: 0.4121
+                            grasp/cond3: 0.7944
+                            grasp/valid: 0.4048
+                       grasp/cache_size: 72.0000
+        grasp/max_fingertip_surface_gap: 0.0391
+          grasp/fingertip_surface_valid: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.58s
+                           Time elapsed: 00:01:47
+                                    ETA: 19:42:36
+
+################################################################################
+[1m                         Learning iteration 70/1000000                          [0m 
+
+                            Total steps: 581632 
+                       Steps per second: 4829 
+                        Collection time: 0.747s 
+                          Learning time: 0.949s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0058
+                      Mean entropy loss: 23.4076
+                            Mean reward: 0.00
+                    Mean episode length: 1.52
+                        Mean action std: 1.05
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9448
+                            grasp/cond2: 0.4014
+                            grasp/cond3: 0.8135
+                            grasp/valid: 0.3940
+                       grasp/cache_size: 73.5000
+        grasp/max_fingertip_surface_gap: 0.0419
+          grasp/fingertip_surface_valid: 0.0556
+--------------------------------------------------------------------------------
+                         Iteration time: 1.70s
+                           Time elapsed: 00:01:49
+                                    ETA: 20:19:17
+
+################################################################################
+[1m                         Learning iteration 71/1000000                          [0m 
+
+                            Total steps: 589824 
+                       Steps per second: 4854 
+                        Collection time: 0.707s 
+                          Learning time: 0.981s 
+                        Mean value loss: 0.0000
+                    Mean surrogate loss: 0.0013
+                      Mean entropy loss: 23.4185
+                            Mean reward: 0.00
+                    Mean episode length: 1.54
+                        Mean action std: 1.05
+                           reward/total: 0.0000
+                            grasp/cond1: 0.9497
+                            grasp/cond2: 0.4028
+                            grasp/cond3: 0.8149
+                            grasp/valid: 0.3960
+                       grasp/cache_size: 75.0000
+        grasp/max_fingertip_surface_gap: 0.0430
+          grasp/fingertip_surface_valid: 0.0000
+                 grasp/dedup_candidates: 75.0000
+                   grasp/dedup_rejected: 0.0000
+                   grasp/dedup_accepted: 75.0000
+             grasp/dedup_rejection_rate: 0.0000
+    grasp/serialized_surface_candidates: 75.0000
+      grasp/serialized_surface_rejected: 0.0000
+grasp/serialized_surface_rejection_rate: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 1.69s
+                           Time elapsed: 00:01:51
+                                    ETA: 20:52:55

@@ -1,11 +1,14 @@
 # @package _global_
+# LEAP embodiment owner for the Sharpa-parity ball-rotation task. The HORA
+# overlay selects the HORA APPO runtime without redefining task semantics.
+
 training:
-  task_name: LeapInhandBall0730Rotation
+  task_name: LeapInhandBall0730HoraAppoRotation
   sim_backend: mujoco
   play_steps: 200
   render_spacing: 0.5
   cam_distance: 1.2
-  cam_lookat: [0.0, 0.0, 0.5]
+  cam_lookat: [0.0, 0.0, 0.665]
   cam_elevation: -20.0
   replay_queue_size: 1
   device: cpu
@@ -13,7 +16,6 @@ training:
   no_play: true
 
 algo:
-  # Full training budget; num_envs may still be overridden per launch.
   num_envs: 2048
   steps_per_env: 32
   max_iterations: 5000
@@ -37,11 +39,11 @@ algo:
     obs_normalization: true
   algorithm:
     value_loss_coef: 4.0
-    entropy_coef: 0.0
-    learning_rate: 0.0005
+    entropy_coef: 0.01
+    learning_rate: 0.001
     desired_kl: 0.02
-    adaptive_kl_factor: 2.0
-    adaptive_lr_factor: 1.5
+    adaptive_kl_factor: 1.2
+    adaptive_lr_factor: 1.1
     num_learning_epochs: 5
     num_mini_batches: 4
     clip_param: 0.2
@@ -53,27 +55,29 @@ algo:
 
 reward:
   scales:
-    rotate: 1.25
+    rotate: 2.5
     obj_linvel: -0.3
-    pose_diff: -0.3
+    pose_diff: -0.4
     torque: -0.1
-    work: -2.0
-    # Disabled for now; the 30 mm cache-relative termination remains active.
-    drop: 0.0
+    work: -0.5
+    object_pos: 0.003
   angvel_clip_min: -0.5
   angvel_clip_max: 0.5
-  # Compatibility field required by RewardConfigPPO. This task terminates from
-  # each cache row's initial_ball_z minus env.termination_drop_distance.
-  reset_z_threshold: 0.0
 
 env:
-  sim_dt: 0.005
+  sim_dt: 0.004166666666666667
   ctrl_dt: 0.05
   max_episode_seconds: 20.0
-  gen_grasp: false
-  grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k.npy
-  # Fixed pose_diff target: the nominal hand pose used to generate this cache.
-  pose_diff_target_qpos:
+  post_step_forward_sensor: true
+  clip_obs: 5.0
+  clip_actions: 1.0
+  # Only the 0.06 m width is used; each reset centers it on that cache row's ball z.
+  reset_height_lower: 0.58906
+  reset_height_upper: 0.64906
+  rot_axis: [0.0, 0.0, 1.0]
+  grasp_cache_path: robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k
+  use_default_object_pose_for_object_pos_anchor: true
+  default_hand_joint_pos:
     - 1.5152045040427635
     - 0.11430147259750476
     - 0.2876406730815961
@@ -84,27 +88,73 @@ env:
     - 0.5369823550831088
     - 1.5294890485315962
     - -0.01798386011739139
-    - 0.27558019211759154
+    - 0.27558019211759954
     - 0.19821762108233876
     - 1.9245445859343515
     - 0.04788276935232176
     - -0.021885380331691334
     - 0.19524630120127295
-  # Terminate after the ball falls 30 mm from the selected cache row's height.
-  termination_drop_distance: 0.03
-  noise_config:
-    level: 0.0
-    scale_joint_angle: 0.0
+  default_object_pose:
+    - -0.032440416893199604
+    - 0.041151239943936
+    - 0.664301098275159
+    - 0.9300906819767993
+    - 0.07052047191574277
+    - -0.04548098804911446
+    - 0.3576166467976395
+  tactile_diagnostic_names: [index, middle, ring, thumb]
+  sensor:
+    tactile_force_sensor_names:
+      - leap_index_tactile_force
+      - leap_middle_tactile_force
+      - leap_ring_tactile_force
+      - leap_thumb_tactile_force
+  disable_tactile_ids: []
+  obs:
+    observation_mode: separated
+    enable_tactile: true
+    binary_contact: false
+    enable_contact_pos: false
+    contact_smooth: 0.5
+    contact_threshold: 0.05
+    tactile_force_clip_max: 4.0
+  priv_info:
+    include_friction_scale: true
+    include_gravity_direction: false
   control_config:
     action_scale: 0.041666666666666664
+    p_gain: 1.0
+    d_gain: 0.1
+    torque_control: false
+    dof_limits_scale: 0.9
   domain_rand:
-    randomize_base_mass: false
-    random_com: false
-    randomize_gravity: false
-    push_robots: false
-    joint_noise: 0.0
-    ball_vel_noise: 0.0
-    ball_z_offset: 0.0
+    scale_list: [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5]
+    randomize_gravity_direction: true
+    gravity_direction_magnitude: 9.81
+    randomize_pd_gains: true
+    randomize_p_gain_scale_lower: 0.5
+    randomize_p_gain_scale_upper: 2.0
+    randomize_d_gain_scale_lower: 0.5
+    randomize_d_gain_scale_upper: 2.0
+    randomize_friction: true
+    randomize_friction_scale_lower: 0.75
+    randomize_friction_scale_upper: 1.25
+    elastomer_base_friction: 2.0
+    metal_base_friction: 1.0
+    object_base_friction: 2.0
+    randomize_com: true
+    randomize_com_lower: -0.01
+    randomize_com_upper: 0.01
+    randomize_mass: true
+    randomize_mass_lower: 0.01
+    randomize_mass_upper: 0.25
+    force_scale: 2.0
+    random_force_prob_scalar: 0.25
+    force_decay: 0.9
+    force_decay_interval: 0.08
+    joint_noise_scale: 0.02
+    contact_latency: 0.005
+    contact_sensor_noise: 0.01
 
 play_profile:
   enabled: true

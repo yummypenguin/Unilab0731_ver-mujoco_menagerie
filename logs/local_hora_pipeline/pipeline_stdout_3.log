@@ -1,0 +1,4 @@
+2026-08-08T11:00:39.1726060-07:00 pipeline_started
+2026-08-08T11:00:39.1881250-07:00 cache_start scale=0.8 path=D:\Unilab0731_ver-mujoco_menagerie\src\unilab\assets\robots\leap_hand\caches\ball_grasp_allegro_new_physics_0731_50k_0.8.npy
+Using device: cpu
+2026-08-08T11:00:45.3084522-07:00 pipeline_failed error=uv command failed with exit code 1: uv run train --algo ppo --task leap_inhand_ball_grasp_allegro --sim mujoco training.no_play=true training.device=cpu training.capture_git_state=false env.object_scale=0.8 env.grasp_cache_path=robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k_0.8.npy

@@ -39,6 +39,7 @@ class AllegroRotationGraspCfg(AllegroRotationPPOCfg):
     gen_grasp: bool = True
     grasp_collection_target: int = 50_000
     grasp_auto_save: bool = True
+    grasp_auto_save_interval: int = 1_000
     grasp_quality_check: bool = True
     grasp_min_contacts: int = 2
 
@@ -55,6 +56,7 @@ class AllegroRotationGrasp(AllegroRotationPPO):
         super().__init__(cfg, num_envs=num_envs, backend_type=backend_type)
         self._saved_grasping_states: list[np.ndarray] = []
         self._grasp_cache_saved = False
+        self._last_grasp_auto_save_total = 0
         self._grasp_target_reached_notified = False
 
     def apply_action(self, actions: np.ndarray, state: NpEnvState) -> np.ndarray:
@@ -130,11 +132,10 @@ class AllegroRotationGrasp(AllegroRotationPPO):
         exit(0)
 
     def _save_grasp_cache(self, force: bool = False) -> None:
-        if self._grasp_cache_saved and not force:
-            return
-
         total = self._total_saved_grasps()
         target = int(self._cfg.grasp_collection_target)
+        if self._grasp_cache_saved and not force and total < target:
+            return
         if not force and total < target:
             return
 
@@ -149,9 +150,13 @@ class AllegroRotationGrasp(AllegroRotationPPO):
         if not output_file.is_absolute():
             output_file = ASSETS_ROOT_PATH / output_file
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        np.save(output_file, all_states)
+        temporary_file = output_file.with_suffix(output_file.suffix + ".tmp")
+        with temporary_file.open("wb") as stream:
+            np.save(stream, all_states)
+        temporary_file.replace(output_file)
 
         self._grasp_cache_saved = True
+        self._last_grasp_auto_save_total = int(all_states.shape[0])
         if self.state is not None:
             log = self.state.info.get("log", {})
             log["grasp_cache/saved"] = 1.0
@@ -188,7 +193,14 @@ class AllegroRotationGrasp(AllegroRotationPPO):
             return
 
         self._saved_grasping_states.append(states)
-        self._save_grasp_cache()
+        auto_save_interval = max(int(getattr(self._cfg, "grasp_auto_save_interval", 1_000)), 1)
+        if bool(self._cfg.grasp_auto_save) and (
+            self._total_saved_grasps() - int(getattr(self, "_last_grasp_auto_save_total", 0))
+            >= auto_save_interval
+        ):
+            self._save_grasp_cache(force=True)
+        else:
+            self._save_grasp_cache()
         self._stop_collection()
 
         if self.state is not None:

@@ -248,6 +248,31 @@ def test_proposal_sampling_clips_joint_limits(monkeypatch) -> None:
     )
 
 
+def test_scale_collection_builds_one_physical_ball_variant() -> None:
+    provider = LeapAllegroGraspResetProvider()
+    env = SimpleNamespace(
+        _num_envs=3,
+        cfg=SimpleNamespace(object_scale=1.2),
+        _backend=SimpleNamespace(get_geom_size=lambda name: np.asarray([0.0335, 0.0, 0.0])),
+    )
+
+    plan = provider.build_init_randomization_plan(env)
+
+    np.testing.assert_array_equal(plan.model_assignments, [0, 0, 0])
+    assert len(plan.model_variants) == 1
+    override = plan.model_variants[0].geom_size_overrides[0]
+    assert override.geom_name == "leap_object_col"
+    np.testing.assert_allclose(override.size, [0.0402, 0.0, 0.0])
+
+
+@pytest.mark.parametrize("value", [0.0, -1.0, np.inf, np.nan])
+def test_scale_collection_rejects_invalid_object_scale(value: float) -> None:
+    cfg = LeapInhandBallGraspAllegroCfg(grasp_seed_qpos=SEED.tolist(), object_scale=value)
+
+    with pytest.raises(ValueError, match="object_scale"):
+        cfg.validate()
+
+
 def test_inherited_info_updates_set_prev_ctrl_from_sampled_qpos() -> None:
     provider = LeapAllegroGraspResetProvider()
     hand = np.broadcast_to(SEED[:16], (2, 16)).copy()
@@ -621,6 +646,8 @@ def test_direct_save_uses_float32_unique_rows_and_temporary_path(tmp_path) -> No
     saved = np.load(output)
     assert saved.shape == (2, 23)
     assert saved.dtype == np.float32
+    assert not output.with_suffix(".npy.tmp").exists()
+    assert env._last_grasp_auto_save_total == 2
     assert output.name != Path(STRICT_CACHE).name
     assert (
         len(
@@ -635,6 +662,32 @@ def test_direct_save_uses_float32_unique_rows_and_temporary_path(tmp_path) -> No
         )
         == 2
     )
+
+
+def test_partial_scale_cache_is_restored_for_resume(tmp_path) -> None:
+    env = object.__new__(LeapInhandBallGraspAllegroEnv)
+    rows = np.stack([_row(), _row()]).astype(np.float32)
+    rows[1, 0] = 0.1
+    cache = tmp_path / "partial.npy"
+    np.save(cache, rows)
+    env._cfg = SimpleNamespace(
+        grasp_auto_save=True,
+        grasp_cache_path=str(cache),
+        grasp_collection_target=50_000,
+        grasp_dedup_joint_resolution=0.001,
+        grasp_dedup_ball_position_resolution=0.0005,
+    )
+    env._saved_grasping_states = []
+    env._saved_grasp_keys = set()
+    env._grasp_cache_saved = False
+    env._last_grasp_auto_save_total = 0
+
+    env._restore_partial_grasp_cache()
+
+    assert env._total_saved_grasps() == 2
+    assert env._last_grasp_auto_save_total == 2
+    assert env._grasp_cache_saved is True
+    assert len(env._saved_grasp_keys) == 2
 
 
 def test_cache_inspector_reports_quantized_and_quaternion_only_duplicates(tmp_path) -> None:

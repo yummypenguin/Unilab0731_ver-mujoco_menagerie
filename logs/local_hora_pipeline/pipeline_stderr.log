@@ -1,0 +1,40 @@
+Error executing job with overrides: ['task=leap_inhand_ball_grasp_allegro/mujoco', 'training.no_play=true', 'training.device=cpu', 'env.object_scale=0.8', 'env.grasp_cache_path=robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k_0.8.npy']
+Traceback (most recent call last):
+  File "D:\Unilab0731_ver-mujoco_menagerie\scripts\train_rsl_rl.py", line 977, in main
+    runner.learn(num_learning_iterations=max_iterations, init_at_random_ep_len=True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Unilab0731_ver-mujoco_menagerie\.venv\Lib\site-packages\rsl_rl\runners\on_policy_runner.py", line 74, in learn
+    self.logger.init_logging_writer()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\Unilab0731_ver-mujoco_menagerie\.venv\Lib\site-packages\rsl_rl\utils\logger.py", line 89, in init_logging_writer
+    files_to_upload = self._store_code_state()
+  File "D:\Unilab0731_ver-mujoco_menagerie\.venv\Lib\site-packages\rsl_rl\utils\logger.py", line 302, in _store_code_state
+    f"--- git status ---\n{repo.git.status()} \n\n\n"
+                           ~~~~~~~~~~~~~~~^^
+  File "D:\Unilab0731_ver-mujoco_menagerie\.venv\Lib\site-packages\git\cmd.py", line 1003, in <lambda>
+    return lambda *args, **kwargs: self._call_process(name, *args, **kwargs)
+                                   ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Unilab0731_ver-mujoco_menagerie\.venv\Lib\site-packages\git\cmd.py", line 1616, in _call_process
+    return self.execute(call, **exec_kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Unilab0731_ver-mujoco_menagerie\.venv\Lib\site-packages\git\cmd.py", line 1406, in execute
+    raise GitCommandError(redacted_command, status, stderr_value, stdout_value)
+git.exc.GitCommandError: Cmd('git') failed due to: exit code(128)
+  cmdline: git status
+  stderr: 'Error cleaning Git LFS object: open D:\Unilab0731_ver-mujoco_menagerie\.git\lfs\tmp\84824988: Access is denied.
+error: packet write failed: Broken pipe
+error: external filter 'git-lfs filter-process' failed
+fatal: logs/hora_ppo/LeapInhandBall0730HoraRotation/2026-08-07_19-37-00_mujoco/model_0.pt: clean filter 'lfs' failed'
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.
+uv command failed with exit code 1: uv run train --algo ppo --task leap_inhand_ball_grasp_allegro --sim mujoco training
+.no_play=true training.device=cpu env.object_scale=0.8 env.grasp_cache_path=robots/leap_hand/caches/ball_grasp_allegro_
+new_physics_0731_50k_0.8.npy
+At D:\Unilab0731_ver-mujoco_menagerie\scripts\run_leap_hora_local_pipeline.ps1:27 char:9
++         throw "uv command failed with exit code $LASTEXITCODE`: uv ru ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (uv command fail...731_50k_0.8.npy:String) [], RuntimeException
+    + FullyQualifiedErrorId : uv command failed with exit code 1: uv run train --algo ppo --task leap_inhand_ball_gras 
+   p_allegro --sim mujoco training.no_play=true training.device=cpu env.object_scale=0.8 env.grasp_cache_path=robots/  
+  leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k_0.8.npy
+ 

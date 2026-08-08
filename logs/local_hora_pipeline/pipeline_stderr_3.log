@@ -1,0 +1,37 @@
+Error executing job with overrides: ['task=leap_inhand_ball_grasp_allegro/mujoco', 'training.no_play=true', 'training.device=cpu', 'training.capture_git_state=false', 'env.object_scale=0.8', 'env.grasp_cache_path=robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k_0.8.npy']
+Traceback (most recent call last):
+  File "D:\Unilab0731_ver-mujoco_menagerie\scripts\train_rsl_rl.py", line 876, in main
+    env = create_env(
+        cfg,
+        num_envs=cfg.algo.num_envs,
+        env_cfg_override=env_cfg_override,
+    )
+  File "D:\Unilab0731_ver-mujoco_menagerie\src\unilab\training\common.py", line 110, in create_env
+    return registry.make(
+           ~~~~~~~~~~~~~^
+        task_name or str(OmegaConf.select(cfg, "training.task_name")),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        env_cfg_override=env_cfg_override,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\Unilab0731_ver-mujoco_menagerie\src\unilab\base\registry.py", line 226, in make
+    apply_cfg_overrides(env_cfg, env_cfg_override)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Unilab0731_ver-mujoco_menagerie\src\unilab\base\registry.py", line 186, in apply_cfg_overrides
+    raise ValueError(f"Config class '{type(target_obj).__name__}' has no attribute '{key}'")
+ValueError: Config class 'LeapInhandBallGraspAllegroCfg' has no attribute 'grasp_auto_save_interval'
+
+Set the environment variable HYDRA_FULL_ERROR=1 for a complete stack trace.
+uv command failed with exit code 1: uv run train --algo ppo --task leap_inhand_ball_grasp_allegro --sim mujoco training
+.no_play=true training.device=cpu training.capture_git_state=false env.object_scale=0.8 env.grasp_cache_path=robots/lea
+p_hand/caches/ball_grasp_allegro_new_physics_0731_50k_0.8.npy
+At D:\Unilab0731_ver-mujoco_menagerie\scripts\run_leap_hora_local_pipeline.ps1:27 char:9
++         throw "uv command failed with exit code $LASTEXITCODE`: uv ru ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (uv command fail...731_50k_0.8.npy:String) [], RuntimeException
+    + FullyQualifiedErrorId : uv command failed with exit code 1: uv run train --algo ppo --task leap_inhand_ball_gras 
+   p_allegro --sim mujoco training.no_play=true training.device=cpu training.capture_git_state=false env.object_scale  
+  =0.8 env.grasp_cache_path=robots/leap_hand/caches/ball_grasp_allegro_new_physics_0731_50k_0.8.npy
+ 

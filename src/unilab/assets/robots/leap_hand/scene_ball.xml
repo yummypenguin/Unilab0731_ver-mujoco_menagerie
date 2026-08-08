@@ -8,6 +8,10 @@
   </worldbody>
 
   <sensor>
+    <contact name="leap_index_tactile_force" geom1="index_tip_col" geom2="leap_object_col" data="force" num="1" reduce="netforce"/>
+    <contact name="leap_middle_tactile_force" geom1="middle_tip_col" geom2="leap_object_col" data="force" num="1" reduce="netforce"/>
+    <contact name="leap_ring_tactile_force" geom1="ring_tip_col" geom2="leap_object_col" data="force" num="1" reduce="netforce"/>
+    <contact name="leap_thumb_tactile_force" geom1="thumb_tip_col" geom2="leap_object_col" data="force" num="1" reduce="netforce"/>
     <contact name="leap_index_contact" geom1="index_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
     <contact name="leap_middle_contact" geom1="middle_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>
     <contact name="leap_ring_contact" geom1="ring_tip_col" geom2="leap_object_col" data="found" num="1" reduce="mindist"/>

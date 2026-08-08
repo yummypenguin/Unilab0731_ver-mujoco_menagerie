@@ -181,6 +181,18 @@ class SharpaInhandBaseCfg(EnvCfg):
     actuated_joint_names: list[str] = field(
         default_factory=lambda: list(DEFAULT_ACTUATED_JOINT_NAMES)
     )
+    default_hand_joint_pos: list[float] = field(
+        default_factory=lambda: np.deg2rad(
+            np.asarray(SOURCE_DEFAULT_HAND_JOINT_POS_DEG, dtype=np.float64)
+        ).tolist()
+    )
+    # Empty keeps the historical Sharpa behavior: resolve the fixed object anchor
+    # from the backend/model default qpos. Other embodiments may provide the
+    # cache-generation nominal 7D object pose explicitly.
+    default_object_pose: list[float] = field(default_factory=list)
+    # Optional stable labels for per-channel tactile contact diagnostics. Empty
+    # preserves existing tasks without adding logging keys.
+    tactile_diagnostic_names: list[str] = field(default_factory=list)
     fingertip_body_names: list[str] = field(
         default_factory=lambda: list(DEFAULT_FINGERTIP_BODY_NAMES)
     )
@@ -244,6 +256,7 @@ def resolve_grasp_cache_file(grasp_cache_path: str, scale_value: float) -> Path:
 def sample_scale_grasp_caches(
     grasp_caches: Sequence[np.ndarray],
     scale_ids: np.ndarray,
+    expected_width: int | None = None,
 ) -> np.ndarray:
     """Sample one cached grasp per reset environment from per-scale cache files.
 
@@ -259,10 +272,18 @@ def sample_scale_grasp_caches(
     if num_scales <= 0:
         raise ValueError("grasp_caches must contain at least one scale bucket")
 
-    sampled = np.zeros((num_envs, 29), dtype=np.float64)
+    first_cache = np.asarray(grasp_caches[0])
+    if first_cache.ndim != 2:
+        raise ValueError(f"Expected a 2D grasp cache, got {first_cache.shape}")
+    row_width = int(first_cache.shape[1])
+    if expected_width is not None and row_width != int(expected_width):
+        raise ValueError(f"Expected cached grasp width {int(expected_width)}, got {row_width}")
+    sampled = np.zeros((num_envs, row_width), dtype=np.float64)
     for scale_idx, grasp_cache in enumerate(grasp_caches):
-        if grasp_cache.ndim != 2 or grasp_cache.shape[1] < 29:
-            raise ValueError(f"Expected cached grasp shape (?, 29), got {grasp_cache.shape}")
+        if grasp_cache.ndim != 2 or grasp_cache.shape[1] != row_width:
+            raise ValueError(
+                f"Expected cached grasp shape (?, {row_width}), got {grasp_cache.shape}"
+            )
         if grasp_cache.shape[0] == 0:
             raise ValueError(f"grasp cache for scale id {scale_idx} is empty")
         env_ids = np.flatnonzero(scale_ids == scale_idx)
@@ -321,15 +342,15 @@ class SharpaInhandBaseEnv(NpEnv):
         self._obj_pos_slice = slice(self._num_action, self._num_action + 3)
         self._obj_quat_slice = slice(self._num_action + 3, self._num_action + 7)
 
-        source_default_angles = np.deg2rad(
-            np.asarray(SOURCE_DEFAULT_HAND_JOINT_POS_DEG, dtype=np.float64)
-        )
-        if source_default_angles.shape[0] != self._num_action:
+        default_angles = np.asarray(cfg.default_hand_joint_pos, dtype=np.float64)
+        if default_angles.shape != (self._num_action,):
             raise ValueError(
-                "Source default hand joint pose size mismatch: "
-                f"{source_default_angles.shape[0]} vs expected {self._num_action}"
+                "default_hand_joint_pos size mismatch: "
+                f"{default_angles.shape} vs expected {(self._num_action,)}"
             )
-        self.default_angles = np.asarray(source_default_angles, dtype=self._np_dtype)
+        if not np.isfinite(default_angles).all():
+            raise ValueError("default_hand_joint_pos must contain only finite values")
+        self.default_angles = np.asarray(default_angles, dtype=self._np_dtype)
 
         self._action_space = gym.spaces.Box(
             low=-float(cfg.clip_actions),

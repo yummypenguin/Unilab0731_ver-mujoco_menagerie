@@ -58,6 +58,9 @@ algo:
 training:
   task_name: Go1JoystickFlat
   device: null
+  # Disable only in restricted worktrees where a read-only Git/LFS filter
+  # prevents RSL-RL from snapshotting repository state.
+  capture_git_state: true
   logger: tensorboard
   wandb_project: unilab
   wandb_entity: null
