@@ -41,7 +41,6 @@ htmlcov/
 # Project specific
 runs/
 # Generated training and evaluation outputs
-logs/
 run_config.json
 run_summary.json
 .worktrees/
